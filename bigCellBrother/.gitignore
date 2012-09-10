@@ -2,3 +2,5 @@
 /gmon.out
 /data
 /gss
+.*
+ !/.gitignore

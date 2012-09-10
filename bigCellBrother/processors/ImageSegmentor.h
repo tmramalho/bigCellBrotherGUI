@@ -32,7 +32,7 @@ public:
 
 	//segmentation stuff
 	cv::Mat drawMarkers(const markersCont &mc);
-	markersCont makeNiceMarkers(cv::Mat& origImage, int defectSize, int maxHeight, int maxWidth);
+	markersCont makeNiceMarkers(cv::Mat& origImage, int defectSize, int maxHeight, int maxWidth, int minArea, int minPerimeter);
 	cv::Mat addBackgroundMask(cv::Mat &markersPic, cv::Mat &backgroundMask);
 	cv::Mat watershed(cv::Mat &improvImage, cv::Mat &markers);
 

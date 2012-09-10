@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
 	distTrans = ImageProcessor::threshold(distTrans, 80, false);
 	distTrans = ImageProcessor::applyMorphologyOp(distTrans, cv::MORPH_OPEN, 3);
 
-	markersCont mcBfNice = is.makeNiceMarkers(distTrans, 50, 60, 12);
+	markersCont mcBfNice = is.makeNiceMarkers(distTrans, 50, 60, 12, 30, 40);
 	cv::Mat wsMarkersBfNice = is.drawMarkers(mcBfNice);
 	cv::imshow("markersBf2", wsMarkersBfNice);
 

@@ -96,8 +96,8 @@ cv::Mat ImageSegmentor::addBackgroundMask(cv::Mat& markersPic, cv::Mat& backgrou
 	return merged;
 }
 
-markersCont ImageSegmentor::makeNiceMarkers(cv::Mat& origImage, int defectSize, int maxHeight, int maxWidth) {
-	int compCount = 0, ni = 0, np = 100, nc;
+markersCont ImageSegmentor::makeNiceMarkers(cv::Mat& origImage, int defectSize, int maxHeight, int maxWidth, int minArea, int minPerimeter) {
+	int compCount = 0, ni = 0, np = 100, nc = 0;
 	vector<vector<cv::Point> > contours;
 	vector<cv::Vec4i> hierarchy;
 	vector<vector<cv::Point> > contoursTemp;
@@ -124,14 +124,13 @@ markersCont ImageSegmentor::makeNiceMarkers(cv::Mat& origImage, int defectSize, 
 			throw new std::exception;
 		}
 
-		std::cout << contours.size() << std::endl;
-
 		for( uint i = 0; i< contours.size(); i++ ) {
 			if(hierarchy[i][3] != -1) continue; //it's a hole!
 
 			cv::Rect boundBox = cv::boundingRect(contours[i]);
 			cv::RotatedRect box = cv::minAreaRect(contours[i]);
 			double hDim, wDim;
+
 			if(box.size.width > box.size.height) {
 				hDim = box.size.width;
 				wDim = box.size.height;
@@ -139,7 +138,8 @@ markersCont ImageSegmentor::makeNiceMarkers(cv::Mat& origImage, int defectSize, 
 				hDim = box.size.height;
 				wDim = box.size.width;
 			}
-			if(hDim > maxHeight || wDim > maxWidth) {
+
+			if(hDim > maxHeight || wDim > maxWidth) { //contour too big, break it
 				cv::drawContours(tempStorage, contours, i, cv::Scalar::all(WHITE), -1, 8, hierarchy, INT_MAX);
 				cv::Mat contourRoi = tempStorage(boundBox);
 				if(ni > 0) contourRoi = ImageProcessor::dilate(contourRoi, 3);
@@ -148,7 +148,7 @@ markersCont ImageSegmentor::makeNiceMarkers(cv::Mat& origImage, int defectSize, 
 				cv::Mat newContour;
 				bool broken = false;
 
-				for (int th = 20; th < 250; th += 5) {
+				for (int th = 20; th < 250; th += 5) { //try to break contour
 					newContour = ImageProcessor::threshold(distTrans, th, false);
 					cv::Mat newContourSource;
 					newContour.copyTo(newContourSource);
@@ -161,10 +161,8 @@ markersCont ImageSegmentor::makeNiceMarkers(cv::Mat& origImage, int defectSize, 
 					nc++;
 					newContour.copyTo(contourRoi);
 					cv::bitwise_or(tempStorage, fixedImage, fixedImage);
-					cv::bitwise_or(tempStorage, debugImage, debugImage);//debug
 				} else {
 					cv::drawContours(fixedImage, contours, i, cv::Scalar::all(WHITE), -1, 8, hierarchy, INT_MAX);
-					cv::drawContours(debugImage, contours, i, cv::Scalar::all(128), -1, 8, hierarchy, INT_MAX);//debug
 				}
 
 				tempStorage = cv::Scalar::all(BLACK);
@@ -178,12 +176,7 @@ markersCont ImageSegmentor::makeNiceMarkers(cv::Mat& origImage, int defectSize, 
 		fixedImage.copyTo(contourSourceImage);
 		tempStorage = cv::Scalar::all(BLACK);
 		ni++;
-
-		debugImage = cv::Scalar::all(BLACK);//debug
-		std::cout << nc << std::endl;//debug
 	}
-
-	//cv::imshow("step1", fixedImage);
 
 	fixedImage = cv::Scalar::all(BLACK);
 
@@ -197,53 +190,30 @@ markersCont ImageSegmentor::makeNiceMarkers(cv::Mat& origImage, int defectSize, 
 		double area = cv::contourArea(contours[i]);
 		if(perimeter < defectSize || area < defectSize) {
 			cv::drawContours(tempStorage, contours, i, cv::Scalar::all(255), -1, 8, hierarchy, INT_MAX);
+			nc++;
 		} else {
 			cv::drawContours(fixedImage, contours, i, cv::Scalar::all(255), -1, 8, hierarchy, INT_MAX);
 		}
 	}
 
-	//cv::imshow("step2a", tempStorage);
-	//cv::imshow("step2af", fixedImage);
 	tempStorage = ImageProcessor::dilate(tempStorage, 5);
 	tempStorage = ImageProcessor::applyMorphologyOp(tempStorage, cv::MORPH_CLOSE, 5);
-	//cv::imshow("step2b", tempStorage);
 
-	tempStorage.copyTo(contourSourceImage);
+	cv::bitwise_or(fixedImage, tempStorage, fixedImage);
 
 	/*find the contours of the image with the coarse objects*/
-	cv::findContours(contourSourceImage, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
+	cv::findContours(fixedImage, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
 
 	for( uint i = 0; i< contours.size(); i++ ) {
 		if(hierarchy[i][3] != -1) continue; //it's a hole!
 
 		double perimeter = cv::arcLength(contours[i], 1);
 		double area = cv::contourArea(contours[i]);
-		if(perimeter > defectSize && area > defectSize) {
-			cv::drawContours(fixedImage, contours, i, cv::Scalar::all(255), -1, 8, hierarchy, INT_MAX);
+		if(perimeter > minPerimeter && area > minArea) {
+			assocCompContour.push_back(i);
+			compCount++;
+			cv::drawContours(markers, contours, i, cv::Scalar::all(compCount+1), -1, 8, hierarchy, INT_MAX);
 		}
-	}
-
-	//cv::imshow("step2c", fixedImage);
-
-	fixedImage.copyTo(contourSourceImage);
-
-	contours.clear();
-	hierarchy.clear();
-	/*find the contours of the image with the coarse objects*/
-	cv::findContours(contourSourceImage, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
-
-	for( uint i = 0; i< contours.size(); i++ ) {
-		if(hierarchy[i][3] != -1) continue; //it's a hole!
-
-		double perimeter = cv::arcLength(contours[i], 1);
-		double area = cv::contourArea(contours[i]);
-		if(perimeter < defectSize || area < defectSize) {
-			continue;
-		}
-
-		assocCompContour.push_back(i);
-		compCount++;
-		cv::drawContours(markers, contours, i, cv::Scalar::all(compCount+1), -1, 8, hierarchy, INT_MAX);
 	}
 
 	markersCont mc;
