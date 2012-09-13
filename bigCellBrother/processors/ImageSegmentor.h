@@ -35,6 +35,7 @@ public:
 	markersCont makeNiceMarkers(cv::Mat& origImage, int defectSize, int maxHeight, int maxWidth, int minArea, int minPerimeter);
 	cv::Mat addBackgroundMask(cv::Mat &markersPic, cv::Mat &backgroundMask);
 	cv::Mat watershed(cv::Mat &improvImage, cv::Mat &markers);
+	cv::Mat drawMarkersOnPicture(cv::Mat& targetPicture, cv::Mat& markers);
 
 	static vector<double> calcRatios(const cv::Mat &cellMask, vector<cv::RotatedRect> &boxes, int cellPixels);
 	static void drawRotatedRect(cv::Mat &mask, vector<cv::RotatedRect> &boxes);

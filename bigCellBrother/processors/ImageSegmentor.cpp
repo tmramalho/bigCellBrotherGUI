@@ -21,24 +21,6 @@ cv::Mat ImageSegmentor::watershed(cv::Mat &improvImage, cv::Mat &markers) {
 
 	cv::watershed( wsTargetImage, markers );
 
-	// paint the watershed image
-	cv::Mat wshed(wsTargetImage.rows, wsTargetImage.cols, CV_8UC3);
-	vector<cv::Vec3b> colorTab = getRandomColorTab(500);
-	for( int i = 0; i < markers.rows; i++ )
-		for( int j = 0; j < markers.cols; j++ )
-		{
-			int idx = markers.at<int>(i,j);
-			if( idx == -1 )
-				wshed.at<cv::Vec3b>(i,j) = cv::Vec3b(WHITE, WHITE, WHITE);
-			else if( idx <= 1 )
-				wshed.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, BLACK, BLACK);
-			else
-				wshed.at<cv::Vec3b>(i,j) = colorTab[idx - 1];
-		}
-
-	cv::Mat result = wshed*0.5 + wsTargetImage*0.5;
-	cv::imshow("wshed2", result);
-
 	return markers;
 }
 
@@ -83,6 +65,29 @@ cv::Mat ImageSegmentor::drawMarkers(const markersCont &mc) {
 	}
 
 	return wshed;
+}
+
+cv::Mat ImageSegmentor::drawMarkersOnPicture(cv::Mat& targetPicture, cv::Mat& markers) {
+	cv::Mat targetColorPicture;
+	cv::Mat colorMarkers(targetPicture.rows, targetPicture.cols, CV_8UC3);
+	vector<cv::Vec3b> colorTab = getRandomColorTab(500);
+
+	cv::cvtColor(targetPicture, targetColorPicture, CV_GRAY2BGR);
+
+	for( int i = 0; i < markers.rows; i++ )
+		for( int j = 0; j < markers.cols; j++ )
+		{
+			int idx = markers.at<int>(i,j);
+			if( idx == -1 )
+				colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(WHITE, WHITE, WHITE);
+			else if( idx == 1 )
+				colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, BLACK, BLACK);
+			else
+				colorMarkers.at<cv::Vec3b>(i,j) = colorTab[idx - 1];
+		}
+
+	cv::Mat result = colorMarkers * 0.5 + targetColorPicture * 0.5;
+	return result;
 }
 
 cv::Mat ImageSegmentor::addBackgroundMask(cv::Mat& markersPic, cv::Mat& backgroundMask) {
@@ -240,7 +245,6 @@ vector<double> ImageSegmentor::calcRatios(const cv::Mat& cellMask,
 	vector<double> results;
 	cv::Mat rectMask(cellMask.rows, cellMask.cols, CV_8U, cv::Scalar::all(BLACK));
 
-	//cv::imshow("The mask", rectMask);
 	double area = 0;
 	for (uint i = 0; i<boxes.size() ; i++) {
 		drawRotatedRect(rectMask, boxes[i]);
@@ -254,7 +258,6 @@ vector<double> ImageSegmentor::calcRatios(const cv::Mat& cellMask,
 	double overlap = area - boxAreaPixels;
 
 	cv::bitwise_and(rectMask, cellMask, rectMask);
-	//cv::imshow("The masked cells", rectMask);
 	int coveredPixels = cv::countNonZero(rectMask);//area of cells covered by boxes
 
 	results.push_back( coveredPixels / (double) cellPixels );

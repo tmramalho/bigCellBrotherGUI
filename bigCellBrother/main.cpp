@@ -37,35 +37,39 @@ int main(int argc, char *argv[]) {
 	while (true) {
 		char c = cv::waitKey(0);
 		if (c == 27) break;
-		if (c != 0) {
+		if (c == 32) {
 			if (!capture.read(frame)) // read next frame if any
 				break;
-
-			cv::imshow("Extracted Frame",frame);
-
-			cv::Mat improvImage = ImageProcessor::simplifyImage(frame, 5, 100);
+			cv::Mat improvImage = ImageProcessor::simplifyImage(frame, 3, 100);
 			improvImage = ImageProcessor::invertImage(improvImage);
+			cv::imshow("Extracted Frame",improvImage);
 
-			cv::Mat targetBlobs = ImageProcessor::adaptiveThreshold(improvImage, -4, 35, false);
+			cv::Mat thresholdBlobs = ImageProcessor::adaptiveThreshold(improvImage, -4, 35, false);
+			thresholdBlobs = ImageProcessor::applyMorphologyOp(thresholdBlobs, cv::MORPH_OPEN, 7);
+			thresholdBlobs = ImageProcessor::applyMorphologyOp(thresholdBlobs, cv::MORPH_CLOSE, 7);
 
-			cv::Mat backgroundMask = ImageProcessor::floodBackground(improvImage, 1105, 86, 3);
-			cv::bitwise_or(backgroundMask, ImageProcessor::invertImage(targetBlobs), backgroundMask);
-			backgroundMask = ImageProcessor::applyMorphologyOp(backgroundMask, cv::MORPH_CLOSE, 7);
-			backgroundMask = ImageProcessor::erode(backgroundMask, 5);
+			cv::Mat topHatBlobs = ImageProcessor::applyMorphologyOp(improvImage, cv::MORPH_TOPHAT, 21);
+			topHatBlobs = ImageProcessor::threshold(topHatBlobs, 25, false);
 
-			cv::subtract(targetBlobs, backgroundMask, targetBlobs);
+			cv::Mat finalBlobs;
+			cv::bitwise_and(thresholdBlobs, topHatBlobs, finalBlobs);
+			finalBlobs = ImageProcessor::applyMorphologyOp(finalBlobs, cv::MORPH_OPEN, 7);
+			cv::imshow("blobs", finalBlobs);
 
-			cv::Mat distTrans = ImageProcessor::distanceTransform(targetBlobs);
-			distTrans = ImageProcessor::threshold(distTrans, 80, false);
-			distTrans = ImageProcessor::applyMorphologyOp(distTrans, cv::MORPH_OPEN, 3);
+			cv::Mat backgroundMask = ImageProcessor::invertImage(finalBlobs);
+			backgroundMask = ImageProcessor::erode(backgroundMask, 7);
 
-			markersCont mcBfNice = is.makeNiceMarkers(distTrans, 50, 60, 12, 30, 40);
+			markersCont mcBfNice = is.makeNiceMarkers(finalBlobs, 50, 60, 12, 30, 40);
 			cv::Mat wsMarkersBfNice = is.drawMarkers(mcBfNice);
 			cv::imshow("markersBf2", wsMarkersBfNice);
 
 			cv::Mat wsMarkersFinal = is.addBackgroundMask(mcBfNice.markers, backgroundMask);
 
 			cv::Mat watershed = is.watershed(improvImage, wsMarkersFinal);
+
+			cv::Mat paintedWatershed = is.drawMarkersOnPicture(improvImage, watershed);
+
+			cv::imshow("Watershed result", paintedWatershed);
 
 		}
 	}
