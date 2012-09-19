@@ -39,6 +39,7 @@ public:
 	static cv::Mat invertImage(cv::Mat &origImage);
 	static cv::Mat getHistogram(cv::Mat &origImage);
 	static cv::Mat distanceTransform(cv::Mat &origImage);
+	static cv::Mat distanceTransformWithVoronoi(cv::Mat &origImage, cv::Mat &voronoiImage);
 	static cv::Mat erode(cv::Mat &targetImage, int kernelSize);
 	static cv::Mat dilate(cv::Mat &targetImage, int kernelSize);
 	static cv::Mat laplacian(cv::Mat &targetImage, int kernelSize);

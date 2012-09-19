@@ -94,131 +94,48 @@ cv::Mat ImageSegmentor::addBackgroundMask(cv::Mat& markersPic, cv::Mat& backgrou
 	cv::Mat merged;
 	markersPic.copyTo(merged);
 
-	for( int i = 0; i < markersPic.rows; i++ )
-		for( int j = 0; j < markersPic.cols; j++ )
-			if(backgroundMask.at<char>(i,j) != 0) merged.at<int>(i,j) = 1;
+	int nl = markersPic.rows;
+	int nc = markersPic.cols; //only valid for single channel pic!
+	for (int j=0; j<nl; j++) {
+		char* bgdata = backgroundMask.ptr<char>(j);
+		int * medata = merged.ptr<int>(j);
+		for (int i=0; i<nc; i++) {
+			if(bgdata[i] != 0) medata[i] = 1;
+		}
+	}
 
 	return merged;
 }
 
-markersCont ImageSegmentor::makeNiceMarkers(cv::Mat& origImage, int defectSize, int maxHeight, int maxWidth, int minArea, int minPerimeter) {
-	int compCount = 0, ni = 0, np = 100, nc = 0;
+markersCont ImageSegmentor::makeNiceMarkers(cv::Mat& origImage, int maxHeight, int maxWidth) {
+	int compCount = 0;
 	vector<vector<cv::Point> > contours;
 	vector<cv::Vec4i> hierarchy;
-	vector<vector<cv::Point> > contoursTemp;
-	vector<cv::Vec4i> hierarchyTemp;
 	vector<int> assocCompContour;
-	cv::Mat wsTargetImage;
 	cv::Mat contourSourceImage;
-	cv::Mat fixedImage(origImage.size(), CV_8U, cv::Scalar::all(BLACK));
+	cv::Mat finalStorage(origImage.size(), CV_8U, cv::Scalar::all(BLACK));
 	cv::Mat tempStorage(origImage.size(), CV_8U, cv::Scalar::all(BLACK));
 	cv::Mat markers(origImage.size(), CV_32S, cv::Scalar::all(0));
-	cv::Mat debugImage(origImage.size(), CV_8U, cv::Scalar::all(BLACK));//debug
 
 	origImage.copyTo(contourSourceImage);
 
-	while((np - nc) != 0){
-		np = nc; nc = 0;
-		fixedImage = cv::Scalar::all(BLACK);
-
-		/*find the contours of the image with the coarse objects*/
-		cv::findContours(contourSourceImage, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
-
-		if( contours.empty() ) {
-			std::cerr << "No contours in watershed" << std::endl;
-			throw new std::exception;
-		}
-
-		for( uint i = 0; i< contours.size(); i++ ) {
-			if(hierarchy[i][3] != -1) continue; //it's a hole!
-
-			cv::Rect boundBox = cv::boundingRect(contours[i]);
-			cv::RotatedRect box = cv::minAreaRect(contours[i]);
-			double hDim, wDim;
-
-			if(box.size.width > box.size.height) {
-				hDim = box.size.width;
-				wDim = box.size.height;
-			} else {
-				hDim = box.size.height;
-				wDim = box.size.width;
-			}
-
-			if(hDim > maxHeight || wDim > maxWidth) { //contour too big, break it
-				cv::drawContours(tempStorage, contours, i, cv::Scalar::all(WHITE), -1, 8, hierarchy, INT_MAX);
-				cv::Mat contourRoi = tempStorage(boundBox);
-				if(ni > 0) contourRoi = ImageProcessor::dilate(contourRoi, 3);
-				cv::Mat distTrans = ImageProcessor::distanceTransform(contourRoi);
-				cv::Mat labeledContours(contourRoi.size(), CV_8U);
-				cv::Mat newContour;
-				bool broken = false;
-
-				for (int th = 20; th < 250; th += 5) { //try to break contour
-					newContour = ImageProcessor::threshold(distTrans, th, false);
-					cv::Mat newContourSource;
-					newContour.copyTo(newContourSource);
-					cv::findContours(newContourSource, contoursTemp, hierarchyTemp, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
-					int cc = contoursTemp.size();
-					if(cc > 2) { broken = true; break; }
-				}
-
-				if(broken){
-					nc++;
-					newContour.copyTo(contourRoi);
-					cv::bitwise_or(tempStorage, fixedImage, fixedImage);
-				} else {
-					cv::drawContours(fixedImage, contours, i, cv::Scalar::all(WHITE), -1, 8, hierarchy, INT_MAX);
-				}
-
-				tempStorage = cv::Scalar::all(BLACK);
-
-			} else {
-				cv::drawContours(fixedImage, contours, i, cv::Scalar::all(WHITE), -1, 8, hierarchy, INT_MAX);
-			}
-
-		}
-
-		fixedImage.copyTo(contourSourceImage);
-		tempStorage = cv::Scalar::all(BLACK);
-		ni++;
-	}
-
-	fixedImage = cv::Scalar::all(BLACK);
-
-	/*find the contours of the image with the coarse objects*/
 	cv::findContours(contourSourceImage, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
 
 	for( uint i = 0; i< contours.size(); i++ ) {
 		if(hierarchy[i][3] != -1) continue; //it's a hole!
-
-		double perimeter = cv::arcLength(contours[i], 1);
-		double area = cv::contourArea(contours[i]);
-		if(perimeter < defectSize || area < defectSize) {
-			cv::drawContours(tempStorage, contours, i, cv::Scalar::all(255), -1, 8, hierarchy, INT_MAX);
-			nc++;
-		} else {
-			cv::drawContours(fixedImage, contours, i, cv::Scalar::all(255), -1, 8, hierarchy, INT_MAX);
-		}
+		this->breakLargeContours(tempStorage, contours, hierarchy, i, maxHeight, maxWidth);
+		cv::bitwise_or(finalStorage, tempStorage, finalStorage);
 	}
 
-	tempStorage = ImageProcessor::dilate(tempStorage, 5);
-	tempStorage = ImageProcessor::applyMorphologyOp(tempStorage, cv::MORPH_CLOSE, 5);
+	//finalStorage = ImageProcessor::applyMorphologyOp(finalStorage, cv::MORPH_OPEN, 3);
 
-	cv::bitwise_or(fixedImage, tempStorage, fixedImage);
-
-	/*find the contours of the image with the coarse objects*/
-	cv::findContours(fixedImage, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
+	cv::findContours(finalStorage, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
 
 	for( uint i = 0; i< contours.size(); i++ ) {
 		if(hierarchy[i][3] != -1) continue; //it's a hole!
-
-		double perimeter = cv::arcLength(contours[i], 1);
-		double area = cv::contourArea(contours[i]);
-		if(perimeter > minPerimeter && area > minArea) {
-			assocCompContour.push_back(i);
-			compCount++;
-			cv::drawContours(markers, contours, i, cv::Scalar::all(compCount+1), -1, 8, hierarchy, INT_MAX);
-		}
+		assocCompContour.push_back(i);
+		compCount++;
+		cv::drawContours(markers, contours, i, cv::Scalar::all(compCount+1), -1, 8, hierarchy, INT_MAX);
 	}
 
 	markersCont mc;
@@ -231,8 +148,52 @@ markersCont ImageSegmentor::makeNiceMarkers(cv::Mat& origImage, int defectSize, 
 	return mc;
 }
 
+void ImageSegmentor::breakLargeContours(cv::Mat &contourStorage, vector<vector<cv::Point> > &contours, vector<cv::Vec4i> &hierarchy,
+										int i, int maxHeight, int maxWidth) {
+	cv::Rect boundBox = cv::boundingRect(contours[i]);
+	cv::RotatedRect box = cv::minAreaRect(contours[i]);
+	vector<vector<cv::Point> > contoursTemp;
+	vector<cv::Vec4i> hierarchyTemp;
+	double hDim, wDim;
+	int hits = 0;
+
+	detectHeightWidth(box, &hDim, &wDim);
+	contourStorage = cv::Scalar::all(BLACK);
+	cv::drawContours(contourStorage, contours, i, cv::Scalar::all(WHITE), -1, 8, hierarchy, INT_MAX);
+
+	if(hDim > maxHeight || wDim > maxWidth) { //contour too big, break it
+
+		cv::Mat contourRoi = contourStorage(boundBox); //select only region of interest
+		cv::Mat splitLabels(contourRoi.size(), CV_8U, cv::Scalar::all(BLACK));
+		cv::Mat distTrans = ImageProcessor::distanceTransform(contourRoi);
+
+		for (int th = 20; th < 250; th += 10) { //increase threshold for distance transf.
+			cv::Mat threshResult = ImageProcessor::threshold(distTrans, th, false);
+			cv::Mat newContour; threshResult.copyTo(newContour);
+			//find connected components in the thresholded pic
+			cv::findContours(newContour, contoursTemp, hierarchyTemp, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
+			int cc = contoursTemp.size();
+			for (int j = 0; j < cc; j++) {
+				cv::RotatedRect boxTemp = cv::minAreaRect(contoursTemp[j]);
+				detectHeightWidth(boxTemp, &hDim, &wDim);
+				//draw the connected components which obey the criterion
+				if (hDim < maxHeight && wDim < maxWidth) {
+					cv::drawContours(splitLabels, contoursTemp, j, cv::Scalar::all(WHITE), -1, 8, hierarchyTemp, INT_MAX);
+					hits++;
+				}
+			}
+		}
+
+		if(hits == 0) { //failed at breaking it apart
+			cv::drawContours(contourStorage, contours, i, cv::Scalar::all(WHITE), -1, 8, hierarchy, INT_MAX);
+		} else { //draw the split bit
+			splitLabels.copyTo(contourRoi);
+		}
+	}
+}
+
 void ImageSegmentor::drawMinAreaRect(cv::Mat& target, cv::RotatedRect& box,
-		cv::Vec3b& color) {
+									 cv::Vec3b& color) {
 	cv::Scalar colorScalar = cv::Scalar( color );
 	cv::Point2f rect_points[4];
 	box.points( rect_points );
@@ -285,4 +246,81 @@ void ImageSegmentor::drawRotatedRect(cv::Mat& mask, cv::RotatedRect& box) {
 
 }
 
+inline void ImageSegmentor::detectHeightWidth(cv::RotatedRect &box, double *hDim, double *wDim) {
+	if(box.size.width > box.size.height) {
+		*hDim = box.size.width;
+		*wDim = box.size.height;
+	} else {
+		*hDim = box.size.height;
+		*wDim = box.size.width;
+	}
+}
+
+void ImageSegmentor::removeSmallMarkers(cv::Mat &markersPic, int th) {
+	double min, max;
+	cv::minMaxLoc(markersPic,&min,&max);
+	vector<int> markerSize(max + 2, 0); // there are pixels with value -1
+
+	int nl = markersPic.rows;
+	int nc = markersPic.cols; //only valid for single channel pic!
+	for (int j=0; j<nl; j++) {
+		int* data = markersPic.ptr<int>(j);
+		for (int i=0; i<nc; i++) {
+			markerSize[data[i]+1]++;
+		}
+	}
+
+	for (int j=0; j<nl; j++) {
+		int* data = markersPic.ptr<int>(j);
+		for (int i=0; i<nc; i++) {
+			int label = data[i];
+			if (label <= 1) { data[i] = 0; continue; } //set border and bg pixels to zero
+			if (label > 1 && markerSize[label+1] < th) {
+				data[i] = 0;
+			}
+		}
+	}
+}
+
+cv::Mat ImageSegmentor::processLabels(cv::Mat &markersPic) {
+	double min, max;
+	cv::minMaxLoc(markersPic,&min,&max);
+	cv::Mat smoothedMarkers(markersPic.size(), CV_32S, cv::Scalar::all(0));
+	cv::Mat currentLabel(markersPic.size(), CV_8U, cv::Scalar::all(0));
+	int nl = markersPic.rows;
+	int nc = markersPic.cols; //only valid for single channel pic!
+
+	for(int i = 2; i < max + 1; i++) { //iterate all cell labels
+		int ni = 0;
+		for (int j=0; j<nl; j++) { // detect current label pixels
+			int* data = markersPic.ptr<int>(j);
+			char *target = currentLabel.ptr<char>(j);
+			for (int k=0; k<nc; k++) {
+				if(data[k] == i) {
+					target[k] = WHITE;
+					ni++;
+				}
+			}
+		}
+
+		if (ni == 0) continue;
+
+		currentLabel = ImageProcessor::applyMorphologyOp(currentLabel, cv::MORPH_CLOSE, 5);
+		currentLabel = ImageProcessor::applyMorphologyOp(currentLabel, cv::MORPH_OPEN, 5);
+
+		//do scientific stuff here
+
+		for (int j=0; j<nl; j++) { //draw smooth markers just in case
+			int* data = smoothedMarkers.ptr<int>(j);
+			char *target = currentLabel.ptr<char>(j);
+			for (int k=0; k<nc; k++) {
+				if(target[k] != 0) data[k] = i;
+			}
+		}
+
+		currentLabel = cv::Scalar::all(0);
+	}
+
+	return smoothedMarkers;
+}
 

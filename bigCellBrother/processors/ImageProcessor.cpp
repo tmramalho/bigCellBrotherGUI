@@ -20,7 +20,6 @@ cv::Mat ImageProcessor::simplifyImage(cv::Mat &origImage, int blurWindow, int st
 	cv::Mat improvImage;
 	Histogram1D h;
 
-	//convert to grayscale and put it in member variable
 	cv::cvtColor( origImage, improvImage, CV_BGR2GRAY );
 
 	if (equalize) {
@@ -29,7 +28,8 @@ cv::Mat ImageProcessor::simplifyImage(cv::Mat &origImage, int blurWindow, int st
 		improvImage = h.stretch(improvImage, stretchMinVal);
 	}
 
-	cv::medianBlur(improvImage, improvImage, blurWindow);
+	if(blurWindow > 0)
+		cv::medianBlur(improvImage, improvImage, blurWindow);
 
 	return improvImage;
 }
@@ -116,6 +116,17 @@ cv::Mat ImageProcessor::distanceTransform(cv::Mat& origImage) {
 	return result;
 }
 
+cv::Mat ImageProcessor::distanceTransformWithVoronoi(cv::Mat & origImage, cv::Mat &voronoiImage) {
+	cv::Mat dists;
+	cv::Mat targetImage;
+	cv::Mat voronoi(origImage.size(), CV_32SC1, cv::Scalar::all(BLACK));
+	cv::bitwise_not(origImage, targetImage);
+
+	cv::distanceTransform(targetImage, dists, voronoi, CV_DIST_L2, CV_DIST_MASK_5, cv::DIST_LABEL_CCOMP);
+
+	return voronoi;
+}
+
 cv::Mat ImageProcessor::erode(cv::Mat& targetImage, int kernelSize) {
 	cv::Mat binaryImage;
 	cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(kernelSize, kernelSize));
@@ -153,3 +164,5 @@ cv::Mat ImageProcessor::harrisCorners(cv::Mat & targetImage, int blockSize, doub
 	cv::threshold(cornerStrength, harrisCorners, threshold, WHITE, cv::THRESH_BINARY);
 	return harrisCorners;
 }
+
+

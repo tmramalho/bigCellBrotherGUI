@@ -29,49 +29,68 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	//double rate= capture.get(CV_CAP_PROP_FPS);
+	double rate = capture.get(CV_CAP_PROP_FPS);
+	double fourcc = capture.get(CV_CAP_PROP_FOURCC);
+	cv::Size frameSize;
+	frameSize.height = capture.get(CV_CAP_PROP_FRAME_HEIGHT);
+	frameSize.width  = capture.get(CV_CAP_PROP_FRAME_WIDTH);
 	cv::Mat frame; // current video frame
-	cv::namedWindow("Extracted Frame");
+
+	cv::VideoWriter output("/media/sf_tiago/Downloads/ImageStacks_Brightfield_Fluorescence/compressed_10nm_wf_BF_Labeled.avi",
+			fourcc, rate, frameSize);
+
+	double duration;
 
 	// for all frames in video
 	while (true) {
-		char c = cv::waitKey(0);
-		if (c == 27) break;
-		if (c == 32) {
-			if (!capture.read(frame)) // read next frame if any
-				break;
-			cv::Mat improvImage = ImageProcessor::simplifyImage(frame, 3, 100);
-			improvImage = ImageProcessor::invertImage(improvImage);
-			cv::imshow("Extracted Frame",improvImage);
+		if (!capture.read(frame)) // read next frame if any
+			break;
 
-			cv::Mat thresholdBlobs = ImageProcessor::adaptiveThreshold(improvImage, -4, 35, false);
-			thresholdBlobs = ImageProcessor::applyMorphologyOp(thresholdBlobs, cv::MORPH_OPEN, 7);
-			thresholdBlobs = ImageProcessor::applyMorphologyOp(thresholdBlobs, cv::MORPH_CLOSE, 7);
+		duration = static_cast<double>(cv::getTickCount());
 
-			cv::Mat topHatBlobs = ImageProcessor::applyMorphologyOp(improvImage, cv::MORPH_TOPHAT, 21);
-			topHatBlobs = ImageProcessor::threshold(topHatBlobs, 25, false);
+		cv::Mat improvImage = ImageProcessor::simplifyImage(frame, 3, 100);
+		improvImage = ImageProcessor::invertImage(improvImage);
+		cv::Mat boostedImage = ImageProcessor::simplifyImage(frame, 3, 100, true);
+		boostedImage = ImageProcessor::invertImage(boostedImage);
 
-			cv::Mat finalBlobs;
-			cv::bitwise_and(thresholdBlobs, topHatBlobs, finalBlobs);
-			finalBlobs = ImageProcessor::applyMorphologyOp(finalBlobs, cv::MORPH_OPEN, 7);
-			cv::imshow("blobs", finalBlobs);
+		cv::Mat thresholdBlobs = ImageProcessor::adaptiveThreshold(improvImage, -4, 35, false);
+		thresholdBlobs = ImageProcessor::applyMorphologyOp(thresholdBlobs, cv::MORPH_OPEN, 7);
+		thresholdBlobs = ImageProcessor::applyMorphologyOp(thresholdBlobs, cv::MORPH_CLOSE, 7);
 
-			cv::Mat backgroundMask = ImageProcessor::invertImage(finalBlobs);
-			backgroundMask = ImageProcessor::erode(backgroundMask, 7);
+		cv::Mat topHatBlobs = ImageProcessor::applyMorphologyOp(improvImage, cv::MORPH_TOPHAT, 21);
+		topHatBlobs = ImageProcessor::threshold(topHatBlobs, 25, false);
 
-			markersCont mcBfNice = is.makeNiceMarkers(finalBlobs, 50, 60, 12, 30, 40);
-			cv::Mat wsMarkersBfNice = is.drawMarkers(mcBfNice);
-			cv::imshow("markersBf2", wsMarkersBfNice);
+		cv::Mat finalBlobs;
+		cv::bitwise_and(thresholdBlobs, topHatBlobs, finalBlobs);
+		finalBlobs = ImageProcessor::applyMorphologyOp(finalBlobs, cv::MORPH_OPEN, 7);
 
-			cv::Mat wsMarkersFinal = is.addBackgroundMask(mcBfNice.markers, backgroundMask);
+		cv::Mat backgroundMask = ImageProcessor::invertImage(finalBlobs);
+		backgroundMask = ImageProcessor::erode(backgroundMask, 7);
 
-			cv::Mat watershed = is.watershed(improvImage, wsMarkersFinal);
+		markersCont mcBfNice = is.makeNiceMarkers(finalBlobs, 50, 20);
+		cv::Mat wsMarkersBfNice = is.drawMarkers(mcBfNice);
 
-			cv::Mat paintedWatershed = is.drawMarkersOnPicture(improvImage, watershed);
+		cv::Mat wsMarkersFinal = is.addBackgroundMask(mcBfNice.markers, backgroundMask);
 
-			cv::imshow("Watershed result", paintedWatershed);
+		cv::Mat watershed = is.watershed(boostedImage, wsMarkersFinal);
 
+		for (int n = 10; n < 300; n += 20) {
+			is.removeSmallMarkers(watershed, n);
+			watershed = is.addBackgroundMask(watershed, backgroundMask);
+			watershed = is.watershed(boostedImage, watershed);
 		}
+
+		cv::Mat paintedWatershed = is.drawMarkersOnPicture(improvImage, watershed);
+		output.write(paintedWatershed);
+
+		duration = static_cast<double>(cv::getTickCount())-duration;
+		duration /= cv::getTickFrequency();
+		std::cout << "FRAME in " << duration << " ms" << std::endl;
+		//cv::imshow("Watershed result", paintedWatershed);
+
+		//cv::Mat smoothWs = is.processLabels(watershed);
+		//cv::Mat paintedSmoothWatershed = is.drawMarkersOnPicture(improvImage, smoothWs);
+		//cv::imshow("Smooth ws result", paintedSmoothWatershed);
 	}
 
 	capture.release();
