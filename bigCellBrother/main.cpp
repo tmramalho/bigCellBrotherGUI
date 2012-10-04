@@ -3,20 +3,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include "processors/ImageSegmentor.h"
 #include "processors/ImageProcessor.h"
-
-void thresh_callback(int t, void* c) {
-	/*cv::Mat *target = (cv::Mat *)c;
-	cv::Mat targetBlobs = is.adaptiveThreshold(*target, t-40, 31, false);
-
-	cv::namedWindow( "Contours", CV_WINDOW_AUTOSIZE );
-	cv::imshow( "Contours", targetBlobs );
-	cv::namedWindow( "Source", CV_WINDOW_AUTOSIZE );
-	cv::imshow( "Source", targetBlobs );
-
-	int thresh = 0;
-	cv::createTrackbar( "Adaptive thresh:", "Source", &thresh, 80, thresh_callback, &improvImage );
-	thresh_callback( thresh, &improvImage );*/
-}
+#include "helpers/PictureVis.h"
 
 int main(int argc, char *argv[]) {
 	srand(time(NULL));
@@ -37,6 +24,8 @@ int main(int argc, char *argv[]) {
 	cv::Mat frame; // current video frame
 
 	cv::VideoWriter output("/media/sf_tiago/Downloads/ImageStacks_Brightfield_Fluorescence/compressed_10nm_wf_BF_Labeled.avi",
+			fourcc, rate, frameSize);
+	cv::VideoWriter debug("/media/sf_tiago/Downloads/ImageStacks_Brightfield_Fluorescence/compressed_10nm_wf_BF_Markers.avi",
 			fourcc, rate, frameSize);
 
 	double duration;
@@ -63,31 +52,31 @@ int main(int argc, char *argv[]) {
 		cv::Mat finalBlobs;
 		cv::bitwise_and(thresholdBlobs, topHatBlobs, finalBlobs);
 		finalBlobs = ImageProcessor::applyMorphologyOp(finalBlobs, cv::MORPH_OPEN, 7);
+		finalBlobs = ImageProcessor::erode(finalBlobs, 3);
 
 		cv::Mat backgroundMask = ImageProcessor::invertImage(finalBlobs);
 		backgroundMask = ImageProcessor::erode(backgroundMask, 7);
 
-		markersCont mcBfNice = is.makeNiceMarkers(finalBlobs, 50, 20);
-		cv::Mat wsMarkersBfNice = is.drawMarkers(mcBfNice);
+		markersCont mcBfNice = is.createMarkers(finalBlobs, 35, 15);
+		cv::Mat wsMarkersBfNice = PictureVis::drawMarkers(mcBfNice);
+		debug.write(wsMarkersBfNice);
 
 		cv::Mat wsMarkersFinal = is.addBackgroundMask(mcBfNice.markers, backgroundMask);
 
 		cv::Mat watershed = is.watershed(boostedImage, wsMarkersFinal);
 
-		for (int n = 10; n < 300; n += 20) {
+		for (int n = 10; n < 100; n += 20) {
 			is.removeSmallMarkers(watershed, n);
 			watershed = is.addBackgroundMask(watershed, backgroundMask);
 			watershed = is.watershed(boostedImage, watershed);
 		}
 
-		cv::Mat paintedWatershed = is.drawMarkersOnPicture(improvImage, watershed);
+		cv::Mat paintedWatershed = PictureVis::drawMarkersOnPicture(improvImage, watershed);
 		output.write(paintedWatershed);
 
 		duration = static_cast<double>(cv::getTickCount())-duration;
 		duration /= cv::getTickFrequency();
-		std::cout << "FRAME in " << duration << " ms" << std::endl;
-		//cv::imshow("Watershed result", paintedWatershed);
-
+		std::cout << "FRAME in " << duration << " s" << std::endl;
 		//cv::Mat smoothWs = is.processLabels(watershed);
 		//cv::Mat paintedSmoothWatershed = is.drawMarkersOnPicture(improvImage, smoothWs);
 		//cv::imshow("Smooth ws result", paintedSmoothWatershed);

@@ -8,6 +8,7 @@
 #ifndef MARKERSCONT_H_
 #define MARKERSCONT_H_
 #include <vector>
+#include <opencv2/core/core.hpp>
 
 using std::vector;
 

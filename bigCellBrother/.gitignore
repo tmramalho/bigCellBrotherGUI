@@ -4,3 +4,4 @@
 /gss
 .*
  !/.gitignore
+/Debug
