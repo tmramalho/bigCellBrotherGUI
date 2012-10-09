@@ -4,6 +4,7 @@
 #include "processors/ImageSegmentor.h"
 #include "processors/ImageProcessor.h"
 #include "helpers/PictureVis.h"
+#include <cstdio>
 
 int main(int argc, char *argv[]) {
 	srand(time(NULL));
@@ -72,6 +73,9 @@ int main(int argc, char *argv[]) {
 		}
 
 		cv::Mat paintedWatershed = PictureVis::drawMarkersOnPicture(improvImage, watershed);
+		cv::imshow("ws", paintedWatershed);
+		is.findCellMarkers(boostedImage, watershed);
+		return 1;
 		output.write(paintedWatershed);
 
 		duration = static_cast<double>(cv::getTickCount())-duration;

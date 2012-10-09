@@ -122,7 +122,8 @@ cv::Mat ImageProcessor::distanceTransformWithVoronoi(cv::Mat & origImage, cv::Ma
 	cv::Mat voronoi(origImage.size(), CV_32SC1, cv::Scalar::all(BLACK));
 	cv::bitwise_not(origImage, targetImage);
 
-	cv::distanceTransform(targetImage, dists, voronoi, CV_DIST_L2, CV_DIST_MASK_5, cv::DIST_LABEL_CCOMP);
+	//TODO: uncomment this
+	//cv::distanceTransform(targetImage, dists, voronoi, CV_DIST_L2, CV_DIST_MASK_5, cv::DIST_LABEL_CCOMP);
 
 	return voronoi;
 }
@@ -155,6 +156,22 @@ cv::Mat ImageProcessor::laplacian(cv::Mat& targetImage, int kernelSize) {
 	laplace.convertTo(laplaceImage,CV_8U,scale,128);
 
 	return laplaceImage;
+}
+
+bool ImageProcessor::checkIfEmpty(cv::Mat& origImage) {
+	if(origImage.type() != CV_8U) return true;
+
+	int nl = origImage.rows;
+	int nc = origImage.cols;
+
+	for (int j = 0; j < nl; j++) {
+		uchar* data = origImage.ptr<uchar>(j);
+		for (int k = 0; k < nc; k++) {
+			if(data[k] != 0) return false;
+		}
+	}
+
+	return true;
 }
 
 cv::Mat ImageProcessor::harrisCorners(cv::Mat & targetImage, int blockSize, double k, double threshold) {

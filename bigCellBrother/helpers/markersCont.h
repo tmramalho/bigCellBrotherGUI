@@ -14,10 +14,9 @@ using std::vector;
 
 typedef struct markersCont {
 	cv::Mat markers;
-	int compCount;
 	vector<vector<cv::Point> > contours;
 	vector<cv::Vec4i> hierarchy;
-	vector<int> assocCompContour;
+	vector<int> contourList;
 } markersCont;
 
 

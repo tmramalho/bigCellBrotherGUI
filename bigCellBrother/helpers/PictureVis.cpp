@@ -18,7 +18,7 @@ PictureVis::~PictureVis() {
 
 cv::Mat PictureVis::drawMarkers(const markersCont &mc) {
 	cv::Mat wshed(mc.markers.size(), CV_8UC3);
-	vector<cv::Vec3b> colorTab = getRandomColorTab(mc.compCount);
+	vector<cv::Vec3b> colorTab = getRandomColorTab(mc.contourList.size());
 	char buf[512];
 	for( int i = 0; i < mc.markers.rows; i++ )
 		for( int j = 0; j < mc.markers.cols; j++ )
@@ -26,14 +26,14 @@ cv::Mat PictureVis::drawMarkers(const markersCont &mc) {
 			int idx = mc.markers.at<int>(i,j);
 			if( idx == -1 )
 				wshed.at<cv::Vec3b>(i,j) = cv::Vec3b(WHITE, WHITE, WHITE);
-			else if( idx <= 0 || idx > mc.compCount )
+			else if( idx <= 0 || idx > mc.contourList.size() )
 				wshed.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, BLACK, BLACK);
 			else
 				wshed.at<cv::Vec3b>(i,j) = colorTab[idx - 1];
 		}
 
-	for(uint i = 0; i < mc.assocCompContour.size(); i++) {
-		int contIndex = mc.assocCompContour[i];
+	for(uint i = 0; i < mc.contourList.size(); i++) {
+		int contIndex = mc.contourList[i];
 		cv::Rect bbox = cv::boundingRect(mc.contours[contIndex]);
 		cv::RotatedRect box = cv::minAreaRect(mc.contours[contIndex]);
 		//std::cout << i << " : " << box.size.height << ", " << box.size.width << ", " << box.angle << std::endl;
