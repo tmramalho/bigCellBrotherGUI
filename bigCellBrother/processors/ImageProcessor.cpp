@@ -8,12 +8,11 @@
 #include "ImageProcessor.h"
 
 ImageProcessor::ImageProcessor() {
-	// TODO Auto-generated constructor stub
 
 }
 
 ImageProcessor::~ImageProcessor() {
-	// TODO Auto-generated destructor stub
+
 }
 
 cv::Mat ImageProcessor::simplifyImage(cv::Mat &origImage, int blurWindow, int stretchMinVal, int equalize) {

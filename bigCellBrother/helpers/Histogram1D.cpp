@@ -17,7 +17,7 @@ Histogram1D::Histogram1D() {
 }
 
 Histogram1D::~Histogram1D() {
-	// TODO Auto-generated destructor stub
+
 }
 
 cv::MatND Histogram1D::getHistogram(const cv::Mat& image) {

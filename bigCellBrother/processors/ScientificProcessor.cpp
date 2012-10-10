@@ -8,12 +8,12 @@
 #include "ScientificProcessor.h"
 
 ScientificProcessor::ScientificProcessor() {
-	// TODO Auto-generated constructor stub
+
 
 }
 
 ScientificProcessor::~ScientificProcessor() {
-	// TODO Auto-generated destructor stub
+
 }
 
 cv::Mat ScientificProcessor::processLabels(cv::Mat &markersPic) {

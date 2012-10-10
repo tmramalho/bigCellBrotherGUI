@@ -14,17 +14,19 @@
 
 #include <vector>
 #include <set>
+#include <map>
 #include <cstdio>
 #include <iostream>
 #include <exception>
+#include <algorithm>
+#include <utility>
 #include "../helpers/markersCont.h"
+#include "../helpers/CellCont.h"
 #include "ImageProcessor.h"
 #include "../classifier/CellClassifier.h"
 
 #define WHITE 255
 #define BLACK 0
-
-using std::vector;
 
 class ImageSegmentor {
 public:
@@ -43,6 +45,7 @@ private:
 	inline static void detectHeightWidth(cv::RotatedRect &box, double *hDim, double *wDim);
 	std::set<int> findNearestNeigbors(cv::Rect &bbox, cv::Mat &markersPic, cv::Mat &currentLabelMask, int self, int distance);
 	inline static void expandRect(cv::Rect &bbox, int padding, int imgHeight, int imgWidth);
+	CellCont determineLabelProperties(cv::Mat &currentLabelMask, cv::Mat &markersPic, int i);
 };
 
 #endif /* IMAGESEGMENTOR_H_ */

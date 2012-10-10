@@ -8,12 +8,12 @@
 #include "PictureVis.h"
 
 PictureVis::PictureVis() {
-	// TODO Auto-generated constructor stub
+
 
 }
 
 PictureVis::~PictureVis() {
-	// TODO Auto-generated destructor stub
+
 }
 
 cv::Mat PictureVis::drawMarkers(const markersCont &mc) {
@@ -26,7 +26,7 @@ cv::Mat PictureVis::drawMarkers(const markersCont &mc) {
 			int idx = mc.markers.at<int>(i,j);
 			if( idx == -1 )
 				wshed.at<cv::Vec3b>(i,j) = cv::Vec3b(WHITE, WHITE, WHITE);
-			else if( idx <= 0 || idx > mc.contourList.size() )
+			else if( idx <= 0 || idx > (int)mc.contourList.size() )
 				wshed.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, BLACK, BLACK);
 			else
 				wshed.at<cv::Vec3b>(i,j) = colorTab[idx - 1];

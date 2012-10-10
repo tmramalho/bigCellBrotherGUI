@@ -12,7 +12,7 @@ ImageSegmentor::ImageSegmentor() {
 }
 
 ImageSegmentor::~ImageSegmentor() {
-	// TODO Auto-generated destructor stub
+
 }
 
 cv::Mat ImageSegmentor::watershed(cv::Mat &improvImage, cv::Mat &markers) {
@@ -42,9 +42,9 @@ cv::Mat ImageSegmentor::addBackgroundMask(cv::Mat& markersPic, cv::Mat& backgrou
 }
 
 markersCont ImageSegmentor::createMarkers(cv::Mat& origImage, int maxHeight, int maxWidth) {
-	vector<vector<cv::Point> > contours;
-	vector<cv::Vec4i> hierarchy;
-	vector<int> contourList;
+	std::vector< vector<cv::Point> > contours;
+	std::vector<cv::Vec4i> hierarchy;
+	std::vector<int> contourList;
 	cv::Mat contourSourceImage;
 	cv::Mat finalStorage(origImage.size(), CV_8U, cv::Scalar::all(BLACK));
 	cv::Mat tempStorage(origImage.size(), CV_8U, cv::Scalar::all(BLACK));
@@ -81,12 +81,12 @@ markersCont ImageSegmentor::createMarkers(cv::Mat& origImage, int maxHeight, int
 	return mc;
 }
 
-void ImageSegmentor::breakLargeContours(cv::Mat &contourStorage, vector<vector<cv::Point> > &contours, vector<cv::Vec4i> &hierarchy,
+void ImageSegmentor::breakLargeContours(cv::Mat &contourStorage, vector< vector<cv::Point> > &contours, vector<cv::Vec4i> &hierarchy,
 										int i, int maxHeight, int maxWidth) {
 	cv::Rect boundBox = cv::boundingRect(contours[i]);
 	cv::RotatedRect box = cv::minAreaRect(contours[i]);
-	vector<vector<cv::Point> > ctours;
-	vector<cv::Vec4i> hrchy;
+	std::vector< vector<cv::Point> > ctours;
+	std::vector<cv::Vec4i> hrchy;
 	double hDim, wDim;
 	int hits = 0;
 
@@ -127,54 +127,88 @@ void ImageSegmentor::breakLargeContours(cv::Mat &contourStorage, vector<vector<c
 
 cv::Mat ImageSegmentor::findCellMarkers(cv::Mat& improvImage,
 		cv::Mat& markersPic) {
-	double min, max, mi, ma;
+	int maxNumNeighbors = 0;
+	double min, max;
 	cv::minMaxLoc(markersPic,&min,&max);
 	cv::Mat currentLabelMask(markersPic.size(), CV_8U);
-	cv::Mat currentLabelCtour;
-	std::set<int> ngb;
-	std::set<int>::iterator it;
-	vector<vector<cv::Point> > ctours;
-	vector<cv::Vec4i> hrchy;
-	std::vector<double> features (2);
-	CellClassifier decider;
-	decider.setHeight(40);
-	decider.setWidth(12);
-	decider.setHeightSigma(100);
-	decider.setWidthSigma(16);
+	std::set<int>::iterator setIt;
+	std::map<int, CellCont> labels;
+	std::map<int, CellCont>::iterator it;
+	double probThreshold = 10;
 
 	for(int i = 2; i < max + 1; i++) { //iterate all cell labels
 		currentLabelMask = cv::Scalar::all(BLACK);
 		cv::compare(markersPic, i, currentLabelMask, cv::CMP_EQ);
 
 		if(ImageProcessor::checkIfEmpty(currentLabelMask)) continue;
+		CellCont newLabel = determineLabelProperties(currentLabelMask, markersPic, i);
 
-		currentLabelMask.copyTo(currentLabelCtour);
-		cv::findContours(currentLabelCtour, ctours, hrchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
-		cv::RotatedRect box = cv::minAreaRect(ctours[0]);
-		cv::Rect bbox = cv::boundingRect(ctours[0]);
+		if((int) newLabel.getNeighbors().size() > maxNumNeighbors) maxNumNeighbors = (int) newLabel.getNeighbors().size();
+		labels.insert( std::pair<int, CellCont> (i, newLabel) );
+	}
 
-		//save cell features
-		detectHeightWidth(box, &mi, &ma);
-		features[0] = mi;
-		features[1] = ma;
-		double pr = decider.calculateLogProbFeatures(features, 1);
-		std::cout << i << " : " << pr << " woot ";
+	// isolated cells
+	for(it = labels.begin(); it != labels.end(); it++) {
+		currentLabelMask = cv::Scalar::all(BLACK);
+		CellCont& currentCell = (*it).second;
 
-		//save cell neighbors
-		expandRect(bbox, 20, markersPic.rows, markersPic.cols);
-		ngb = findNearestNeigbors(bbox, markersPic, currentLabelMask, i, 5);
+		if(currentCell.getNeighbors().size() == 0) {
+			if(currentCell.getProbs().at(0) < probThreshold) {
+				labels.erase(it);
+				//TODO:remove from markersPic
+			}
+		}
+	}
 
-		//save stuff in CellCont, setup arrays at the beginning
+	// cells with neighbors
+	int numNeighbors = 1;
 
-		for (it=ngb.begin(); it!=ngb.end(); it++)
-			std::cout << " " << *it;
+	while(numNeighbors < maxNumNeighbors) {
+		for(it = labels.begin(); it != labels.end(); it++) {
+			CellCont& currentCell = (*it).second;
+			int curLabel = (*it).first;
+			std::set<int> currentNeighbors = currentCell.getNeighbors();
 
-		std::cout << std::endl;
+			if((int) currentNeighbors.size() == numNeighbors) {
+				currentLabelMask = cv::Scalar::all(BLACK);
+				cv::compare(markersPic, curLabel, currentLabelMask, cv::CMP_EQ);
 
+				for(setIt = currentNeighbors.begin();
+						setIt != currentNeighbors.end(); ++setIt) {
+					int neighborLabel = *setIt;
+					std::cout << neighborLabel << std::endl;
+					cv::Mat neighborLabelMask(currentLabelMask.size(), CV_8U);
+					cv::compare(markersPic, neighborLabel, neighborLabelMask, cv::CMP_EQ);
+					cv::bitwise_or(currentLabelMask, neighborLabelMask, neighborLabelMask);
+					neighborLabelMask = ImageProcessor::applyMorphologyOp(neighborLabelMask, cv::MORPH_CLOSE, 3);
+					CellCont newLabel = determineLabelProperties(neighborLabelMask, markersPic, neighborLabel);
+
+					currentCell.printCellInfo();
+					labels[neighborLabel].printCellInfo();
+					newLabel.printCellInfo();
+					/* if final score is better than both, then merge
+					 * remove neighbor and current, add new to the list
+					 * make sure currentLabel is removed from neighbor list
+					 * finally swap labels in markersPic
+					 */
+					cv::imshow("merged", neighborLabelMask);
+					cv::waitKey(0);
+				}
+			}
+		}
+	}
+
+	for(it = labels.begin(); it != labels.end(); it++) {
+		currentLabelMask = cv::Scalar::all(BLACK);
+		CellCont& currentCell = (*it).second;
+		std::cout << (*it).first << " " << currentCell.getCurLabel() << std::endl;
+		cv::compare(markersPic, currentCell.getCurLabel(), currentLabelMask, cv::CMP_EQ);
+
+		currentCell.printCellInfo();
 		cv::imshow("curr label", currentLabelMask); //DEBUG
 		cv::waitKey(0);
-
 	}
+
 
 	return markersPic;
 }
@@ -192,7 +226,7 @@ inline void ImageSegmentor::detectHeightWidth(cv::RotatedRect &box, double *hDim
 void ImageSegmentor::removeSmallMarkers(cv::Mat &markersPic, int th) {
 	double min, max;
 	cv::minMaxLoc(markersPic,&min,&max);
-	vector<int> markerSize(max + 2, 0); // there are pixels with value -1
+	std::vector<int> markerSize(max + 2, 0); // there are pixels with value -1
 
 	int nl = markersPic.rows;
 	int nc = markersPic.cols; //only valid for single channel pic!
@@ -243,12 +277,61 @@ inline void ImageSegmentor::expandRect(cv::Rect& bbox, int padding, int imgHeigh
 	else bbox.x = 0;
 	if(bbox.y - padding >= 0) bbox.y -= padding;
 	else bbox.y = 0;
-	if(bbox.y + bbox.height + padding + padding < imgHeight) bbox.height += padding + padding;
+	if(bbox.y + bbox.height + 2 * padding < imgHeight) bbox.height += 2 * padding;
 	else bbox.height = imgHeight - bbox.y;
-	if(bbox.x + bbox.width  + padding + padding < imgWidth ) bbox.width  += padding + padding;
+	if(bbox.x + bbox.width  + 2 * padding < imgWidth ) bbox.width  += 2 * padding;
 	else bbox.width  = imgWidth  - bbox.x;
 
 }
+
+CellCont ImageSegmentor::determineLabelProperties(cv::Mat &currentLabelMask, cv::Mat &markersPic, int i) {
+	double mi, ma;
+	cv::Mat currentLabelCtour;
+	std::vector< vector<cv::Point> > ctours;
+	std::vector<cv::Vec4i> hrchy;
+	std::vector<double> features (11);
+	std::set<int> ngb;
+
+	CellClassifier decider; //simplest classifier
+	decider.setHeight(40);
+	decider.setWidth(12);
+	decider.setHeightSigma(100);
+	decider.setWidthSigma(16);
+
+	// get the contour of this cell label
+	currentLabelMask.copyTo(currentLabelCtour);
+	cv::findContours(currentLabelCtour, ctours, hrchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
+	cv::RotatedRect box = cv::minAreaRect(ctours[0]);
+	cv::Rect bbox = cv::boundingRect(ctours[0]);
+
+	//save cell features
+	detectHeightWidth(box, &mi, &ma);
+	features[0] = mi;
+	features[1] = ma;
+	features[2] = cv::contourArea(ctours[0]);
+	features[3] = cv::arcLength(ctours[0], true);
+	// put 7 hu moments in features [4:10]
+	cv::Moments mom = cv::moments(ctours[0]);
+	cv::HuMoments(mom, &features[4]);
+
+	// probability of this being a cell
+	std::vector<double> probList = decider.calculateLogProbFeatures(features);
+
+	//find cell neighbors
+	expandRect(bbox, 20, markersPic.rows, markersPic.cols);
+	ngb = findNearestNeigbors(bbox, markersPic, currentLabelMask, i, 5);
+
+	CellCont newLabel;
+	//save stuff in CellCont
+	newLabel.setCurLabel(i);
+	newLabel.setFeatures(features);
+	newLabel.setNeighbors(ngb);
+	newLabel.setProbs(probList);
+
+	return newLabel;
+}
+
+
 
 
 

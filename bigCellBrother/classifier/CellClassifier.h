@@ -13,7 +13,7 @@ class CellClassifier {
 public:
 	CellClassifier();
 	virtual ~CellClassifier();
-	double calculateLogProbFeatures(std::vector<double>& features, int phenotype);
+	std::vector<double> calculateLogProbFeatures(std::vector<double>& features);
 
 	double getHeight() const;
 	void setHeight(double height);

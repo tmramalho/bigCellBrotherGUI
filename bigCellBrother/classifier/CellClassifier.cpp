@@ -8,26 +8,26 @@
 #include "CellClassifier.h"
 
 CellClassifier::CellClassifier() {
-	// TODO Auto-generated constructor stub
+
 
 }
 
 CellClassifier::~CellClassifier() {
-	// TODO Auto-generated destructor stub
+
 }
 
 /* Stub method until a proper classifier is implemented
  * which will inherit from this class
  */
-double CellClassifier::calculateLogProbFeatures(std::vector<double>& features,
-		int phenotype) {
-	if(phenotype == 1 && features.size() >= 2) {
+std::vector<double> CellClassifier::calculateLogProbFeatures(std::vector<double>& features) {
+	std::vector<double> probList(1, 0);
+	if(features.size() >= 2) {
 		double w = (features[0] - width )*(features[0] - width )/(2*widthSigma );
 		double h = (features[0] - height)*(features[0] - height)/(2*heightSigma);
-		return w*w + h*h;
-	} else {
-		return 0;
+		probList[0] = w + h;
 	}
+
+	return probList;
 }
 
 double CellClassifier::getHeight() const {
