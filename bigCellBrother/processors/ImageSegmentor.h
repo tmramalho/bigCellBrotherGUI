@@ -16,6 +16,7 @@
 #include <set>
 #include <map>
 #include <cstdio>
+#include <stack>
 #include <iostream>
 #include <exception>
 #include <algorithm>
@@ -33,19 +34,41 @@ public:
 	ImageSegmentor();
 	~ImageSegmentor();
 
-	markersCont createMarkers(cv::Mat& origImage, int maxHeight, int maxWidth);
-	cv::Mat addBackgroundMask(cv::Mat &markersPic, cv::Mat &backgroundMask);
-	cv::Mat watershed(cv::Mat &improvImage, cv::Mat &markers);
-	void removeSmallMarkers(cv::Mat &markersPic, int th);
-	cv::Mat findCellMarkers(cv::Mat &improvImage, cv::Mat &markersPic);
+	void createMarkers(cv::Mat& origImage, int maxHeight, int maxWidth);
+	void watershed();
+	void removeSmallMarkers(int th);
+	void findCellMarkers();
+
+    cv::Mat getBoostedImage() const;
+    cv::Mat getMarkersPic() const;
+    cv::Mat getOriginalImage() const;
+    cv::Mat getBackgroundMask() const;
+    markersCont getWatershedMarkers() const;
+    void setBoostedImage(cv::Mat &boostedImage);
+    void setOriginalImage(cv::Mat &originalImage);
+    void setWatershedMarkers(markersCont watershedMarkers);
+    void setBackgroundMask(cv::Mat &backgroundMask);
+    CellClassifier getDecider() const;
+    void setDecider(CellClassifier decider);
 
 private:
-	void breakLargeContours(cv::Mat &contourStorage, vector<vector<cv::Point> > &contours, vector<cv::Vec4i> &hierarchy,
+	void addBackgroundMask();
+    void breakLargeContours(cv::Mat &contourStorage, vector<vector<cv::Point> > &contours, vector<cv::Vec4i> &hierarchy,
 			int i, int maxHeight, int maxWidth);
 	inline static void detectHeightWidth(cv::RotatedRect &box, double *hDim, double *wDim);
-	std::set<int> findNearestNeigbors(cv::Rect &bbox, cv::Mat &markersPic, cv::Mat &currentLabelMask, int self, int distance);
+	std::set<int> findNearestNeigbors(cv::Rect &bbox, cv::Mat &currentLabelMask, int self, int distance);
 	inline static void expandRect(cv::Rect &bbox, int padding, int imgHeight, int imgWidth);
-	CellCont determineLabelProperties(cv::Mat &currentLabelMask, cv::Mat &markersPic, int i);
+	CellCont determineLabelProperties(cv::Mat &currentLabelMask, int i);
+	double calcMergedScore(cv::Mat &currentLabelMask, int neighborLabel);
+	CellCont mergeLabels(cv::Mat &currentLabelMask, int neighborLabel, int currentLabel);
+	void removeLabel(cv::Mat &currentLabelMask);
+
+	cv::Mat markersPic;
+	cv::Mat originalImage;
+	cv::Mat boostedImage;
+	cv::Mat backgroundMask;
+	markersCont watershedMarkers;
+	CellClassifier decider;
 };
 
 #endif /* IMAGESEGMENTOR_H_ */

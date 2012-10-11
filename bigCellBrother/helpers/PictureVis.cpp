@@ -24,9 +24,9 @@ cv::Mat PictureVis::drawMarkers(const markersCont &mc) {
 		for( int j = 0; j < mc.markers.cols; j++ )
 		{
 			int idx = mc.markers.at<int>(i,j);
-			if( idx == -1 )
+			/*if( idx == -1 )
 				wshed.at<cv::Vec3b>(i,j) = cv::Vec3b(WHITE, WHITE, WHITE);
-			else if( idx <= 0 || idx > (int)mc.contourList.size() )
+			else*/ if( idx <= 0 || idx > (int)mc.contourList.size() )
 				wshed.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, BLACK, BLACK);
 			else
 				wshed.at<cv::Vec3b>(i,j) = colorTab[idx - 1];
@@ -58,9 +58,9 @@ cv::Mat PictureVis::drawMarkersOnPicture(cv::Mat& targetPicture, cv::Mat& marker
 		for( int j = 0; j < markers.cols; j++ )
 		{
 			int idx = markers.at<int>(i,j);
-			if( idx == -1 )
+			/*if( idx == -1 )
 				colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(WHITE, WHITE, WHITE);
-			else if( idx == 1 )
+			else*/ if( idx == 1 )
 				colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, BLACK, BLACK);
 			else
 				colorMarkers.at<cv::Vec3b>(i,j) = colorTab[idx - 1];

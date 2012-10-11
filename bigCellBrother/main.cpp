@@ -9,7 +9,13 @@
 int main(int argc, char *argv[]) {
 	srand(time(NULL));
 	ImageSegmentor is;
-	//cv::Mat bfOriginalImage = cv::imread("data/cells_bf.png");
+	CellClassifier decider; //simplest classifier
+	decider.setHeight(55);
+	decider.setWidth(12);
+	decider.setHeightSigma(200);
+	decider.setWidthSigma(16);
+	decider.setProbThreshold(1.5);
+	is.setDecider(decider);
 
 	cv::VideoCapture capture("/media/sf_tiago/Downloads/ImageStacks_Brightfield_Fluorescence/compressed_10nm_wf_BF.avi");
 	if (!capture.isOpened()) {
@@ -42,6 +48,8 @@ int main(int argc, char *argv[]) {
 		improvImage = ImageProcessor::invertImage(improvImage);
 		cv::Mat boostedImage = ImageProcessor::simplifyImage(frame, 3, 100, true);
 		boostedImage = ImageProcessor::invertImage(boostedImage);
+		is.setOriginalImage(improvImage);
+		is.setBoostedImage(boostedImage);
 
 		cv::Mat thresholdBlobs = ImageProcessor::adaptiveThreshold(improvImage, -4, 35, false);
 		thresholdBlobs = ImageProcessor::applyMorphologyOp(thresholdBlobs, cv::MORPH_OPEN, 7);
@@ -50,32 +58,33 @@ int main(int argc, char *argv[]) {
 		cv::Mat topHatBlobs = ImageProcessor::applyMorphologyOp(improvImage, cv::MORPH_TOPHAT, 21);
 		topHatBlobs = ImageProcessor::threshold(topHatBlobs, 25, false);
 
-		cv::Mat finalBlobs;
-		cv::bitwise_and(thresholdBlobs, topHatBlobs, finalBlobs);
-		finalBlobs = ImageProcessor::applyMorphologyOp(finalBlobs, cv::MORPH_OPEN, 7);
-		finalBlobs = ImageProcessor::erode(finalBlobs, 3);
+		cv::Mat targetBlobs;
+		cv::bitwise_and(thresholdBlobs, topHatBlobs, targetBlobs);
+		targetBlobs = ImageProcessor::applyMorphologyOp(targetBlobs, cv::MORPH_OPEN, 7);
+		targetBlobs = ImageProcessor::erode(targetBlobs, 3);
 
-		cv::Mat backgroundMask = ImageProcessor::invertImage(finalBlobs);
+		cv::Mat backgroundMask = ImageProcessor::invertImage(targetBlobs);
 		backgroundMask = ImageProcessor::erode(backgroundMask, 7);
+		is.setBackgroundMask(backgroundMask);
 
-		markersCont mcBfNice = is.createMarkers(finalBlobs, 35, 15);
-		cv::Mat wsMarkersBfNice = PictureVis::drawMarkers(mcBfNice);
+		is.createMarkers(targetBlobs, 35, 15);
+		cv::Mat wsMarkersBfNice = PictureVis::drawMarkers(is.getWatershedMarkers());
 		debug.write(wsMarkersBfNice);
 
-		cv::Mat wsMarkersFinal = is.addBackgroundMask(mcBfNice.markers, backgroundMask);
-
-		cv::Mat watershed = is.watershed(boostedImage, wsMarkersFinal);
+		is.watershed();
 
 		for (int n = 10; n < 100; n += 20) {
-			is.removeSmallMarkers(watershed, n);
-			watershed = is.addBackgroundMask(watershed, backgroundMask);
-			watershed = is.watershed(boostedImage, watershed);
+			is.removeSmallMarkers(n);
+			is.watershed();
 		}
 
-		cv::Mat paintedWatershed = PictureVis::drawMarkersOnPicture(improvImage, watershed);
+		is.findCellMarkers();
+		cv::Mat markers = is.getMarkersPic();
+		cv::Mat paintedWatershed = PictureVis::drawMarkersOnPicture(improvImage, markers);
 		cv::imshow("ws", paintedWatershed);
-		is.findCellMarkers(boostedImage, watershed);
-		return 1;
+
+		//cv::waitKey(0);
+
 		output.write(paintedWatershed);
 
 		duration = static_cast<double>(cv::getTickCount())-duration;

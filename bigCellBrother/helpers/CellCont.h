@@ -27,6 +27,7 @@ public:
 	void setNeighbors(std::set<int> neighbors);
 	void setProbs(std::vector<double> probs);
 	double getCompactness();
+	void removeNeighbor(int neighbor);
 
 	void printCellInfo();
 

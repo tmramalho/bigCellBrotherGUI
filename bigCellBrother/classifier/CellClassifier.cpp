@@ -22,12 +22,16 @@ CellClassifier::~CellClassifier() {
 std::vector<double> CellClassifier::calculateLogProbFeatures(std::vector<double>& features) {
 	std::vector<double> probList(1, 0);
 	if(features.size() >= 2) {
-		double w = (features[0] - width )*(features[0] - width )/(2*widthSigma );
+		double w = (features[1] - width )*(features[1] - width )/(2*widthSigma );
 		double h = (features[0] - height)*(features[0] - height)/(2*heightSigma);
 		probList[0] = w + h;
 	}
 
 	return probList;
+}
+
+bool CellClassifier::classifyCell(std::vector<double>& probs) {
+	return probs.at(0) > this->probThreshold;
 }
 
 double CellClassifier::getHeight() const {
@@ -61,6 +65,18 @@ double CellClassifier::getWidthSigma() const {
 void CellClassifier::setWidthSigma(double widthSigma) {
 	if(widthSigma > 0) this->widthSigma = widthSigma;
 }
+
+double CellClassifier::getProbThreshold() const
+{
+    return probThreshold;
+}
+
+void CellClassifier::setProbThreshold(double probThreshold)
+{
+    this->probThreshold = probThreshold;
+}
+
+
 
 
 

@@ -77,6 +77,12 @@ void CellCont::printCellInfo() {
 	std::cout << std::endl << std::endl;
 }
 
+void CellCont::removeNeighbor(int neighbor) {
+	this->neighbors.erase(neighbor);
+}
+
+
+
 
 
 
