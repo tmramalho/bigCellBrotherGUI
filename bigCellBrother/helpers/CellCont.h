@@ -34,11 +34,14 @@ public:
 	static bool compareByNumNeighbors(CellCont a, CellCont b);
     int getCurLabel() const;
     void setCurLabel(int curLabel);
+	cv::Rect getBoundBox() const;
+	void setBoundBox(cv::Rect boundBox);
 
 private:
 	std::vector<double> features;
 	std::set<int> neighbors;
 	std::vector<double> probs;
+	cv::Rect boundBox;
 	int curLabel;
 };
 

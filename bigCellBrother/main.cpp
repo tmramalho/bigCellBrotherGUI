@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
 	decider.setWidth(12);
 	decider.setHeightSigma(200);
 	decider.setWidthSigma(16);
-	decider.setProbThreshold(1.5);
+	decider.setProbThreshold(2);
 	is.setDecider(decider);
 
 	cv::VideoCapture capture("/media/sf_tiago/Downloads/ImageStacks_Brightfield_Fluorescence/compressed_10nm_wf_BF.avi");
@@ -30,11 +30,11 @@ int main(int argc, char *argv[]) {
 	frameSize.width  = capture.get(CV_CAP_PROP_FRAME_WIDTH);
 	cv::Mat frame; // current video frame
 
-	cv::VideoWriter output("/media/sf_tiago/Downloads/ImageStacks_Brightfield_Fluorescence/compressed_10nm_wf_BF_Labeled.avi",
+	/*cv::VideoWriter output("/media/sf_tiago/Downloads/ImageStacks_Brightfield_Fluorescence/compressed_10nm_wf_BF_Labeled.avi",
 			fourcc, rate, frameSize);
 	cv::VideoWriter debug("/media/sf_tiago/Downloads/ImageStacks_Brightfield_Fluorescence/compressed_10nm_wf_BF_Markers.avi",
 			fourcc, rate, frameSize);
-
+*/
 	double duration;
 
 	// for all frames in video
@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
 
 		is.createMarkers(targetBlobs, 35, 15);
 		cv::Mat wsMarkersBfNice = PictureVis::drawMarkers(is.getWatershedMarkers());
-		debug.write(wsMarkersBfNice);
+		//debug.write(wsMarkersBfNice);
 
 		is.watershed();
 
@@ -78,14 +78,17 @@ int main(int argc, char *argv[]) {
 			is.watershed();
 		}
 
-		is.findCellMarkers();
 		cv::Mat markers = is.getMarkersPic();
 		cv::Mat paintedWatershed = PictureVis::drawMarkersOnPicture(improvImage, markers);
 		cv::imshow("ws", paintedWatershed);
+		is.findCellMarkers();
+		markers = is.getMarkersPic();
+		paintedWatershed = PictureVis::drawMarkersOnPicture(improvImage, markers);
+		cv::imshow("wsAfter", paintedWatershed);
 
-		//cv::waitKey(0);
+		cv::waitKey(0);
 
-		output.write(paintedWatershed);
+		//output.write(paintedWatershed);
 
 		duration = static_cast<double>(cv::getTickCount())-duration;
 		duration /= cv::getTickFrequency();

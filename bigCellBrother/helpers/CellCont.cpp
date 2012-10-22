@@ -81,6 +81,15 @@ void CellCont::removeNeighbor(int neighbor) {
 	this->neighbors.erase(neighbor);
 }
 
+cv::Rect CellCont::getBoundBox() const {
+	return boundBox;
+}
+
+void CellCont::setBoundBox(cv::Rect boundBox) {
+	this->boundBox = boundBox;
+}
+
+
 
 
 

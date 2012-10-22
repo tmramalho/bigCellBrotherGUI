@@ -156,9 +156,9 @@ void ImageSegmentor::findCellMarkers() {
 
 		int numNeighbors = currentCell.getNeighbors().size();
 		cv::compare(markersPic, currentLabel, currentLabelMask, cv::CMP_EQ);
-		std::vector<double> features = currentCell.getFeatures();
+		std::vector<double> probs = currentCell.getProbs();
 
-		if(numNeighbors == 0 && decider.classifyCell(features)) {
+		if(numNeighbors == 0 && decider.classifyCell(probs)) {
 			std::cout << "was garbage." << std::endl;
 			removeLabel(currentLabelMask);
 			cellsByLabel.erase(currentLabel);
@@ -184,7 +184,7 @@ void ImageSegmentor::findCellMarkers() {
 				cellsByLabel[bestLabel] = mergeLabels(currentLabelMask, bestLabel, currentLabel);
 				labelStack.push(bestLabel); // process the merged cell
 				cellsByLabel.erase(currentLabel);
-			} else if (decider.classifyCell(features)) {
+			} else if (decider.classifyCell(probs)) {
 				std::cout << "had neighbors but was garbage." << std::endl;
 				removeLabel(currentLabelMask);
 				cellsByLabel.erase(currentLabel);
@@ -194,16 +194,17 @@ void ImageSegmentor::findCellMarkers() {
 		}
 	}
 
-	/*for(std::map<int, CellCont>::iterator it = cellsByLabel.begin(); it != cellsByLabel.end(); it++) {
+	for(std::map<int, CellCont>::iterator it = cellsByLabel.begin(); it != cellsByLabel.end(); it++) {
 		currentLabelMask = cv::Scalar::all(BLACK);
 		CellCont& currentCell = (*it).second;
-		std::cout << (*it).first << " " << currentCell.getCurLabel() << std::endl;
+		std::cout << currentCell.getCurLabel() << std::endl;
 		cv::compare(markersPic, currentCell.getCurLabel(), currentLabelMask, cv::CMP_EQ);
+		cv::Mat displayCell = currentLabelMask(currentCell.getBoundBox());
 
 		currentCell.printCellInfo();
-		cv::imshow("curr label", currentLabelMask); //DEBUG
+		cv::imshow("curr label", displayCell); //DEBUG
 		cv::waitKey(0);
-	}*/
+	}
 }
 
 double ImageSegmentor::calcMergedScore(cv::Mat &currentLabelMask, int neighborLabel) {
@@ -350,6 +351,7 @@ CellCont ImageSegmentor::determineLabelProperties(cv::Mat &currentLabelMask, int
 	newCell.setFeatures(features);
 	newCell.setNeighbors(ngb);
 	newCell.setProbs(probList);
+	newCell.setBoundBox(bbox);
 
 	return newCell;
 }

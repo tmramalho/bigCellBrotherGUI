@@ -31,7 +31,7 @@ cv::Mat ScientificProcessor::processLabels(cv::Mat &markersPic) {
 			char *target = currentLabel.ptr<char>(j);
 			for (int k=0; k<nc; k++) {
 				if(data[k] == i) {
-					target[k] = WHITE;
+					target[k] = (char) 255;
 					ni++;
 				}
 			}

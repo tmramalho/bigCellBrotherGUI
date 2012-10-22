@@ -9,6 +9,7 @@
 #define CELLCLASSIFIER_H_
 #include <vector>
 #include <cmath>
+#include <iostream>
 
 class CellClassifier {
 public:
