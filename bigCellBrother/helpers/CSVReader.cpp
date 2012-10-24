@@ -21,11 +21,9 @@ std::vector<std::vector<double> > CSVReader::readValues(std::string filename) {
 	while(std::getline(dataFile, line)) {
 		std::stringstream linestream(line);
 		std::string cell;
-		std::vector<double> values(7);
-		int i = 0;
+		std::vector<double> values;
 		while(std::getline(linestream, cell, ',')) {
-			values.at(i) = atof(cell.c_str());
-			if(i++ > 6) break;
+			values.push_back(atof(cell.c_str()));
 		}
 		result.push_back(values);
 	}

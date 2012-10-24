@@ -140,7 +140,6 @@ void ImageSegmentor::findCellMarkers() {
 	std::sort(cellVector.begin(), cellVector.end(), CellCont::compareByNumNeighbors);
 
 	for(std::vector<CellCont>::reverse_iterator it = cellVector.rbegin(); it != cellVector.rend(); it++) {
-		//std::cout << it->getCurLabel() << " ( " << it->getNeighbors().size() << " ) ";
 		labelStack.push(it->getCurLabel());
 	}
 
@@ -158,13 +157,13 @@ void ImageSegmentor::findCellMarkers() {
 		cv::compare(markersPic, currentLabel, currentLabelMask, cv::CMP_EQ);
 		std::vector<double> probs = currentCell.getProbs();
 
-		if(numNeighbors == 0 && decider.classifyCell(probs)) {
+		if(numNeighbors == 0 && decider->classifyCell(probs)) {
 			std::cout << "was garbage." << std::endl;
 			removeLabel(currentLabelMask);
 			cellsByLabel.erase(currentLabel);
 		} else if (numNeighbors > 0) {
 			std::set<int> currentNeighbors = currentCell.getNeighbors();
-			double bestScore = 100;
+			double bestScore = 1e100;
 			double bestLabel = 0;
 
 			for(setIt = currentNeighbors.begin();
@@ -179,12 +178,12 @@ void ImageSegmentor::findCellMarkers() {
 					bestLabel = neighborLabel;
 				}
 			}
-			if(bestScore < 100) {
+			if(bestScore < 1e100) {
 				std::cout << "merged with " << bestLabel << std::endl;
 				cellsByLabel[bestLabel] = mergeLabels(currentLabelMask, bestLabel, currentLabel);
 				labelStack.push(bestLabel); // process the merged cell
 				cellsByLabel.erase(currentLabel);
-			} else if (decider.classifyCell(probs)) {
+			} else if (decider->classifyCell(probs)) {
 				std::cout << "had neighbors but was garbage." << std::endl;
 				removeLabel(currentLabelMask);
 				cellsByLabel.erase(currentLabel);
@@ -194,7 +193,7 @@ void ImageSegmentor::findCellMarkers() {
 		}
 	}
 
-	for(std::map<int, CellCont>::iterator it = cellsByLabel.begin(); it != cellsByLabel.end(); it++) {
+	/*for(std::map<int, CellCont>::iterator it = cellsByLabel.begin(); it != cellsByLabel.end(); it++) {
 		currentLabelMask = cv::Scalar::all(BLACK);
 		CellCont& currentCell = (*it).second;
 		std::cout << currentCell.getCurLabel() << std::endl;
@@ -204,7 +203,7 @@ void ImageSegmentor::findCellMarkers() {
 		currentCell.printCellInfo();
 		cv::imshow("curr label", displayCell); //DEBUG
 		cv::waitKey(0);
-	}
+	}*/
 }
 
 double ImageSegmentor::calcMergedScore(cv::Mat &currentLabelMask, int neighborLabel) {
@@ -339,7 +338,7 @@ CellCont ImageSegmentor::determineLabelProperties(cv::Mat &currentLabelMask, int
 	cv::HuMoments(mom, &features[4]);
 
 	// probability of this being a cell
-	std::vector<double> probList = decider.calculateLogProbFeatures(features);
+	std::vector<double> probList = decider->calculateLogProbFeatures(features);
 
 	//find cell neighbors
 	expandRect(bbox, 20, markersPic.rows, markersPic.cols);
@@ -401,12 +400,12 @@ void ImageSegmentor::setBackgroundMask(cv::Mat &backgroundMask)
     this->backgroundMask = backgroundMask;
 }
 
-CellClassifier ImageSegmentor::getDecider() const
+CellClassifier *ImageSegmentor::getDecider() const
 {
     return decider;
 }
 
-void ImageSegmentor::setDecider(CellClassifier decider)
+void ImageSegmentor::setDecider(CellClassifier *decider)
 {
     this->decider = decider;
 }

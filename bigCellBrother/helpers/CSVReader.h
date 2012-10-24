@@ -19,7 +19,7 @@ public:
 	CSVReader();
 	~CSVReader();
 
-	std::vector< std::vector<double> > readValues(std::string filename);
+	static std::vector< std::vector<double> > readValues(std::string filename);
 };
 
 #endif /* CSVREADER_H_ */

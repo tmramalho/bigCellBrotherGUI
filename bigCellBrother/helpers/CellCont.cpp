@@ -66,14 +66,14 @@ void CellCont::printCellInfo() {
 	std::cout << "Pretty info for cell with label " << this->curLabel << std::endl;
 	std::cout << "Features: ";
 	for(vecIt = this->features.begin(); vecIt != this->features.end(); ++vecIt)
-		std::cout << *vecIt << " ";
+		std::cout << *vecIt << ", ";
 	std::cout << std::endl << "Compactness: " << this->getCompactness();
 	std::cout << std::endl << "Neighbors: ";
 	for(setIt = this->neighbors.begin(); setIt != this->neighbors.end(); ++setIt)
-		std::cout << *setIt << " ";
+		std::cout << *setIt << ", ";
 	std::cout << std::endl << "Probabilites: ";
 	for(vecIt = this->probs.begin(); vecIt != this->probs.end(); ++vecIt)
-		std::cout << *vecIt << " ";
+		std::cout << *vecIt << ", ";
 	std::cout << std::endl << std::endl;
 }
 

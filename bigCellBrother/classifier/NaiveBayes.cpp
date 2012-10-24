@@ -48,7 +48,7 @@ void NaiveBayes::addTrainingSet(
 
 	std::cout << "Initialized naive bayes with " << std::endl;
 	for(uint j = 0; j < numFeatures; j++) {
-		std::cout << averages[j] << " (" << variances[j] << "), ";
+		std::cout << averages[j] << " (" << sqrt(variances[j]) << "), ";
 	}
 	std::cout << std::endl;
 }

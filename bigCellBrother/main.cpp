@@ -5,17 +5,23 @@
 #include "processors/ImageProcessor.h"
 #include "helpers/PictureVis.h"
 #include <cstdio>
+#include "helpers/CSVReader.h"
+#include "classifier/NaiveBayes.h"
 
 int main(int argc, char *argv[]) {
 	srand(time(NULL));
 	ImageSegmentor is;
-	CellClassifier decider; //simplest classifier
+	/*CellClassifier decider; //simplest classifier
 	decider.setHeight(55);
 	decider.setWidth(12);
 	decider.setHeightSigma(200);
 	decider.setWidthSigma(16);
-	decider.setProbThreshold(2);
-	is.setDecider(decider);
+	decider.setProbThreshold(2);*/
+	std::vector<std::vector<double> >values = CSVReader::readValues("data/ImageStacksFluorescenceGoodCells.csv");
+	NaiveBayes decider;
+	decider.addTrainingSet(values);
+	decider.setProbThreshold(100);
+	is.setDecider(&decider);
 
 	cv::VideoCapture capture("/media/sf_tiago/Downloads/ImageStacks_Brightfield_Fluorescence/compressed_10nm_wf_BF.avi");
 	if (!capture.isOpened()) {
@@ -23,18 +29,18 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	double rate = capture.get(CV_CAP_PROP_FPS);
-	double fourcc = capture.get(CV_CAP_PROP_FOURCC);
 	cv::Size frameSize;
 	frameSize.height = capture.get(CV_CAP_PROP_FRAME_HEIGHT);
 	frameSize.width  = capture.get(CV_CAP_PROP_FRAME_WIDTH);
 	cv::Mat frame; // current video frame
 
-	/*cv::VideoWriter output("/media/sf_tiago/Downloads/ImageStacks_Brightfield_Fluorescence/compressed_10nm_wf_BF_Labeled.avi",
+	/*double rate = capture.get(CV_CAP_PROP_FPS);
+	double fourcc = capture.get(CV_CAP_PROP_FOURCC);
+	cv::VideoWriter output("/media/sf_tiago/Downloads/ImageStacks_Brightfield_Fluorescence/compressed_10nm_wf_BF_Labeled.avi",
 			fourcc, rate, frameSize);
 	cv::VideoWriter debug("/media/sf_tiago/Downloads/ImageStacks_Brightfield_Fluorescence/compressed_10nm_wf_BF_Markers.avi",
-			fourcc, rate, frameSize);
-*/
+			fourcc, rate, frameSize);*/
+
 	double duration;
 
 	// for all frames in video

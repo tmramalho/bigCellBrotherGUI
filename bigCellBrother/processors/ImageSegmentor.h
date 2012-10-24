@@ -48,8 +48,8 @@ public:
     void setOriginalImage(cv::Mat &originalImage);
     void setWatershedMarkers(markersCont watershedMarkers);
     void setBackgroundMask(cv::Mat &backgroundMask);
-    CellClassifier getDecider() const;
-    void setDecider(CellClassifier decider);
+    CellClassifier *getDecider() const;
+    void setDecider(CellClassifier *decider);
 
 private:
 	void addBackgroundMask();
@@ -68,7 +68,7 @@ private:
 	cv::Mat boostedImage;
 	cv::Mat backgroundMask;
 	markersCont watershedMarkers;
-	CellClassifier decider;
+	CellClassifier *decider;
 };
 
 #endif /* IMAGESEGMENTOR_H_ */
