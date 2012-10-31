@@ -2,7 +2,7 @@
  * ImageSegmentor.h
  *
  *  Created on: Jul 4, 2012
- *      Author: tiago
+ *	  Author: tiago
  */
 
 #ifndef IMAGESEGMENTOR_H_
@@ -37,23 +37,23 @@ public:
 	void createMarkers(cv::Mat& origImage, int maxHeight, int maxWidth);
 	void watershed();
 	void removeSmallMarkers(int th);
-	void findCellMarkers();
+	void findCellMarkers(CellClassifier *deciderPtr);
+	void smoothLabels(int kernelSize);
 
-    cv::Mat getBoostedImage() const;
-    cv::Mat getMarkersPic() const;
-    cv::Mat getOriginalImage() const;
-    cv::Mat getBackgroundMask() const;
-    markersCont getWatershedMarkers() const;
-    void setBoostedImage(cv::Mat &boostedImage);
-    void setOriginalImage(cv::Mat &originalImage);
-    void setWatershedMarkers(markersCont watershedMarkers);
-    void setBackgroundMask(cv::Mat &backgroundMask);
-    CellClassifier *getDecider() const;
-    void setDecider(CellClassifier *decider);
+	//getters and setters
+	cv::Mat getBoostedImage() const;
+	cv::Mat getMarkersPic() const;
+	cv::Mat getOriginalImage() const;
+	cv::Mat getBackgroundMask() const;
+	markersCont getWatershedMarkers() const;
+	void setBoostedImage(cv::Mat &boostedImage);
+	void setOriginalImage(cv::Mat &originalImage);
+	void setWatershedMarkers(markersCont watershedMarkers);
+	void setBackgroundMask(cv::Mat &backgroundMask);
 
 private:
 	void addBackgroundMask();
-    void breakLargeContours(cv::Mat &contourStorage, vector<vector<cv::Point> > &contours, vector<cv::Vec4i> &hierarchy,
+	void breakLargeContours(cv::Mat &contourStorage, vector<vector<cv::Point> > &contours, vector<cv::Vec4i> &hierarchy,
 			int i, int maxHeight, int maxWidth);
 	inline static void detectHeightWidth(cv::RotatedRect &box, double *hDim, double *wDim);
 	std::set<int> findNearestNeigbors(cv::Rect &bbox, cv::Mat &currentLabelMask, int self, int distance);
@@ -62,13 +62,18 @@ private:
 	double calcMergedScore(cv::Mat &currentLabelMask, int neighborLabel);
 	CellCont mergeLabels(cv::Mat &currentLabelMask, int neighborLabel, int currentLabel);
 	void removeLabel(cv::Mat &currentLabelMask);
+	void clearBorderValues();
 
 	cv::Mat markersPic;
 	cv::Mat originalImage;
 	cv::Mat boostedImage;
 	cv::Mat backgroundMask;
 	markersCont watershedMarkers;
+
 	CellClassifier *decider;
+
+	int mergeSmoothRadius;
+	int boxPadding;
 };
 
 #endif /* IMAGESEGMENTOR_H_ */

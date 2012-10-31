@@ -20,8 +20,7 @@ int main(int argc, char *argv[]) {
 	std::vector<std::vector<double> >values = CSVReader::readValues("data/ImageStacksFluorescenceGoodCells.csv");
 	NaiveBayes decider;
 	decider.addTrainingSet(values);
-	decider.setProbThreshold(100);
-	is.setDecider(&decider);
+	decider.setProbThreshold(16);
 
 	cv::VideoCapture capture("/media/sf_tiago/Downloads/ImageStacks_Brightfield_Fluorescence/compressed_10nm_wf_BF.avi");
 	if (!capture.isOpened()) {
@@ -34,12 +33,12 @@ int main(int argc, char *argv[]) {
 	frameSize.width  = capture.get(CV_CAP_PROP_FRAME_WIDTH);
 	cv::Mat frame; // current video frame
 
-	/*double rate = capture.get(CV_CAP_PROP_FPS);
-	double fourcc = capture.get(CV_CAP_PROP_FOURCC);
+	double rate = capture.get(CV_CAP_PROP_FPS);
+	int fourcc = capture.get(CV_CAP_PROP_FOURCC);
 	cv::VideoWriter output("/media/sf_tiago/Downloads/ImageStacks_Brightfield_Fluorescence/compressed_10nm_wf_BF_Labeled.avi",
 			fourcc, rate, frameSize);
-	cv::VideoWriter debug("/media/sf_tiago/Downloads/ImageStacks_Brightfield_Fluorescence/compressed_10nm_wf_BF_Markers.avi",
-			fourcc, rate, frameSize);*/
+	//cv::VideoWriter debug("/media/sf_tiago/Downloads/ImageStacks_Brightfield_Fluorescence/compressed_10nm_wf_BF_Markers.avi",
+		//	fourcc, rate, frameSize);
 
 	double duration;
 
@@ -79,22 +78,36 @@ int main(int argc, char *argv[]) {
 
 		is.watershed();
 
-		for (int n = 10; n < 100; n += 20) {
+		for (int n = 10; n < 200; n += 20) {
 			is.removeSmallMarkers(n);
 			is.watershed();
 		}
 
+		is.smoothLabels(9);
+
 		cv::Mat markers = is.getMarkersPic();
 		cv::Mat paintedWatershed = PictureVis::drawMarkersOnPicture(improvImage, markers);
-		cv::imshow("ws", paintedWatershed);
-		is.findCellMarkers();
+
+		/*bool removedMarkers;
+		for(double th = 100; th > 19; th -= 10) {
+			do {
+				decider.setProbThreshold(th);
+				removedMarkers = is.removeSingleMarker();
+				is.watershed();
+				markers = is.getMarkersPic();
+				paintedWatershed = PictureVis::drawMarkersOnPicture(improvImage, markers);
+				cv::imshow("wsAfter", paintedWatershed);
+				cv::waitKey(0);
+			} while(removedMarkers);
+		}*/
+
+		is.findCellMarkers(&decider);
 		markers = is.getMarkersPic();
 		paintedWatershed = PictureVis::drawMarkersOnPicture(improvImage, markers);
 		cv::imshow("wsAfter", paintedWatershed);
-
 		cv::waitKey(0);
 
-		//output.write(paintedWatershed);
+		output.write(paintedWatershed);
 
 		duration = static_cast<double>(cv::getTickCount())-duration;
 		duration /= cv::getTickFrequency();

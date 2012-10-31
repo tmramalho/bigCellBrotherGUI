@@ -8,7 +8,8 @@
 #include "ImageSegmentor.h"
 
 ImageSegmentor::ImageSegmentor() {
-
+	mergeSmoothRadius = 27;
+	boxPadding = 20;
 }
 
 ImageSegmentor::~ImageSegmentor() {
@@ -117,14 +118,14 @@ void ImageSegmentor::breakLargeContours(cv::Mat &contourStorage, vector< vector<
 	}
 }
 
-void ImageSegmentor::findCellMarkers() {
+void ImageSegmentor::findCellMarkers(CellClassifier *deciderPtr) {
 	double min, max;
 	cv::minMaxLoc(markersPic,&min,&max);
 	cv::Mat currentLabelMask(markersPic.size(), CV_8U);
-	std::set<int>::iterator setIt;
 	std::vector<CellCont> cellVector;
 	std::map<int, CellCont> cellsByLabel;
 	std::stack<int> labelStack;
+	decider = deciderPtr;
 
 	for(int i = 2; i < max + 1; i++) { //iterate all cell labels
 		currentLabelMask = cv::Scalar::all(BLACK);
@@ -148,7 +149,7 @@ void ImageSegmentor::findCellMarkers() {
 		std::cout << "Processing "<< currentLabel << std::endl;
 		labelStack.pop();
 		if(cellsByLabel.count(currentLabel) == 0) {
-			std::cout << "Skipping " << currentLabel << std::endl;
+			//std::cout << "Skipping " << currentLabel << std::endl;
 			continue;
 		}
 		CellCont& currentCell = cellsByLabel[currentLabel];
@@ -158,7 +159,7 @@ void ImageSegmentor::findCellMarkers() {
 		std::vector<double> probs = currentCell.getProbs();
 
 		if(numNeighbors == 0 && decider->classifyCell(probs)) {
-			std::cout << "was garbage." << std::endl;
+			//std::cout << "was garbage." << std::endl;
 			removeLabel(currentLabelMask);
 			cellsByLabel.erase(currentLabel);
 		} else if (numNeighbors > 0) {
@@ -166,7 +167,7 @@ void ImageSegmentor::findCellMarkers() {
 			double bestScore = 1e100;
 			double bestLabel = 0;
 
-			for(setIt = currentNeighbors.begin();
+			for(std::set<int>::iterator setIt = currentNeighbors.begin();
 				setIt != currentNeighbors.end(); ++setIt) {
 				int neighborLabel = *setIt;
 				if(cellsByLabel.count(neighborLabel) == 0) continue;
@@ -179,16 +180,16 @@ void ImageSegmentor::findCellMarkers() {
 				}
 			}
 			if(bestScore < 1e100) {
-				std::cout << "merged with " << bestLabel << std::endl;
+				//std::cout << "merged with " << bestLabel << std::endl;
 				cellsByLabel[bestLabel] = mergeLabels(currentLabelMask, bestLabel, currentLabel);
 				labelStack.push(bestLabel); // process the merged cell
 				cellsByLabel.erase(currentLabel);
 			} else if (decider->classifyCell(probs)) {
-				std::cout << "had neighbors but was garbage." << std::endl;
+				//std::cout << "had neighbors but was garbage." << std::endl;
 				removeLabel(currentLabelMask);
 				cellsByLabel.erase(currentLabel);
 			} else {// else was good cell, do nothing
-				std::cout << "was good aleady" << std::endl;
+				//std::cout << "was good aleady" << std::endl;
 			}
 		}
 	}
@@ -210,7 +211,7 @@ double ImageSegmentor::calcMergedScore(cv::Mat &currentLabelMask, int neighborLa
 	cv::Mat neighborLabelMask(currentLabelMask.size(), CV_8U);
 	cv::compare(markersPic, neighborLabel, neighborLabelMask, cv::CMP_EQ);
 	cv::bitwise_or(currentLabelMask, neighborLabelMask, neighborLabelMask);
-	neighborLabelMask = ImageProcessor::applyMorphologyOp(neighborLabelMask, cv::MORPH_CLOSE, 3);
+	neighborLabelMask = ImageProcessor::applyMorphologyOp(neighborLabelMask, cv::MORPH_CLOSE, mergeSmoothRadius);
 	CellCont newCell = determineLabelProperties(neighborLabelMask, neighborLabel);
 
 	return newCell.getProbs().at(0);
@@ -223,7 +224,7 @@ CellCont ImageSegmentor::mergeLabels(cv::Mat &currentLabelMask, int neighborLabe
 	cv::Mat neighborLabelMask(currentLabelMask.size(), CV_8U);
 	cv::compare(markersPic, neighborLabel, neighborLabelMask, cv::CMP_EQ);
 	cv::bitwise_or(currentLabelMask, neighborLabelMask, neighborLabelMask);
-	neighborLabelMask = ImageProcessor::applyMorphologyOp(neighborLabelMask, cv::MORPH_CLOSE, 13);
+	neighborLabelMask = ImageProcessor::applyMorphologyOp(neighborLabelMask, cv::MORPH_CLOSE, mergeSmoothRadius);
 	CellCont newCell = determineLabelProperties(neighborLabelMask, neighborLabel);
 
 	cv::findContours(neighborLabelMask, ctours, hrchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
@@ -341,8 +342,8 @@ CellCont ImageSegmentor::determineLabelProperties(cv::Mat &currentLabelMask, int
 	std::vector<double> probList = decider->calculateLogProbFeatures(features);
 
 	//find cell neighbors
-	expandRect(bbox, 20, markersPic.rows, markersPic.cols);
-	ngb = findNearestNeigbors(bbox, currentLabelMask, i, 5);
+	expandRect(bbox, boxPadding, markersPic.rows, markersPic.cols);
+	ngb = findNearestNeigbors(bbox, currentLabelMask, i, mergeSmoothRadius);
 
 	CellCont newCell;
 	//save stuff in CellCont
@@ -400,15 +401,36 @@ void ImageSegmentor::setBackgroundMask(cv::Mat &backgroundMask)
     this->backgroundMask = backgroundMask;
 }
 
-CellClassifier *ImageSegmentor::getDecider() const
-{
-    return decider;
+void ImageSegmentor::smoothLabels(int kernelSize) {
+	double min, max;
+	cv::minMaxLoc(markersPic,&min,&max);
+	cv::Mat newMarkers(markersPic.size(), CV_32S, cv::Scalar::all(0));
+	cv::Mat currentLabelMask(markersPic.size(), CV_8U);
+
+	for(int i = 2; i < max + 1; i++) { //iterate all cell labels
+		currentLabelMask = cv::Scalar::all(BLACK);
+		cv::compare(markersPic, i, currentLabelMask, cv::CMP_EQ);
+
+		if(ImageProcessor::checkIfEmpty(currentLabelMask)) continue;
+		currentLabelMask = ImageProcessor::applyMorphologyOp(currentLabelMask, cv::MORPH_OPEN, kernelSize);
+		currentLabelMask = ImageProcessor::applyMorphologyOp(currentLabelMask, cv::MORPH_CLOSE, kernelSize);
+		newMarkers.setTo(i, currentLabelMask);
+	}
+
+	newMarkers.copyTo(markersPic);
 }
 
-void ImageSegmentor::setDecider(CellClassifier *decider)
-{
-    this->decider = decider;
+void ImageSegmentor::clearBorderValues() {
+	int nl = markersPic.rows;
+	int nc = markersPic.cols; //only valid for single channel pic!
+	for (int j=0; j<nl; j++) {
+		int* data = markersPic.ptr<int>(j);
+		for (int i=0; i<nc; i++) {
+			if(data[i] < 0) data[i] = 0;
+		}
+	}
 }
+
 
 
 
