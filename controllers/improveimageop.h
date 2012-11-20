@@ -1,0 +1,32 @@
+#ifndef IMPROVEIMAGEOP_H
+#define IMPROVEIMAGEOP_H
+
+#include <QObject>
+#include "operation.h"
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include "processors/ImageProcessor.h"
+
+class ImproveImageOp : public QObject, public Operation
+{
+	Q_OBJECT
+public:
+	ImproveImageOp();
+
+	void execute();
+	void createPreview();
+	void showPreview();
+
+public slots:
+	void updateSmoothing(int sm);
+	void updateContrast(int ct);
+	void updateDoubleRes(bool dr);
+
+private:
+	int blurWindow;
+	int stretchMinVal;
+	bool doubleRes;
+};
+
+#endif // IMPROVEIMAGEOP_H

@@ -1,0 +1,21 @@
+#ifndef PICTURELABEL_H
+#define PICTURELABEL_H
+
+#include <QLabel>
+#include <QMouseEvent>
+#include <iostream>
+
+class PictureLabel : public QLabel
+{
+	Q_OBJECT
+
+public:
+	PictureLabel();
+	double scaleFactor;
+
+protected:
+	void mousePressEvent ( QMouseEvent * ev );
+
+};
+
+#endif // PICTURELABEL_H
