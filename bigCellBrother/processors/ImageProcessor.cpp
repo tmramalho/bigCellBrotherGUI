@@ -19,7 +19,8 @@ cv::Mat ImageProcessor::simplifyImage(cv::Mat &origImage, int blurWindow, int st
 	cv::Mat improvImage;
 	Histogram1D h;
 
-	cv::cvtColor( origImage, improvImage, CV_BGR2GRAY );
+	if(origImage.type() != 0) cv::cvtColor( origImage, improvImage, CV_BGR2GRAY );
+	else origImage.copyTo(improvImage);
 
 	if (equalize) {
 		cv::equalizeHist(improvImage, improvImage);
@@ -150,9 +151,9 @@ cv::Mat ImageProcessor::laplacian(cv::Mat& targetImage, int kernelSize) {
 	double lapmin, lapmax;
 	cv::minMaxLoc(laplace,&lapmin,&lapmax);
 
-	double scale= 127/ std::max(-lapmin,lapmax);
+	double scale= 255/ std::max(-lapmin,lapmax);
 	cv::Mat laplaceImage;
-	laplace.convertTo(laplaceImage,CV_8U,scale,128);
+	cv::convertScaleAbs(laplace, laplaceImage, scale);
 
 	return laplaceImage;
 }

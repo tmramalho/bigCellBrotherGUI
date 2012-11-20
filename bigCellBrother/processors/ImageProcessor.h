@@ -44,6 +44,7 @@ public:
 	static cv::Mat dilate(cv::Mat &targetImage, int kernelSize);
 	static cv::Mat laplacian(cv::Mat &targetImage, int kernelSize);
 	static cv::Mat harrisCorners(cv::Mat &targetImage, int blockSize, double k, double threshold);
+	static cv::Mat distanceLaplace(cv::Mat &binaryImage, cv::Mat &originalImage, int kernelSize);
 	static bool checkIfEmpty(cv::Mat &origImage);
 };
 

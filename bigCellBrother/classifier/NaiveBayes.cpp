@@ -71,7 +71,7 @@ std::vector<double> NaiveBayes::calculateLogProbFeatures(
 
 bool NaiveBayes::classifyCell(std::vector<double>& probs) {
 	//only one cell type!
-	return probs.at(0) > this->probThreshold;
+	return probs.at(0) < this->probThreshold;
 }
 
 double NaiveBayes::getProbThreshold() const {

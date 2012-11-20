@@ -8,7 +8,6 @@
 #include "ImageSegmentor.h"
 
 ImageSegmentor::ImageSegmentor() {
-	mergeSmoothRadius = 27;
 	boxPadding = 20;
 }
 
@@ -48,10 +47,11 @@ void ImageSegmentor::createMarkers(cv::Mat& targetBlobs, int maxHeight, int maxW
 	targetBlobs.copyTo(contourSourceImage);
 
 	cv::findContours(contourSourceImage, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
+	cv::Mat laplace = ImageProcessor::laplacian(originalImage, 27);
 
 	for( uint i = 0; i< contours.size(); i++ ) {
 		if(hierarchy[i][3] != -1) continue; //it's a hole!
-		this->breakLargeContours(tempStorage, contours, hierarchy, i, maxHeight, maxWidth);
+		this->breakLargeContours(tempStorage, laplace, contours, hierarchy, i, maxHeight, maxWidth);
 		cv::bitwise_or(finalStorage, tempStorage, finalStorage);
 	}
 
@@ -74,7 +74,7 @@ void ImageSegmentor::createMarkers(cv::Mat& targetBlobs, int maxHeight, int maxW
 	markersPic = markers;
 }
 
-void ImageSegmentor::breakLargeContours(cv::Mat &contourStorage, vector< vector<cv::Point> > &contours, vector<cv::Vec4i> &hierarchy,
+void ImageSegmentor::breakLargeContours(cv::Mat &contourStorage, cv::Mat laplace, vector< vector<cv::Point> > &contours, vector<cv::Vec4i> &hierarchy,
 										int i, int maxHeight, int maxWidth) {
 	cv::Rect boundBox = cv::boundingRect(contours[i]);
 	cv::RotatedRect box = cv::minAreaRect(contours[i]);
@@ -83,7 +83,7 @@ void ImageSegmentor::breakLargeContours(cv::Mat &contourStorage, vector< vector<
 	double hDim, wDim;
 	int hits = 0;
 
-	detectHeightWidth(box, &hDim, &wDim);
+	CellCont::detectHeightWidth(box, &hDim, &wDim);
 	contourStorage = cv::Scalar::all(BLACK);
 	cv::drawContours(contourStorage, contours, i, cv::Scalar::all(WHITE), -1, 8, hierarchy, INT_MAX);
 
@@ -92,16 +92,20 @@ void ImageSegmentor::breakLargeContours(cv::Mat &contourStorage, vector< vector<
 		cv::Mat contourRoi = contourStorage(boundBox); //select only region of interest
 		cv::Mat splitLabels(contourRoi.size(), CV_8U, cv::Scalar::all(BLACK));
 		cv::Mat distTrans = ImageProcessor::distanceTransform(contourRoi);
+		cv::Mat laplaceRoi = laplace(boundBox);
+		cv::Mat maskedLaplace;
+		laplaceRoi.copyTo(maskedLaplace, contourRoi);//set bg to zero on laplace
+		cv::Mat landscape = 0.5*distTrans + 0.5*maskedLaplace;
 
 		for (int th = 20; th < 250; th += 10) { //increase threshold for distance transf.
-			cv::Mat threshResult = ImageProcessor::threshold(distTrans, th, false);
+			cv::Mat threshResult = ImageProcessor::threshold(landscape, th, false);
 			cv::Mat newContour; threshResult.copyTo(newContour);
 			//find connected components in the thresholded pic
 			cv::findContours(newContour, ctours, hrchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
 			int cc = ctours.size();
 			for (int j = 0; j < cc; j++) {
 				cv::RotatedRect boxTemp = cv::minAreaRect(ctours[j]);
-				detectHeightWidth(boxTemp, &hDim, &wDim);
+				CellCont::detectHeightWidth(boxTemp, &hDim, &wDim);
 				//draw the connected components which obey the criterion
 				if (hDim < maxHeight && wDim < maxWidth) {
 					cv::drawContours(splitLabels, ctours, j, cv::Scalar::all(WHITE), -1, 8, hrchy, INT_MAX);
@@ -132,7 +136,7 @@ void ImageSegmentor::findCellMarkers(CellClassifier *deciderPtr) {
 		cv::compare(markersPic, i, currentLabelMask, cv::CMP_EQ);
 
 		if(ImageProcessor::checkIfEmpty(currentLabelMask)) continue;
-		CellCont newCell = determineLabelProperties(currentLabelMask, i);
+		CellCont newCell = CellCont::determineLabelProperties(currentLabelMask, markersPic, i, decider);
 
 		cellsByLabel.insert( std::pair<int, CellCont> (i, newCell) );
 		cellVector.push_back(newCell);
@@ -212,7 +216,7 @@ double ImageSegmentor::calcMergedScore(cv::Mat &currentLabelMask, int neighborLa
 	cv::compare(markersPic, neighborLabel, neighborLabelMask, cv::CMP_EQ);
 	cv::bitwise_or(currentLabelMask, neighborLabelMask, neighborLabelMask);
 	neighborLabelMask = ImageProcessor::applyMorphologyOp(neighborLabelMask, cv::MORPH_CLOSE, mergeSmoothRadius);
-	CellCont newCell = determineLabelProperties(neighborLabelMask, neighborLabel);
+	CellCont newCell = CellCont::determineLabelProperties(neighborLabelMask, markersPic, neighborLabel, decider);
 
 	return newCell.getProbs().at(0);
 }
@@ -225,7 +229,7 @@ CellCont ImageSegmentor::mergeLabels(cv::Mat &currentLabelMask, int neighborLabe
 	cv::compare(markersPic, neighborLabel, neighborLabelMask, cv::CMP_EQ);
 	cv::bitwise_or(currentLabelMask, neighborLabelMask, neighborLabelMask);
 	neighborLabelMask = ImageProcessor::applyMorphologyOp(neighborLabelMask, cv::MORPH_CLOSE, mergeSmoothRadius);
-	CellCont newCell = determineLabelProperties(neighborLabelMask, neighborLabel);
+	CellCont newCell = CellCont::determineLabelProperties(neighborLabelMask, markersPic, neighborLabel, decider);
 
 	cv::findContours(neighborLabelMask, ctours, hrchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
 	cv::drawContours(markersPic, ctours, 0, cv::Scalar::all(neighborLabel), -1, 8, hrchy, INT_MAX);
@@ -241,16 +245,6 @@ void ImageSegmentor::removeLabel(cv::Mat &currentLabelMask) {
 	std::vector<cv::Vec4i> hrchy;
 	cv::findContours(currentLabelMask, ctours, hrchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
 	cv::drawContours(markersPic, ctours, 0, cv::Scalar::all(0), -1, 8, hrchy, INT_MAX);
-}
-
-inline void ImageSegmentor::detectHeightWidth(cv::RotatedRect &box, double *hDim, double *wDim) {
-	if(box.size.width > box.size.height) {
-		*hDim = box.size.width;
-		*wDim = box.size.height;
-	} else {
-		*hDim = box.size.height;
-		*wDim = box.size.width;
-	}
 }
 
 void ImageSegmentor::removeSmallMarkers(int th) {
@@ -277,83 +271,6 @@ void ImageSegmentor::removeSmallMarkers(int th) {
 			}
 		}
 	}
-}
-
-std::set<int> ImageSegmentor::findNearestNeigbors(cv::Rect &bbox,
-		cv::Mat &currentLabelMask, int self, int distance) {
-	cv::Mat maskRoi = currentLabelMask(bbox);
-	cv::Mat markersRoi = markersPic(bbox);
-	std::set<int> neighborSet;
-
-	cv::Mat maskRoiBig = ImageProcessor::dilate(maskRoi, distance);
-
-	int nl = markersRoi.rows;
-	int nc = markersRoi.cols; //only valid for single channel pic!
-	for (int j=0; j<nl; j++) {
-		int* data = markersRoi.ptr<int>(j);
-		uchar* mask = maskRoiBig.ptr<uchar>(j);
-		for (int i=0; i<nc; i++) {
-			if(mask[i] != 0 && data[i] != self && data[i] > 1) {
-				neighborSet.insert(data[i]);
-			}
-		}
-	}
-
-	return neighborSet;
-}
-
-inline void ImageSegmentor::expandRect(cv::Rect& bbox, int padding, int imgHeight, int imgWidth) {
-	if(bbox.x - padding >= 0) bbox.x -= padding;
-	else bbox.x = 0;
-	if(bbox.y - padding >= 0) bbox.y -= padding;
-	else bbox.y = 0;
-	if(bbox.y + bbox.height + 2 * padding < imgHeight) bbox.height += 2 * padding;
-	else bbox.height = imgHeight - bbox.y;
-	if(bbox.x + bbox.width  + 2 * padding < imgWidth ) bbox.width  += 2 * padding;
-	else bbox.width  = imgWidth  - bbox.x;
-
-}
-
-CellCont ImageSegmentor::determineLabelProperties(cv::Mat &currentLabelMask, int i) {
-	double mi, ma;
-	cv::Mat currentLabelCtour;
-	std::vector< vector<cv::Point> > ctours;
-	std::vector<cv::Vec4i> hrchy;
-	std::vector<double> features (11);
-	std::set<int> ngb;
-
-	// get the contour of this cell label
-	currentLabelMask.copyTo(currentLabelCtour);
-	cv::findContours(currentLabelCtour, ctours, hrchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
-	cv::RotatedRect box = cv::minAreaRect(ctours[0]);
-	cv::Rect bbox = cv::boundingRect(ctours[0]);
-
-	//save cell features
-	detectHeightWidth(box, &mi, &ma);
-	features[0] = mi;
-	features[1] = ma;
-	features[2] = cv::contourArea(ctours[0]);
-	features[3] = cv::arcLength(ctours[0], true);
-	// put 7 hu moments in features [4:10]
-	cv::Moments mom = cv::moments(ctours[0]);
-	cv::HuMoments(mom, &features[4]);
-
-	// probability of this being a cell
-	std::vector<double> probList = decider->calculateLogProbFeatures(features);
-
-	//find cell neighbors
-	expandRect(bbox, boxPadding, markersPic.rows, markersPic.cols);
-	ngb = findNearestNeigbors(bbox, currentLabelMask, i, mergeSmoothRadius);
-
-	CellCont newCell;
-	//save stuff in CellCont
-	newCell.setCurLabel(i);
-	newCell.setFeatures(features);
-	newCell.setNeighbors(ngb);
-	newCell.setProbs(probList);
-	newCell.setBoundBox(bbox);
-
-	return newCell;
 }
 
 cv::Mat ImageSegmentor::getBoostedImage() const
@@ -420,6 +337,10 @@ void ImageSegmentor::smoothLabels(int kernelSize) {
 	newMarkers.copyTo(markersPic);
 }
 
+void ImageSegmentor::setMarkersPic(cv::Mat& markersPic) {
+	this->markersPic = markersPic;
+}
+
 void ImageSegmentor::clearBorderValues() {
 	int nl = markersPic.rows;
 	int nc = markersPic.cols; //only valid for single channel pic!
@@ -430,15 +351,4 @@ void ImageSegmentor::clearBorderValues() {
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
 

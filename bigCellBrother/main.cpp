@@ -5,7 +5,7 @@
 #include "processors/ImageProcessor.h"
 #include "helpers/PictureVis.h"
 #include <cstdio>
-#include "helpers/CSVReader.h"
+#include "files/CSVReader.h"
 #include "classifier/NaiveBayes.h"
 
 int main(int argc, char *argv[]) {

@@ -48,17 +48,14 @@ public:
 	markersCont getWatershedMarkers() const;
 	void setBoostedImage(cv::Mat &boostedImage);
 	void setOriginalImage(cv::Mat &originalImage);
+	void setMarkersPic(cv::Mat &markersPic);
 	void setWatershedMarkers(markersCont watershedMarkers);
 	void setBackgroundMask(cv::Mat &backgroundMask);
 
 private:
 	void addBackgroundMask();
-	void breakLargeContours(cv::Mat &contourStorage, vector<vector<cv::Point> > &contours, vector<cv::Vec4i> &hierarchy,
+	void breakLargeContours(cv::Mat &contourStorage, cv::Mat laplace, vector<vector<cv::Point> > &contours, vector<cv::Vec4i> &hierarchy,
 			int i, int maxHeight, int maxWidth);
-	inline static void detectHeightWidth(cv::RotatedRect &box, double *hDim, double *wDim);
-	std::set<int> findNearestNeigbors(cv::Rect &bbox, cv::Mat &currentLabelMask, int self, int distance);
-	inline static void expandRect(cv::Rect &bbox, int padding, int imgHeight, int imgWidth);
-	CellCont determineLabelProperties(cv::Mat &currentLabelMask, int i);
 	double calcMergedScore(cv::Mat &currentLabelMask, int neighborLabel);
 	CellCont mergeLabels(cv::Mat &currentLabelMask, int neighborLabel, int currentLabel);
 	void removeLabel(cv::Mat &currentLabelMask);
