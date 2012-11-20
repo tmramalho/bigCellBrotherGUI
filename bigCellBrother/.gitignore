@@ -1,8 +1,0 @@
-/old
-/gmon.out
-/data
-/gss
-.*
- !/.gitignore
-/Debug
-/Library
