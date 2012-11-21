@@ -4,7 +4,7 @@ ImproveImageOp::ImproveImageOp()
 {
 	blurWindow = 0;
 	stretchMinVal = 0;
-	doubleRes = false;
+	doubleRes = 0;
 }
 
 void ImproveImageOp::execute()
@@ -12,17 +12,22 @@ void ImproveImageOp::execute()
 	cv::Mat prev = controller->getPipelineImage(1);
 	cv::Mat improveImg = ImageProcessor::simplifyImage(prev, blurWindow, stretchMinVal);
 	cv::Mat boostedImg = ImageProcessor::simplifyImage(prev, blurWindow, stretchMinVal, true);
-	if(doubleRes) {
-		cv::Mat improveImgPump;
-		cv::Mat boostedImgPump;
+	cv::Mat improveImgPump;
+	cv::Mat boostedImgPump;
+
+	if(doubleRes == 0) {
+		improveImgPump = improveImg;
+		boostedImgPump = boostedImg;
+	} if(doubleRes == 1) {
 		cv::resize(improveImg, improveImgPump, cv::Size(), 2, 2, cv::INTER_CUBIC);
 		cv::resize(boostedImg, boostedImgPump, cv::Size(), 2, 2, cv::INTER_CUBIC);
-		controller->setPipelineImage(2, improveImgPump);
-		controller->setPipelineImage(32, boostedImgPump);
-	} else {
-		controller->setPipelineImage(2, improveImg);
-		controller->setPipelineImage(32, boostedImg);
+	} else if(doubleRes == 2) {
+		cv::resize(improveImg, improveImgPump, cv::Size(), 4, 4, cv::INTER_CUBIC);
+		cv::resize(boostedImg, boostedImgPump, cv::Size(), 4, 4, cv::INTER_CUBIC);
 	}
+
+	controller->setPipelineImage(2, improveImgPump);
+	controller->setPipelineImage(32, boostedImgPump);
 }
 
 void ImproveImageOp::createPreview()
@@ -42,7 +47,7 @@ void ImproveImageOp::updateContrast(int ct)
 	perform();
 }
 
-void ImproveImageOp::updateDoubleRes(bool dr)
+void ImproveImageOp::updateDoubleRes(int dr)
 {
 	doubleRes = dr;
 	perform();

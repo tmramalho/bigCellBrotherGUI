@@ -4,12 +4,7 @@ OperationsController::OperationsController()
 {
 	currentStep = 0;
 	pipelineReady = false;
-	//change this so that the user opens a csv
-	std::vector<std::vector<double> >values = CSVReader::readValues(
-				"/home/tiago/Downloads/ImageStacksFluorescenceGoodCells.csv");
-	decider = new NaiveBayes();
-	decider->addTrainingSet(values);
-	decider->setProbThreshold(1600);
+	decider = NULL;
 }
 
 OperationsController::~OperationsController()

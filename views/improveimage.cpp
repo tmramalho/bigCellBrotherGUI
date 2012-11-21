@@ -17,6 +17,6 @@ void ImproveImage::bindToOp(ImproveImageOp *iio)
 {
 	QObject::connect(ui->contrastSlider, SIGNAL(valueChanged(int)), iio, SLOT(updateContrast(int)));
 	QObject::connect(ui->smoothSlider, SIGNAL(valueChanged(int)), iio, SLOT(updateSmoothing(int)));
-	QObject::connect(ui->doubleRes, SIGNAL(toggled(bool)), iio, SLOT(updateDoubleRes(bool)));
+	QObject::connect(ui->doubleRes, SIGNAL(currentIndexChanged(int)), iio, SLOT(updateDoubleRes(int)));
 }
 

@@ -21,12 +21,12 @@ public:
 public slots:
 	void updateSmoothing(int sm);
 	void updateContrast(int ct);
-	void updateDoubleRes(bool dr);
+	void updateDoubleRes(int dr);
 
 private:
 	int blurWindow;
 	int stretchMinVal;
-	bool doubleRes;
+	int doubleRes;
 };
 
 #endif // IMPROVEIMAGEOP_H

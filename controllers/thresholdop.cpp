@@ -38,10 +38,10 @@ void ThresholdOp::execute()
 
 	cv::subtract(blobsImage, bgImage, blobsImage);
 
-	if(window < 31) {
+	/*if(window < 31) {
 		cv::Mat lap = ImageProcessor::laplacian(prev, window);
 		cv::imshow("lalap", lap);
-	}
+	}*/
 
 	controller->setPipelineImage(3, blobsImage);
 	controller->setPipelineImage(22, thImage);

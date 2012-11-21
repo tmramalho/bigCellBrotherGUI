@@ -13,6 +13,9 @@ public:
 	PictureLabel();
 	double scaleFactor;
 
+signals:
+	void labelChanged(int i, int j, int bt);
+
 protected:
 	void mousePressEvent ( QMouseEvent * ev );
 

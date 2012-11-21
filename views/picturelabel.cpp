@@ -7,6 +7,8 @@ PictureLabel::PictureLabel()
 
 void PictureLabel::mousePressEvent(QMouseEvent *ev)
 {
-	QPoint pos = ev->pos();//this->mapFromParent(ev->pos());
-	std::cout << pos.x()/scaleFactor << " " << pos.y()/scaleFactor << std::endl;
+	QPoint pos = ev->pos();
+	Qt::MouseButton bt = ev->button();
+	//x and y are exchanged because of opencv matrix
+	emit labelChanged(pos.y()/scaleFactor, pos.x()/scaleFactor, (int)bt);
 }

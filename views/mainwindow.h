@@ -18,6 +18,7 @@
 #include "videoprocessor.h"
 #include "createclassifier.h"
 #include "picturelabel.h"
+#include "listclassifier.h"
 #include <iostream>
 #include <QFileDialog>
 #include <QDir>

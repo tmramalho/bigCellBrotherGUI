@@ -7,7 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 	opCtr = new OperationsController;
-	cc = new CreateClassifier;
+
 	videoBox = NULL;
 	videoBoxFluorescence = NULL;
 
@@ -82,6 +82,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	qlw = new QListWidgetItem(tr("Classifier"), ui->listWidget);
 	qlw->setData(Qt::UserRole, QVariant(n++));
+
+	ListClassifier *ls = new ListClassifier();
+	opCtr->operationDialogs.push_back(ls);
+
+	cc = new CreateClassifier;
+	cc->controller = opCtr;
+	QObject::connect(imageLabel, SIGNAL(labelChanged(int, int, int)), cc, SLOT(cellPicked(int, int, int)));
+	QObject::connect(cc, SIGNAL(cellFeaturesFound(CellCont)), ls, SLOT(cellFeaturesAccepted(CellCont)));
+	ls->bindToOp(cc);
+	opCtr->operationPipeline.push_back(cc);
 
 	qlw = new QListWidgetItem(tr("Results"), ui->listWidget);
 	qlw->setData(Qt::UserRole, QVariant(n++));
@@ -263,7 +273,7 @@ void MainWindow::on_listWidget_currentItemChanged(QListWidgetItem *current, QLis
 void MainWindow::on_editOpSettings_clicked()
 {
 	int curOperation = ui->listWidget->currentItem()->data(Qt::UserRole).toInt();
-	if(curOperation >= 0 && curOperation < 5 && videoBox->isLoaded()) {
+	if(curOperation >= 0 && curOperation < 6 && videoBox->isLoaded()) {
 		opCtr->editOperation(curOperation);
 	}
 }

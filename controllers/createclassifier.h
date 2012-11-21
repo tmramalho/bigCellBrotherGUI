@@ -7,12 +7,24 @@
 #include <QMouseEvent>
 #include <QScrollArea>
 #include <QLabel>
+#include "operation.h"
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
-class CreateClassifier : public QObject
+class CreateClassifier : public QObject, public Operation
 {
 	Q_OBJECT
 public:
 	CreateClassifier();
+	void execute();
+	void createPreview();
+
+public slots:
+	void cellPicked(int i, int j, int bt);
+
+signals:
+	void cellFeaturesFound(CellCont);
 
 };
 
