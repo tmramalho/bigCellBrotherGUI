@@ -45,7 +45,7 @@ public:
 
 	static bool compareByNumNeighbors(CellCont a, CellCont b);
 	static CellCont determineLabelProperties(cv::Mat &currentLabelMask, cv::Mat &markersPic,
-											int i, CellClassifier *decider, int smRadius = 27);
+											int i, CellClassifier *decider = NULL, int smRadius = 27);
 	static void detectHeightWidth(cv::RotatedRect &box, double *hDim, double *wDim);
 	static double calcDistance(CellCont &first, CellCont &second);
 	static void calcFluorescence(CellCont& target, cv::Mat &currentLabelMask,

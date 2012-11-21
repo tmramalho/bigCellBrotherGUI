@@ -95,11 +95,11 @@ void ScientificProcessor::createDotFile(std::string filename) {
 
 void ScientificProcessor::createCsvFile(std::string filename) {
 	std::fstream filestr(filename.c_str(), std::fstream::trunc | std::fstream::out);
-
+	filestr << "t, label, cx, cy, h, w, area, fl" << std::endl;
 	for(uint i = 0; i < allCells.size(); i++) {
 		std::vector<CellCont> currCells = allCells[i];
 		for(uint j = 0; j < currCells.size(); j++) {
-			filestr << "nodet" << i << "L" << currCells[j].getCurLabel() << ", ";
+			filestr << i << ", " << currCells[j].getCurLabel() << ", ";
 			cv::Point2f center = currCells[j].getCenter();
 			filestr << center.x << ", " << center.y << ", ";
 			std::vector <double> feats = currCells[j].getFeatures();

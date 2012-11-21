@@ -140,9 +140,16 @@ CellCont CellCont::determineLabelProperties(cv::Mat &currentLabelMask, cv::Mat &
 	cv::Moments mom = cv::moments(ctours[0]);
 	cv::HuMoments(mom, &features[4]);
 
-	// probability of this being a cell
-	std::vector<double> probList = decider->calculateLogProbFeatures(features);
-	bool isCell = decider->classifyCell(probList);
+	std::vector<double> probList;
+	bool isCell = true;
+
+	if(decider) {
+		// probability of this being a cell
+		probList = decider->calculateLogProbFeatures(features);
+		isCell = decider->classifyCell(probList);
+	} else {
+		probList.push_back(0);
+	}
 
 	//find cell neighbors
 	expandRect(bbox, boxPadding, markersPic.rows, markersPic.cols);
