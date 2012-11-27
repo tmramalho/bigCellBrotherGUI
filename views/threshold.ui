@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>611</height>
+    <height>353</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,9 +17,35 @@
    <item row="0" column="0">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Window</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSlider" name="windowSlider">
+       <property name="minimum">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <number>300</number>
+       </property>
+       <property name="singleStep">
+        <number>2</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="tickPosition">
+        <enum>QSlider::TicksBelow</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QLabel" name="label_8">
        <property name="text">
-        <string>Background (red)</string>
+        <string>Edges (blue)</string>
        </property>
       </widget>
      </item>
@@ -34,32 +60,6 @@
       <widget class="QSlider" name="bgThresholdSlider">
        <property name="minimum">
         <number>-99</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="tickPosition">
-        <enum>QSlider::TicksBelow</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_10">
-       <property name="text">
-        <string>Window</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QSlider" name="bgWindowSlider">
-       <property name="minimum">
-        <number>3</number>
-       </property>
-       <property name="maximum">
-        <number>300</number>
-       </property>
-       <property name="singleStep">
-        <number>2</number>
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -96,16 +96,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="invertBg">
-       <property name="text">
-        <string>Invert</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QLabel" name="label_7">
        <property name="text">
-        <string>Cells (blue)</string>
+        <string>Background (red)</string>
        </property>
       </widget>
      </item>
@@ -121,31 +114,8 @@
        <property name="minimum">
         <number>-99</number>
        </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="tickPosition">
-        <enum>QSlider::TicksBelow</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Window</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QSlider" name="windowSlider">
-       <property name="minimum">
-        <number>3</number>
-       </property>
-       <property name="maximum">
-        <number>300</number>
-       </property>
-       <property name="singleStep">
-        <number>2</number>
+       <property name="value">
+        <number>0</number>
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -165,10 +135,10 @@
      <item>
       <widget class="QSlider" name="smoothSlider">
        <property name="minimum">
-        <number>1</number>
+        <number>3</number>
        </property>
        <property name="maximum">
-        <number>21</number>
+        <number>55</number>
        </property>
        <property name="singleStep">
         <number>2</number>
@@ -181,79 +151,6 @@
        </property>
        <property name="tickInterval">
         <number>3</number>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="invertOp">
-       <property name="text">
-        <string>Invert</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>Edges (green)</string>
-       </property>
-       <property name="textFormat">
-        <enum>Qt::AutoText</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>Threshold</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QSlider" name="thThresholdSlider">
-       <property name="value">
-        <number>20</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="tickPosition">
-        <enum>QSlider::TicksBelow</enum>
-       </property>
-       <property name="tickInterval">
-        <number>10</number>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_6">
-       <property name="text">
-        <string>Window</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QSlider" name="thWindowSlider">
-       <property name="minimum">
-        <number>3</number>
-       </property>
-       <property name="singleStep">
-        <number>2</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="tickPosition">
-        <enum>QSlider::TicksBelow</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="thInvertOp">
-       <property name="text">
-        <string>Invert</string>
        </property>
       </widget>
      </item>

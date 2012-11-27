@@ -4,13 +4,11 @@ ThresholdOp::ThresholdOp()
 {
 	threshold = 0;
 	window = 9;
-	smooth = 3;
+	smooth = 7;
 	invert = true;
 	thresholdTH = 20;
-	windowTH = 9;
 	invertTH = false;
 	thresholdBG = 0;
-	windowBG = 9;
 	smoothBG = 3;
 	invertBG = false;
 }
@@ -19,45 +17,38 @@ void ThresholdOp::execute()
 {
 	cv::Mat prev = controller->getPipelineImage(2);
 	cv::Mat thImage = ImageProcessor::adaptiveThreshold(prev, threshold, window, invert);
+	thImage = ImageProcessor::applyMorphologyOp(thImage, cv::MORPH_CLOSE, smooth);
+	thImage = ImageProcessor::invertImage(thImage);
+	thImage = ImageProcessor::erode(thImage, smooth);
 
-	if(smooth > 1) {
-		thImage = ImageProcessor::applyMorphologyOp(thImage, cv::MORPH_CLOSE, smooth);
-		thImage = ImageProcessor::applyMorphologyOp(thImage, cv::MORPH_OPEN, smooth);
-	}
-	cv::Mat thatImage = ImageProcessor::applyMorphologyOp(prev, cv::MORPH_TOPHAT, windowTH);
-			thatImage = ImageProcessor::threshold(thatImage, thresholdTH, invertTH);
-
-	cv::Mat blobsImage;
-	cv::subtract(thImage, thatImage, blobsImage);
-
-	cv::Mat bgImage = ImageProcessor::adaptiveThreshold(prev, thresholdBG, windowBG, invertBG);
+	cv::Mat bgImage = ImageProcessor::adaptiveThreshold(prev, thresholdBG, window, invertBG);
+	bgImage = ImageProcessor::applyMorphologyOp(bgImage, cv::MORPH_CLOSE, 3);
 	if(smoothBG > 1) {
-		bgImage = ImageProcessor::applyMorphologyOp(bgImage, cv::MORPH_CLOSE, smoothBG);
-		bgImage = ImageProcessor::applyMorphologyOp(bgImage, cv::MORPH_OPEN, smoothBG);
+		thImage = ImageProcessor::applyMorphologyOp(thImage, cv::MORPH_CLOSE, smoothBG);
+		thImage = ImageProcessor::applyMorphologyOp(thImage, cv::MORPH_OPEN, smoothBG);
 	}
 
-	cv::subtract(blobsImage, bgImage, blobsImage);
+	cv::Mat background;
+	cv::add(thImage, bgImage, background);
 
-	/*if(window < 31) {
-		cv::Mat lap = ImageProcessor::laplacian(prev, window);
-		cv::imshow("lalap", lap);
-	}*/
-
-	controller->setPipelineImage(3, blobsImage);
 	controller->setPipelineImage(22, thImage);
-	controller->setPipelineImage(23, thatImage);
-	controller->setPipelineImage(24, bgImage);
+	controller->setPipelineImage(23, bgImage);
+	controller->setPipelineImage(24, background);
 }
 
 void ThresholdOp::createPreview()
 {
 	std::vector<cv::Mat> channels;
+	cv::Mat prev = controller->getPipelineImage(2);
+	cv::Mat null(prev.size(), CV_8U, cv::Scalar::all(0));
 	channels.push_back(controller->getPipelineImage(24));
-	channels.push_back(controller->getPipelineImage(23));
+	channels.push_back(null);
 	channels.push_back(controller->getPipelineImage(22));
 	cv::Mat result(channels[0].size(), CV_8U);
 	cv::merge(channels, result);
-	controller->setPreview(result);
+	cv::Mat orig;
+	cv::cvtColor(prev, orig, CV_GRAY2BGR);
+	controller->setPreview(0.5*result+0.5*orig);
 }
 
 void ThresholdOp::updateThreshold(int th)
@@ -69,6 +60,7 @@ void ThresholdOp::updateThreshold(int th)
 void ThresholdOp::updateWindow(int wi)
 {
 	if(wi != 0 && wi % 2 == 0) wi +=1;
+	std::cout << wi << std::endl;
 	window = wi;
 	perform();
 }
@@ -92,13 +84,6 @@ void ThresholdOp::updateThresholdTH(int th)
 	perform();
 }
 
-void ThresholdOp::updateWindowTH(int wi)
-{
-	if(wi != 0 && wi % 2 == 0) wi +=1;
-	windowTH = wi;
-	perform();
-}
-
 void ThresholdOp::updateInvertTH(bool in)
 {
 	invertTH = in;
@@ -108,13 +93,6 @@ void ThresholdOp::updateInvertTH(bool in)
 void ThresholdOp::updateThresholdBG(int th)
 {
 	thresholdBG = th;
-	perform();
-}
-
-void ThresholdOp::updateWindowBG(int wi)
-{
-	if(wi != 0 && wi % 2 == 0) wi +=1;
-	windowBG = wi;
 	perform();
 }
 

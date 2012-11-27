@@ -2,19 +2,18 @@
 
 CreateMarkersOp::CreateMarkersOp()
 {
-	width = 100;
-	height = 100;
+	width = 10;
+	height = 80;
 }
 
 void CreateMarkersOp::execute()
 {
-	cv::Mat prev = controller->getPipelineImage(3);
 	cv::Mat backgroundMask = controller->getPipelineImage(24);
 	controller->is.setBackgroundMask(backgroundMask);
 	cv::Mat originalImage = controller->getPipelineImage(2);
 	controller->is.setOriginalImage(originalImage);
 
-	controller->is.createMarkers(prev, height, width);
+	controller->is.createMarkersIterative(originalImage, height, width, 27);
 	controller->setPipelineImage(4, controller->is.getMarkersPic());
 }
 

@@ -24,10 +24,8 @@ public slots:
 	void updateSmoothing(int sm);
 	void updateInvert(bool in);
 	void updateThresholdTH(int th);
-	void updateWindowTH(int wi);
 	void updateInvertTH(bool in);
 	void updateThresholdBG(int th);
-	void updateWindowBG(int wi);
 	void updateSmoothingBG(int sm);
 	void updateInvertBG(bool in);
 
@@ -37,10 +35,8 @@ private:
 	int smooth;
 	bool invert;
 	int thresholdTH;
-	int windowTH;
 	bool invertTH;
 	int thresholdBG;
-	int windowBG;
 	int smoothBG;
 	bool invertBG;
 };
