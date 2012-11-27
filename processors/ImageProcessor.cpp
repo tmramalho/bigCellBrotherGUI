@@ -151,7 +151,7 @@ cv::Mat ImageProcessor::laplacian(cv::Mat& targetImage, int kernelSize) {
 	double lapmin, lapmax;
 	cv::minMaxLoc(laplace,&lapmin,&lapmax);
 
-	double scale= 255/ std::max(-lapmin,lapmax);
+	double scale = 255/ std::max(-lapmin,lapmax);
 	cv::Mat laplaceImage;
 	cv::convertScaleAbs(laplace, laplaceImage, scale);
 

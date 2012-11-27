@@ -35,6 +35,7 @@ public:
 	~ImageSegmentor();
 
 	void createMarkers(cv::Mat& origImage, int maxHeight, int maxWidth);
+	void createMarkersIterative(cv::Mat& origImage, int maxHeight, int maxWidth, int window);
 	void watershed();
 	void removeSmallMarkers(int th);
 	void findCellMarkers(CellClassifier *deciderPtr);

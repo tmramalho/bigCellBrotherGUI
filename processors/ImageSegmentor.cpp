@@ -35,6 +35,52 @@ void ImageSegmentor::addBackgroundMask() {
 	}
 }
 
+void ImageSegmentor::createMarkersIterative(cv::Mat& origImage, int maxHeight,
+		int maxWidth, int window) {
+	std::vector< vector<cv::Point> > ctours;
+	std::vector<cv::Vec4i> hrchy;
+	double hDim, wDim;
+	cv::Mat targets(origImage.size(), CV_8U, cv::Scalar::all(BLACK));
+	cv::Mat topHat = ImageProcessor::applyMorphologyOp(origImage, cv::MORPH_TOPHAT, window);
+	cv::Mat laplace = ImageProcessor::laplacian(origImage, 27);
+
+	cv::Mat blobs = ImageProcessor::adaptiveThreshold(origImage, 0, window, true);
+	blobs = blobs - backgroundMask;
+	blobs = ImageProcessor::applyMorphologyOp(blobs, cv::MORPH_CLOSE, 3);
+	blobs = ImageProcessor::applyMorphologyOp(blobs, cv::MORPH_OPEN, 3);
+	cv::Mat distTrans = ImageProcessor::distanceTransform(blobs);
+	cv::Mat landscape = distTrans*0.5 + laplace*0.5 - topHat;
+
+	for (int th = 20; th < 250; th += 10) { //increase threshold for distance transf.
+		cv::Mat threshResult = ImageProcessor::threshold(landscape, th, false);
+		cv::Mat newContour; threshResult.copyTo(newContour);
+		//find connected components in the thresholded pic
+		cv::findContours(newContour, ctours, hrchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
+		int cc = ctours.size();
+		for (int j = 0; j < cc; j++) {
+			cv::RotatedRect boxTemp = cv::minAreaRect(ctours[j]);
+			CellCont::detectHeightWidth(boxTemp, &hDim, &wDim);
+			//draw the connected components which obey the criterion
+			if (hDim < maxHeight && wDim < maxWidth) {
+				cv::drawContours(targets, ctours, j, cv::Scalar::all(WHITE), -1, 8, hrchy, INT_MAX);
+			}
+		}
+	}
+
+	cv::Mat markers(origImage.size(), CV_32S, cv::Scalar::all(0));
+	cv::findContours(targets, ctours, hrchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
+
+	int nc = 0;
+	for( uint i = 0; i< ctours.size(); i++ ) {
+		if(hrchy[i][3] != -1) continue; //it's a hole!
+		nc++;
+		cv::drawContours(markers, ctours, i, cv::Scalar::all(nc+1), -1, 8, hrchy, INT_MAX);
+	}
+
+	markersPic = markers;
+
+}
+
 void ImageSegmentor::createMarkers(cv::Mat& targetBlobs, int maxHeight, int maxWidth) {
 	std::vector< vector<cv::Point> > contours;
 	std::vector<cv::Vec4i> hierarchy;
