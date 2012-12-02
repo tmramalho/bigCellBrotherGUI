@@ -42,6 +42,7 @@ void OperationsController::editOperation(int op)
 {
 	if(pipelineReady) {
 		runPipelineUntil(op);
+		std::cout << "Editing operation " << op << std::endl;
 		currentStep = op + 1; //current step incremented before executing
 		operationDialogs[op]->show();
 	}

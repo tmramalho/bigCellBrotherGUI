@@ -20,5 +20,5 @@ void ListClassifier::bindToOp(CreateClassifier *cc)
 
 void ListClassifier::cellFeaturesAccepted(CellCont selectedCell)
 {
-	selectedCell.printCellInfo();
+	//selectedCell.printCellInfo();
 }

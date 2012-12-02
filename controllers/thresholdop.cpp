@@ -6,7 +6,7 @@ ThresholdOp::ThresholdOp()
 	window = 9;
 	smooth = 7;
 	invert = true;
-	thresholdTH = 20;
+	thresholdTH = 2;
 	invertTH = false;
 	thresholdBG = 0;
 	smoothBG = 3;
@@ -17,9 +17,10 @@ void ThresholdOp::execute()
 {
 	cv::Mat prev = controller->getPipelineImage(2);
 	cv::Mat thImage = ImageProcessor::adaptiveThreshold(prev, threshold, window, invert);
-	thImage = ImageProcessor::applyMorphologyOp(thImage, cv::MORPH_CLOSE, smooth);
+	//thImage = ImageProcessor::applyMorphologyOp(thImage, cv::MORPH_CLOSE, smooth);
 	thImage = ImageProcessor::invertImage(thImage);
 	thImage = ImageProcessor::erode(thImage, smooth);
+	//thImage = ImageProcessor::applyMorphologyOp(thImage, cv::MORPH_CLOSE, smooth);
 
 	cv::Mat bgImage = ImageProcessor::adaptiveThreshold(prev, thresholdBG, window, invertBG);
 	bgImage = ImageProcessor::applyMorphologyOp(bgImage, cv::MORPH_CLOSE, 3);
@@ -31,6 +32,22 @@ void ThresholdOp::execute()
 	cv::Mat background;
 	cv::add(thImage, bgImage, background);
 
+	int px = -1, py = -1;
+	for( int i = 0; i < background.rows; i++ )
+		for( int j = 0; j < background.cols; j++ ) {
+			if(background.at<uchar>(i,j)) {
+				py = i;
+				px = j;
+				break;
+			}
+		}
+	if(px >= 0) {
+		cv::Mat filledBG = ImageProcessor::floodBackground(prev, px, py, thresholdTH);
+		filledBG = ImageProcessor::applyMorphologyOp(filledBG, cv::MORPH_CLOSE, 3);
+		cv::add(background, filledBG, background);
+	}
+
+
 	controller->setPipelineImage(22, thImage);
 	controller->setPipelineImage(23, bgImage);
 	controller->setPipelineImage(24, background);
@@ -41,9 +58,9 @@ void ThresholdOp::createPreview()
 	std::vector<cv::Mat> channels;
 	cv::Mat prev = controller->getPipelineImage(2);
 	cv::Mat null(prev.size(), CV_8U, cv::Scalar::all(0));
-	channels.push_back(controller->getPipelineImage(24));
-	channels.push_back(null);
 	channels.push_back(controller->getPipelineImage(22));
+	channels.push_back(controller->getPipelineImage(23));
+	channels.push_back(controller->getPipelineImage(24));
 	cv::Mat result(channels[0].size(), CV_8U);
 	cv::merge(channels, result);
 	cv::Mat orig;

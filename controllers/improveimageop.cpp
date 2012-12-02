@@ -28,6 +28,10 @@ void ImproveImageOp::execute()
 
 	controller->setPipelineImage(2, improveImgPump);
 	controller->setPipelineImage(32, boostedImgPump);
+
+	cv::Mat gradient = ImageProcessor::laplacian(improveImgPump, 27);
+	gradient = ImageProcessor::invertImage(gradient);
+	controller->setPipelineImage(33, gradient);
 }
 
 void ImproveImageOp::createPreview()

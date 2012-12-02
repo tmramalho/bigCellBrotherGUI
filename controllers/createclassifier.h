@@ -26,6 +26,9 @@ public slots:
 signals:
 	void cellFeaturesFound(CellCont);
 
+private:
+	std::vector< std::vector<double> > featureList;
+
 };
 
 #endif // CREATECLASSIFIER_H

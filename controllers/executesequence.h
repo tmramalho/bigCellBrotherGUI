@@ -3,8 +3,9 @@
 
 #include <QObject>
 #include "operationscontroller.h"
-#include "filecontainer.h"
+#include "files/filecontainer.h"
 #include "processors/ScientificProcessor.h"
+#include "helpers/PictureVis.h"
 
 class ExecuteSequence : public QObject
 {
@@ -18,6 +19,7 @@ public:
 	void setFluorFileSource(FileContainer *source) { ffs = source; haveFluorescence = true; }
 	void setDotFilename(std::string fn) { dotFilename = fn; }
 	void setCsvFilename(std::string fn) { csvFilename = fn; }
+	void setAviFilename(std::string fn) { aviFilename = fn; }
 	void setDistanceCutoff(int dc) { distanceCutoff = dc; }
 
 public slots:
@@ -33,6 +35,7 @@ private:
 	FileContainer *ffs;
 	std::string dotFilename;
 	std::string csvFilename;
+	std::string aviFilename;
 	ScientificProcessor lab;
 	int distanceCutoff;
 	bool haveFluorescence;

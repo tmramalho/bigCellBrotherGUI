@@ -59,3 +59,15 @@ void VideoProcessor::on_spinBox_valueChanged(int arg1)
 {
 	es->setDistanceCutoff(arg1);
 }
+
+void VideoProcessor::on_pickAVI_clicked()
+{
+	QString filename = QFileDialog::getSaveFileName(this,
+									   tr("Save File as.."), QDir::homePath(),
+										tr("AVI files(*.avi)"));
+	QByteArray ba = filename.toLocal8Bit();
+	const char *c_str = ba.data();
+	const std::string filenameString(c_str);
+	ui->dotFileLabel->setText(tr("Video file %1").arg(filename));
+	es->setAviFilename(filenameString);
+}

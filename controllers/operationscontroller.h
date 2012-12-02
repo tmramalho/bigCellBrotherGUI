@@ -39,6 +39,8 @@ public:
 	void setPipelineImage(int i, cv::Mat result) { pipelineImages[i] = result; }
 	cv::Mat getPipelineImage(int i) { return pipelineImages[i]; }
 
+	int getCurrentStep() { return currentStep; }
+
 	std::vector<Operation *> operationPipeline;
 	std::vector<QDialog *> operationDialogs;
 	ImageSegmentor is;

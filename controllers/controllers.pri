@@ -7,7 +7,8 @@ SOURCES +=  $$PWD/main.cpp\
     $$PWD/createmarkersop.cpp \
     $$PWD/watershedop.cpp \
     $$PWD/executesequence.cpp \
-    $$PWD/createclassifier.cpp
+    $$PWD/createclassifier.cpp \
+    controllers/operationparameters.cpp
 
 HEADERS  += $$PWD/main.h\
     $$PWD/operationscontroller.h \
@@ -17,4 +18,5 @@ HEADERS  += $$PWD/main.h\
     $$PWD/createmarkersop.h \
     $$PWD/watershedop.h \
     $$PWD/executesequence.h \
-    $$PWD/createclassifier.h
+    $$PWD/createclassifier.h \
+    controllers/operationparameters.h

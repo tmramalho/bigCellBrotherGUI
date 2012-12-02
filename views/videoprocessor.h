@@ -31,6 +31,8 @@ private slots:
 
 	void on_spinBox_valueChanged(int arg1);
 
+	void on_pickAVI_clicked();
+
 private:
 	Ui::VideoProcessor *ui;
 	ExecuteSequence *es;

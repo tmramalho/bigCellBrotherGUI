@@ -154,6 +154,32 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Tolerance</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSlider" name="thThresholdSlider">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>60</number>
+       </property>
+       <property name="value">
+        <number>2</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="tickPosition">
+        <enum>QSlider::TicksBelow</enum>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item row="1" column="0">

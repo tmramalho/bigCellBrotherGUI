@@ -10,7 +10,7 @@ WatershedOp::WatershedOp()
 void WatershedOp::execute()
 {
 	cv::Mat image = controller->getPipelineImage(2);
-	cv::Mat boosted = controller->getPipelineImage(32);
+	cv::Mat boosted = controller->getPipelineImage(33);
 	cv::Mat backgroundMask = controller->getPipelineImage(24);
 	cv::Mat markers;
 	controller->getPipelineImage(4).copyTo(markers);
@@ -32,7 +32,7 @@ void WatershedOp::execute()
 
 void WatershedOp::createPreview()
 {
-	cv::Mat original = controller->getPipelineImage(32);
+	cv::Mat original = controller->getPipelineImage(2);
 	cv::Mat markers = controller->getPipelineImage(5);
 	cv::Mat preview = PictureVis::drawMarkersOnPicture(original, markers);
 	controller->setPreview(preview);
