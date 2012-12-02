@@ -14,6 +14,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include "../helpers/CellCont.h"
 
 #define WHITE 255
 #define BLACK 0
@@ -24,6 +25,8 @@ public:
 	virtual ~PictureVis();
 	static cv::Mat drawMarkers(const markersCont &mc);
 	static cv::Mat drawMarkersOnPicture(cv::Mat& targetPicture, cv::Mat& markers);
+	static cv::Mat drawCellsOnPicture(cv::Mat& targetPicture, cv::Mat& markers,
+			std::vector<std::vector<CellCont> > &allCells, int frameNum);
 	static void drawRotatedRect(cv::Mat &mask, vector<cv::RotatedRect> &boxes);
 	static void drawRotatedRect(cv::Mat &mask, cv::RotatedRect &boxes);
 

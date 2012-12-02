@@ -17,6 +17,7 @@ public:
 	bool isLoaded() { return loaded; }
 	int getNumFrames() { return numFrames; }
 	int getCurFrame() { return curFrame; }
+	cv::Size getFrameSize() { return frameSize; }
 
 protected:
 	bool loaded;
@@ -24,6 +25,7 @@ protected:
 	int fourcc;
 	int numFrames;
 	int curFrame;
+	cv::Size frameSize;
 };
 
 #endif // FILECONTAINER_H

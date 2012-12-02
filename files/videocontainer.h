@@ -11,12 +11,12 @@ class VideoContainer : public FileContainer
 {
 public:
     VideoContainer();
+    ~VideoContainer();
 	void openFile(std::string filename);
 	cv::Mat grabFrameNumber(int frameNum);
 
 private:
 	cv::VideoCapture capture;
-	cv::Size frameSize;
 };
 
 #endif // VIDEOCONTAINER_H

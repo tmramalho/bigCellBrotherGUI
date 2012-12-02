@@ -70,6 +70,62 @@ cv::Mat PictureVis::drawMarkersOnPicture(cv::Mat& targetPicture, cv::Mat& marker
 	return result;
 }
 
+cv::Mat PictureVis::drawCellsOnPicture(cv::Mat& targetPicture, cv::Mat& markers,
+		std::vector<std::vector<CellCont> >& allCells, int frameNum) {
+	cv::Mat target(targetPicture.rows, targetPicture.cols, CV_8UC3);
+	double max;
+	cv::minMaxLoc(markers, NULL, &max);
+	vector<cv::Vec3b> colorTab = getRandomColorTab((int)max + 1);
+	cv::Mat original;
+	if(targetPicture.type() == CV_8U)
+		cv::cvtColor(targetPicture, original, CV_GRAY2RGB);
+	else
+		targetPicture.copyTo(original);
+
+	for( int i = 0; i < markers.rows; i++ )
+		for( int j = 0; j < markers.cols; j++ )
+		{
+			int idx = markers.at<int>(i,j);
+			if( idx == 1 )
+				target.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, BLACK, BLACK);
+			else
+				target.at<cv::Vec3b>(i,j) = colorTab[idx - 1];
+		}
+
+	std::vector<CellCont> cellVector = allCells[frameNum];
+	std::vector<CellCont> prevCellVector;
+	if(frameNum > 0) prevCellVector = allCells[frameNum-1];
+	int i = 0;
+	char buf[512];
+
+	for(std::vector<CellCont>::iterator it = cellVector.begin();
+		it != cellVector.end(); it++) {
+		cv::Scalar colorScalar = cv::Scalar(colorTab[i - 1]);
+		cv::Rect bbox = it->getBoundBox();
+		//sprintf(buf, "%d", it->getCurLabel());
+		//cv::putText(target, buf, cv::Point(bbox.x, bbox.y - 10), cv::FONT_HERSHEY_SIMPLEX, 0.5, colorScalar);
+		double fluorescence = it->getFluorescence();
+		if(fluorescence > 0) {
+			sprintf(buf, "%f", fluorescence);
+			cv::putText(target, buf, cv::Point(bbox.x, bbox.y + bbox.width), cv::FONT_HERSHEY_SIMPLEX, 0.5, colorScalar);
+		}
+		int parentLabel = it->getPrevLabel();
+		if(parentLabel > 0 && frameNum > 0) {
+			for(std::vector<CellCont>::iterator jt = prevCellVector.begin();
+				jt != prevCellVector.end(); jt++) {
+				if(jt->getCurLabel() == parentLabel) {
+					cv::line(target, jt->getCenter(), it->getCenter(), cv::Scalar(cv::Vec3b(255,255,255)));
+					break;
+				}
+			}
+		}
+		i++;
+	}
+
+	cv::Mat result = original * 0.5 + target * 0.5;
+	return result;
+}
+
 void PictureVis::drawMinAreaRect(cv::Mat& target, cv::RotatedRect& box,
 									 cv::Vec3b& color) {
 	cv::Scalar colorScalar = cv::Scalar( color );

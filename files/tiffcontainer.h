@@ -22,7 +22,6 @@ private:
 	uint16 spp, bpp, photo;
 	uint32 width, height;
 	char *buf;
-	cv::Size frameSize;
 	cv::Mat currentFrame;
 };
 

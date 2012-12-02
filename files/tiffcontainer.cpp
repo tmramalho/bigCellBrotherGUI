@@ -30,6 +30,8 @@ void TiffContainer::openFile(std::string filename)
 	TIFFGetField(tif, TIFFTAG_SAMPLESPERPIXEL, &spp);
 	TIFFGetField(tif, TIFFTAG_PHOTOMETRIC, &photo);
 	std::cout << height << ", " << width << ", " << bpp << ", "  << spp << ", " << photo << std::endl;
+	frameSize.height = height;
+	frameSize.width = width;
 
 	int dircount = 0;
 	do {

@@ -158,6 +158,26 @@ cv::Mat ImageProcessor::laplacian(cv::Mat& targetImage, int kernelSize) {
 	return laplaceImage;
 }
 
+cv::Mat ImageProcessor::sobel(cv::Mat& targetImage, int kernelSize) {
+	cv::Mat grad;
+	cv::Mat grad_x, grad_y;
+	cv::Mat abs_grad_x, abs_grad_y;
+
+	/// Gradient X
+	//Scharr( src_gray, grad_x, ddepth, 1, 0, scale, delta, BORDER_DEFAULT );
+	cv::Sobel( targetImage, grad_x, CV_16S, 1, 0, kernelSize );
+	cv::convertScaleAbs( grad_x, abs_grad_x );
+
+	/// Gradient Y
+	//Scharr( src_gray, grad_y, ddepth, 0, 1, scale, delta, BORDER_DEFAULT );
+	cv::Sobel( targetImage, grad_y, CV_16S, 0, 1, kernelSize );
+	cv::convertScaleAbs( grad_y, abs_grad_y );
+
+	/// Total Gradient (approximate)
+	cv::addWeighted( abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad );
+	return grad;
+}
+
 bool ImageProcessor::checkIfEmpty(cv::Mat& origImage) {
 	if(origImage.type() != CV_8U) return true;
 

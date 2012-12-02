@@ -5,6 +5,10 @@ VideoContainer::VideoContainer()
 	loaded = false;
 }
 
+VideoContainer::~VideoContainer() {
+
+}
+
 void VideoContainer::openFile(std::string filename)
 {
 
