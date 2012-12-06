@@ -9,19 +9,20 @@
 
 ScientificProcessor::ScientificProcessor() {
 	useFluor = false;
-
+	firstFrame = true;
 }
 
 ScientificProcessor::~ScientificProcessor() {
 
 }
 
-void ScientificProcessor::processLabels(int t, CellClassifier *deciderPtr, int distCutoff) {
+void ScientificProcessor::processLabels(int t, CellClassifier *deciderPtr) {
 	double min, max;
 	cv::minMaxLoc(markersPic,&min,&max);
 	cv::Mat currentLabelMask(markersPic.size(), CV_8U);
 	std::vector<CellCont> cellVector;
 	CellClassifier *decider = deciderPtr;
+	std::vector<int> labels(max+1, 0);
 
 	for(int i = 2; i < max + 1; i++) { //iterate all cell labels
 		currentLabelMask = cv::Scalar::all(BLACK);
@@ -32,25 +33,15 @@ void ScientificProcessor::processLabels(int t, CellClassifier *deciderPtr, int d
 		newCell.setTime(t);
 		if(useFluor) CellCont::calcFluorescence(newCell, currentLabelMask, fluorescencePic);
 		if(newCell.getIsCell()) cellVector.push_back(newCell);
-	}
-
-	if(t != 0) {
-		double starterDist = (distCutoff > 0)?(double)distCutoff:1e100;
-		for(std::vector<CellCont>::iterator it = cellVector.begin(); it != cellVector.end(); it++) {
-			double minDist = starterDist;
-			int minParent = -1;
-			std::vector<CellCont> prevCells = allCells[t-1];
-			for(std::vector<CellCont>::iterator jt = prevCells.begin(); jt != prevCells.end(); jt++) {
-				double distance = CellCont::calcDistance(*it, *jt);
-				if(distance < minDist) {
-					minDist = distance;
-					minParent = jt->getCurLabel();
-				}
-			}
-			it->setPrevLabel(minParent);
+		if(!firstFrame) {
+			int parent = calculateMaxOverlap(newCell, currentLabelMask, labels);
+			newCell.setPrevLabel(parent);
 		}
 	}
 
+	if (firstFrame) { firstFrame = false; }
+
+	markersPic.copyTo(previousMarkersPic);
 	allCells.push_back(cellVector);
 }
 
@@ -134,6 +125,30 @@ bool ScientificProcessor::isUseFluor() const {
 void ScientificProcessor::setUseFluor(bool useFluor) {
 	this->useFluor = useFluor;
 }
+
+int ScientificProcessor::calculateMaxOverlap(CellCont& newCell,
+		cv::Mat& currentLabelMask, std::vector<int> &labels) {
+	std::fill_n(labels.begin(), labels.size(), 0);
+	cv::Rect cellRoi = newCell.getBoundBox();
+	cv::Mat cellMask = currentLabelMask(cellRoi);
+	cv::Mat prevCells = previousMarkersPic(cellRoi);
+	cv::Mat overlap;
+	prevCells.copyTo(overlap, cellMask);
+	int nl = overlap.rows;
+	int nc = overlap.cols;
+	for (int j=0; j<nl; j++) {
+		int* data = overlap.ptr<int>(j);
+		for (int i=0; i<nc; i++) {
+			if(data[i] > 1) labels[data[i]]++;
+		}
+	}
+
+	std::vector<int>::iterator resultPos = std::max_element(labels.begin(), labels.end());
+	int result = std::distance(labels.begin(), resultPos);
+	if (result > 1) return result;
+	else return -1;
+}
+
 
 
 

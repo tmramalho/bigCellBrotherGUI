@@ -30,7 +30,7 @@ class ScientificProcessor {
 public:
 	ScientificProcessor();
 	virtual ~ScientificProcessor();
-	void processLabels(int t, CellClassifier *deciderPtr, int distCutoff);
+	void processLabels(int t, CellClassifier *deciderPtr);
 	void printStatistics();
 	void createDotFile(std::string filename);
 	void createCsvFile(std::string filename);
@@ -40,13 +40,20 @@ public:
     void setMarkersPic(cv::Mat markersPic);
 	bool isUseFluor() const;
 	void setUseFluor(bool useFluor);
-	std::vector<std::vector<CellCont> > &getAllCells() { return allCells; };
+
+	std::vector<std::vector<CellCont> >& getAllCells()
+	{
+		return allCells;
+	}
 
 private:
+	int calculateMaxOverlap(CellCont &newCell, cv::Mat &currentLabelMask, std::vector<int> &labels);
 	std::vector<std::vector<CellCont> > allCells;
 	cv::Mat markersPic;
+	cv::Mat previousMarkersPic;
 	cv::Mat fluorescencePic;
 	bool useFluor;
+	bool firstFrame;
 };
 
 #endif /* SCIENTIFICPROCESSOR_H_ */
