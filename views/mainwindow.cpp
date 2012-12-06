@@ -28,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	qlw->setData(Qt::UserRole, QVariant(n++));
 
 	CropImage *ci = new CropImage();
-	opCtr->operationDialogs.push_back(ci);
+	ui->stackedWidget->addWidget(ci);
 	QObject::connect(opCtr, SIGNAL(newBounds(int,int,int,int)), ci, SLOT(updateBounds(int,int,int,int)));
 
 	CropImageOp *cio = new CropImageOp();
@@ -40,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	qlw->setData(Qt::UserRole, QVariant(n++));
 
 	ImproveImage *ii = new ImproveImage();
-	opCtr->operationDialogs.push_back(ii);
+	ui->stackedWidget->addWidget(ii);
 
 	ImproveImageOp *iio = new ImproveImageOp();
 	iio->controller = opCtr;
@@ -51,7 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	qlw->setData(Qt::UserRole, QVariant(n++));
 
 	Threshold *th = new Threshold();
-	opCtr->operationDialogs.push_back(th);
+	ui->stackedWidget->addWidget(th);
 
 	ThresholdOp *tho = new ThresholdOp();
 	tho->controller = opCtr;
@@ -62,7 +62,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	qlw->setData(Qt::UserRole, QVariant(n++));
 
 	CreateMarkers *cm = new CreateMarkers();
-	opCtr->operationDialogs.push_back(cm);
+	ui->stackedWidget->addWidget(cm);
 
 	CreateMarkersOp *cmo = new CreateMarkersOp();
 	cmo->controller = opCtr;
@@ -73,7 +73,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	qlw->setData(Qt::UserRole, QVariant(n++));
 
 	Watershed *ws = new Watershed();
-	opCtr->operationDialogs.push_back(ws);
+	ui->stackedWidget->addWidget(ws);
 
 	WatershedOp *wso = new WatershedOp();
 	wso->controller = opCtr;
@@ -84,7 +84,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	qlw->setData(Qt::UserRole, QVariant(n++));
 
 	ListClassifier *ls = new ListClassifier();
-	opCtr->operationDialogs.push_back(ls);
+	ui->stackedWidget->addWidget(ls);
 
 	cc = new CreateClassifier;
 	cc->controller = opCtr;
@@ -143,8 +143,6 @@ void MainWindow::openImage() {
 	ui->framePicker->setSingleStep(1);
 	ui->framePicker->setTickInterval(videoBox->getNumFrames()/10);
 	updateFrameNumberDisplay();
-
-	ui->editOpSettings->setEnabled(true);
 
 	on_framePicker_valueChanged(0);
 	opCtr->setupPipeline(videoBox->grabFrameNumber(0));
@@ -263,19 +261,10 @@ void MainWindow::on_listWidget_currentItemChanged(QListWidgetItem *current, QLis
 {
 	//change pixmap on preview
 	int curOperation = current->data(Qt::UserRole).toInt();
-	if(curOperation < 5)
-		opCtr->updateSelectedOperationPreview(curOperation);
+	ui->stackedWidget->setCurrentIndex(curOperation+1);
+	opCtr->updateSelectedOperationPreview(curOperation);
 	if(curOperation == 6)
 		sp->debugSequence(currentFrame);
-}
-
-
-void MainWindow::on_editOpSettings_clicked()
-{
-	int curOperation = ui->listWidget->currentItem()->data(Qt::UserRole).toInt();
-	if(curOperation >= 0 && curOperation < 6 && videoBox->isLoaded()) {
-		opCtr->editOperation(curOperation);
-	}
 }
 
 void MainWindow::updateFrameNumberDisplay()
@@ -300,6 +289,7 @@ void MainWindow::sequenceProcessingFinished()
 void MainWindow::on_framePicker_valueChanged(int value)
 {
 	ui->listWidget->setCurrentRow(0);
+	ui->stackedWidget->setCurrentIndex(0);
 	opCtr->resetPipeline(videoBox->grabFrameNumber(value));
 	opCtr->updateSelectedOperationPreview(-1);
 	currentFrame = value;

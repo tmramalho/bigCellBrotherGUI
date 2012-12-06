@@ -17,20 +17,15 @@ void ThresholdOp::execute()
 {
 	cv::Mat prev = controller->getPipelineImage(2);
 	cv::Mat thImage = ImageProcessor::adaptiveThreshold(prev, threshold, window, invert);
-	//thImage = ImageProcessor::applyMorphologyOp(thImage, cv::MORPH_CLOSE, smooth);
 	thImage = ImageProcessor::invertImage(thImage);
 	thImage = ImageProcessor::erode(thImage, smooth);
-	//thImage = ImageProcessor::applyMorphologyOp(thImage, cv::MORPH_CLOSE, smooth);
 
 	cv::Mat bgImage = ImageProcessor::adaptiveThreshold(prev, thresholdBG, window, invertBG);
 	bgImage = ImageProcessor::applyMorphologyOp(bgImage, cv::MORPH_CLOSE, 3);
-	if(smoothBG > 1) {
-		thImage = ImageProcessor::applyMorphologyOp(thImage, cv::MORPH_CLOSE, smoothBG);
-		thImage = ImageProcessor::applyMorphologyOp(thImage, cv::MORPH_OPEN, smoothBG);
-	}
+	bgImage = ImageProcessor::applyMorphologyOp(bgImage, cv::MORPH_OPEN, 3);
 
-	cv::Mat background;
-	cv::add(thImage, bgImage, background);
+	cv::Mat background = bgImage;
+	//cv::add(thImage, bgImage, background);
 
 	int px = -1, py = -1;
 	for( int i = 0; i < background.rows; i++ )

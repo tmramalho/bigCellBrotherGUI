@@ -3,8 +3,8 @@
 CreateClassifier::CreateClassifier()
 {
 	//this should not be initialized here
-	controller->decider = new NaiveBayes();
-	controller->decider->setProbThreshold(1600);
+	//controller->decider = new NaiveBayes();
+	//controller->decider->setProbThreshold(1600);
 }
 
 void CreateClassifier::execute()
@@ -14,6 +14,10 @@ void CreateClassifier::execute()
 
 void CreateClassifier::createPreview()
 {
+	cv::Mat original = controller->getPipelineImage(2);
+	cv::Mat markers = controller->getPipelineImage(5);
+	cv::Mat preview = PictureVis::drawMarkersOnPicture(original, markers);
+	controller->setPreview(preview);
 }
 
 void CreateClassifier::cellPicked(int i, int j, int bt)
@@ -29,7 +33,7 @@ void CreateClassifier::cellPicked(int i, int j, int bt)
 		if(ImageProcessor::checkIfEmpty(currentLabelMask)) return;
 		CellCont selectedCell = CellCont::determineLabelProperties(currentLabelMask, markers, label);
 		featureList.push_back(selectedCell.getFeatures());
-		controller->decider->addTrainingSet(featureList);
+		//controller->decider->addTrainingSet(featureList);
 
 		emit cellFeaturesFound(selectedCell);
 	}

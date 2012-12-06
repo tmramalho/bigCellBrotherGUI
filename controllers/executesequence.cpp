@@ -3,7 +3,6 @@
 ExecuteSequence::ExecuteSequence(OperationsController *opCtr)
 {
 	ops = opCtr;
-	distanceCutoff = 0;
 	fs = NULL;
 	ffs = NULL;
 	dotFilename = "";
@@ -40,7 +39,7 @@ void ExecuteSequence::run()
 			cv::Mat fluor = ffs->grabFrameNumber(i);
 			lab.setFluorescencePic(fluor);
 		}
-		lab.processLabels(i, NULL, distanceCutoff);
+		lab.processLabels(i, NULL);
 		emit incrementProgress((i+1)*100/maxFrames);
 	}
 

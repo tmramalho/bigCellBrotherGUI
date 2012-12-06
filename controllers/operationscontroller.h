@@ -29,7 +29,6 @@ public:
 	void setupPipeline(cv::Mat initialFrame);
 	cv::Mat runFullPipeline();
 
-	void editOperation(int op);
 	void setPreview(cv::Mat result);
 	void showCurrentPreview();
 	void showSelectedPreview(cv::Mat result);

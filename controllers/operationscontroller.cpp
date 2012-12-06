@@ -10,7 +10,6 @@ OperationsController::OperationsController()
 OperationsController::~OperationsController()
 {
 	operationPipeline.clear();
-	operationDialogs.clear();
 	pipelineVisualization.clear();
 	pipelineImages.clear();
 }
@@ -34,18 +33,8 @@ void OperationsController::setupPipeline(cv::Mat initialFrame)
 
 cv::Mat OperationsController::runFullPipeline()
 {
-	runPipelineUntil(operationDialogs.size()-1);
+	runPipelineUntil(operationPipeline.size()-1);
 	return pipelineImages[5];
-}
-
-void OperationsController::editOperation(int op)
-{
-	if(pipelineReady) {
-		runPipelineUntil(op);
-		std::cout << "Editing operation " << op << std::endl;
-		currentStep = op + 1; //current step incremented before executing
-		operationDialogs[op]->show();
-	}
 }
 
 void OperationsController::setPreview(cv::Mat result)
@@ -88,7 +77,7 @@ void OperationsController::updateSelectedOperationPreview(int op)
 cv::Mat OperationsController::getPreviewForOperation(int op)
 {
 	int pos = op + 1;
-	if(op < -2) pos = operationDialogs.size() - 1;
+	if(op < -2) pos = operationPipeline.size() - 1;
 	return pipelineVisualization[pos];
 }
 

@@ -55,11 +55,6 @@ void VideoProcessor::on_goButton_clicked()
 	es->run();
 }
 
-void VideoProcessor::on_spinBox_valueChanged(int arg1)
-{
-	es->setDistanceCutoff(arg1);
-}
-
 void VideoProcessor::on_pickAVI_clicked()
 {
 	QString filename = QFileDialog::getSaveFileName(this,

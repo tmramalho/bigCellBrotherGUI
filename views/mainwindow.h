@@ -50,8 +50,6 @@ private slots:
 
 	void on_listWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
 
-	void on_editOpSettings_clicked();
-
 	void on_framePicker_valueChanged(int value);
 
 	void updatePreview(QImage imagePreview);
