@@ -32,14 +32,15 @@ void ExecuteSequence::run()
 	for(int i=0; i<maxFrames; i++) {
 		cv::Mat nextFrame = fs->grabFrameNumber(i);
 		ops->resetPipeline(nextFrame);
-		cv::Mat result = ops->runFullPipeline();
-		finalSize = result.size();
-		lab.setMarkersPic(result);
+		cv::Mat currentMarkers = ops->runFullPipeline();
+		finalSize = currentMarkers.size();
+		lab.setMarkersPic(currentMarkers);
 		if(haveFluorescence) {
 			cv::Mat fluor = ffs->grabFrameNumber(i);
 			lab.setFluorescencePic(fluor);
 		}
 		lab.processLabels(i, NULL);
+		lab.setPreviousMarkersPic(currentMarkers);
 		emit incrementProgress((i+1)*100/maxFrames);
 	}
 

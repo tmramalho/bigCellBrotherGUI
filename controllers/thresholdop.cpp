@@ -42,7 +42,6 @@ void ThresholdOp::execute()
 		cv::add(background, filledBG, background);
 	}
 
-
 	controller->setPipelineImage(22, thImage);
 	controller->setPipelineImage(23, bgImage);
 	controller->setPipelineImage(24, background);
