@@ -40,11 +40,12 @@ public:
     void setMarkersPic(cv::Mat markersPic);
 	bool isUseFluor() const;
 	void setUseFluor(bool useFluor);
-
-	std::vector<std::vector<CellCont> >& getAllCells()
-	{
-		return allCells;
-	}
+	cv::Mat getPreviousMarkersPic() const;
+	void setPreviousMarkersPic(cv::Mat previousMarkersPic);
+	std::vector<std::vector<CellCont> > &getAllCells();
+	void setAllCells(std::vector<std::vector<CellCont> > allCells);
+	bool isFirstFrame() const;
+	void setFirstFrame(bool firstFrame);
 
 private:
 	int calculateMaxOverlap(CellCont &newCell, cv::Mat &currentLabelMask, std::vector<int> &labels);

@@ -18,11 +18,14 @@ ScientificProcessor::~ScientificProcessor() {
 
 void ScientificProcessor::processLabels(int t, CellClassifier *deciderPtr) {
 	double min, max;
+
+	cv::minMaxLoc(previousMarkersPic,&min,&max);
+	std::vector<int> labels(max+1, 0);
+
 	cv::minMaxLoc(markersPic,&min,&max);
 	cv::Mat currentLabelMask(markersPic.size(), CV_8U);
 	std::vector<CellCont> cellVector;
 	CellClassifier *decider = deciderPtr;
-	std::vector<int> labels(max+1, 0);
 
 	for(int i = 2; i < max + 1; i++) { //iterate all cell labels
 		currentLabelMask = cv::Scalar::all(BLACK);
@@ -32,16 +35,15 @@ void ScientificProcessor::processLabels(int t, CellClassifier *deciderPtr) {
 		CellCont newCell = CellCont::determineLabelProperties(currentLabelMask, markersPic, i, decider);
 		newCell.setTime(t);
 		if(useFluor) CellCont::calcFluorescence(newCell, currentLabelMask, fluorescencePic);
-		if(newCell.getIsCell()) cellVector.push_back(newCell);
 		if(!firstFrame) {
 			int parent = calculateMaxOverlap(newCell, currentLabelMask, labels);
 			newCell.setPrevLabel(parent);
 		}
+		if(newCell.getIsCell()) cellVector.push_back(newCell);
 	}
 
 	if (firstFrame) { firstFrame = false; }
 
-	markersPic.copyTo(previousMarkersPic);
 	allCells.push_back(cellVector);
 }
 
@@ -148,6 +150,33 @@ int ScientificProcessor::calculateMaxOverlap(CellCont& newCell,
 	if (result > 1) return result;
 	else return -1;
 }
+
+cv::Mat ScientificProcessor::getPreviousMarkersPic() const {
+	return previousMarkersPic;
+}
+
+void ScientificProcessor::setPreviousMarkersPic(cv::Mat previousMarkersPic) {
+	this->previousMarkersPic = previousMarkersPic;
+}
+
+std::vector<std::vector<CellCont> > &ScientificProcessor::getAllCells() {
+	return allCells;
+}
+
+void ScientificProcessor::setAllCells(
+		std::vector<std::vector<CellCont> > allCells) {
+	this->allCells = allCells;
+}
+
+bool ScientificProcessor::isFirstFrame() const {
+	return firstFrame;
+}
+
+void ScientificProcessor::setFirstFrame(bool firstFrame) {
+	this->firstFrame = firstFrame;
+}
+
+
 
 
 

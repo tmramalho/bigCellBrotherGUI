@@ -49,7 +49,7 @@ void ImageSegmentor::createMarkersIterative(cv::Mat& origImage, int maxHeight,
 	blobs = ImageProcessor::applyMorphologyOp(blobs, cv::MORPH_CLOSE, 3);
 	blobs = ImageProcessor::applyMorphologyOp(blobs, cv::MORPH_OPEN, 3);
 	cv::Mat distTrans = ImageProcessor::distanceTransform(blobs);
-	cv::Mat landscape = distTrans*0.5 + laplace*0.5 - topHat;
+	cv::Mat landscape = distTrans*0.5 + laplace*0.5 - topHat - backgroundMask;
 
 	for (int th = 20; th < 250; th += 10) { //increase threshold for distance transf.
 		cv::Mat threshResult = ImageProcessor::threshold(landscape, th, false);
