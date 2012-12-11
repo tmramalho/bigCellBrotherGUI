@@ -112,7 +112,7 @@
      <item>
       <widget class="QCheckBox" name="checkBox">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="text">
         <string>Remove cells touching border</string>

@@ -2,9 +2,7 @@
 
 CreateClassifier::CreateClassifier()
 {
-	//this should not be initialized here
-	//controller->decider = new NaiveBayes();
-	//controller->decider->setProbThreshold(1600);
+	mode = true;
 }
 
 void CreateClassifier::execute()
@@ -26,15 +24,22 @@ void CreateClassifier::cellPicked(int i, int j, int bt)
 	cv::Mat markers = controller->getPipelineImage(5);
 	int label = markers.at<int>(i, j);
 	if(label <= 1) return;
-	if(bt == 1) {
+	if(mode == 1 && bt == 1) {
 		cv::Mat currentLabelMask(markers.size(), CV_8U);
 		cv::compare(markers, label, currentLabelMask, cv::CMP_EQ);
-		std::cout << i << ", " << j << " : " << label << " is " << bt << std::endl;
+		std::cout << i << ", " << j << " : " << label << " is " << mode << std::endl;
 		if(ImageProcessor::checkIfEmpty(currentLabelMask)) return;
 		CellCont selectedCell = CellCont::determineLabelProperties(currentLabelMask, markers, label);
-		featureList.push_back(selectedCell.getFeatures());
-		//controller->decider->addTrainingSet(featureList);
+		controller->decider->addTrainingSample(selectedCell.getFeatures());
 
 		emit cellFeaturesFound(selectedCell);
 	}
+}
+
+void CreateClassifier::setGoodMode() {
+	mode = true;
+}
+
+void CreateClassifier::setBadMode() {
+	mode = false;
 }

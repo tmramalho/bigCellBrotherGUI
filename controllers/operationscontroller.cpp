@@ -4,7 +4,7 @@ OperationsController::OperationsController()
 {
 	currentStep = 0;
 	pipelineReady = false;
-	decider = NULL;
+	decider = new NaiveBayes();
 }
 
 OperationsController::~OperationsController()
@@ -12,6 +12,7 @@ OperationsController::~OperationsController()
 	operationPipeline.clear();
 	pipelineVisualization.clear();
 	pipelineImages.clear();
+	delete decider;
 }
 
 void OperationsController::resetPipeline(cv::Mat initialFrame)

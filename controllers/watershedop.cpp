@@ -5,6 +5,7 @@ WatershedOp::WatershedOp()
 	size = 3;
 	smoothing = 1;
 	nStep = 50;
+	rmBorder = false;
 }
 
 void WatershedOp::execute()
@@ -26,6 +27,7 @@ void WatershedOp::execute()
 	}
 
 	if(smoothing > 1) controller->is.smoothLabels(smoothing);
+	if(rmBorder) controller->is.removeBorderMarkers();
 
 	controller->setPipelineImage(5, controller->is.getMarkersPic());
 }
@@ -54,5 +56,11 @@ void WatershedOp::updateSize(int sz)
 void WatershedOp::updateStep(int sp)
 {
 	nStep = sp;
+	perform();
+}
+
+void WatershedOp::removeBorder(bool rm)
+{
+	rmBorder = rm;
 	perform();
 }

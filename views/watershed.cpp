@@ -18,4 +18,5 @@ void Watershed::bindToOp(WatershedOp *co)
 	QObject::connect(ui->sizeSlider, SIGNAL(valueChanged(int)), co, SLOT(updateSize(int)));
 	QObject::connect(ui->smoothingSlider, SIGNAL(valueChanged(int)), co, SLOT(updateSmoothing(int)));
 	QObject::connect(ui->stepSlider, SIGNAL(valueChanged(int)), co, SLOT(updateStep(int)));
+	QObject::connect(ui->checkBox, SIGNAL(toggled(bool)), co, SLOT(removeBorder(bool)));
 }

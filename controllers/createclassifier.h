@@ -23,12 +23,14 @@ public:
 
 public slots:
 	void cellPicked(int i, int j, int bt);
+	void setGoodMode();
+	void setBadMode();
 
 signals:
 	void cellFeaturesFound(CellCont);
 
 private:
-	std::vector< std::vector<double> > featureList;
+	bool mode;
 
 };
 

@@ -44,6 +44,9 @@
        <property name="tickPosition">
         <enum>QSlider::TicksBelow</enum>
        </property>
+       <property name="tickInterval">
+        <number>10</number>
+       </property>
       </widget>
      </item>
      <item row="5" column="0" colspan="2">
@@ -52,7 +55,7 @@
         <number>1</number>
        </property>
        <property name="maximum">
-        <number>81</number>
+        <number>41</number>
        </property>
        <property name="singleStep">
         <number>2</number>

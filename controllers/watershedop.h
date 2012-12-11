@@ -24,11 +24,13 @@ public slots:
 	void updateSmoothing(int sm);
 	void updateSize(int sz);
 	void updateStep(int sp);
+	void removeBorder(bool rm);
 
 private:
 	int smoothing;
 	int size;
 	int nStep;
+	bool rmBorder;
 };
 
 #endif // WATERSHEDOP_H

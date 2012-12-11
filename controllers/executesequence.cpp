@@ -39,7 +39,7 @@ void ExecuteSequence::run()
 			cv::Mat fluor = ffs->grabFrameNumber(i);
 			lab.setFluorescencePic(fluor);
 		}
-		lab.processLabels(i, NULL);
+		lab.processLabels(i);
 		lab.setPreviousMarkersPic(currentMarkers);
 		emit incrementProgress((i+1)*100/maxFrames);
 	}
