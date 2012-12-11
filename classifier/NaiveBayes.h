@@ -12,23 +12,28 @@
 
 #include "CellClassifier.h"
 
+#define PI 3.14159265
+
 class NaiveBayes: public CellClassifier {
 public:
 	NaiveBayes();
 	~NaiveBayes();
 
-	void addTrainingSample(std::vector<double>& features);
+	void addTrainingSample(std::vector<double> features);
 	void addTrainingSet(std::vector< std::vector<double> >& trainingSet);
-	std::vector<double> calculateLogProbFeatures(std::vector<double>& features);
+	double calculateProbFeatures(std::vector<double>& features);
+	double calculateLogProbFeatures(std::vector<double>& features);
 	bool classifyCell(std::vector<double>& probs);
 	double getProbThreshold() const;
 	void setProbThreshold(double probThreshold);
 
 private:
 	std::vector<double> averages;
-	std::vector<double> variances;
+	std::vector<double> invVar;
 	double probThreshold;
 	uint numFeatures;
+	double initialized;
+	uint numUsedSamples;
 };
 
 #endif /* NAIVEBAYES_H_ */

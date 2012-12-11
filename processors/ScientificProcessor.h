@@ -24,13 +24,12 @@
 #include <utility>
 #include "../helpers/CellCont.h"
 #include "ImageProcessor.h"
-#include "../classifier/CellClassifier.h"
 
 class ScientificProcessor {
 public:
 	ScientificProcessor();
 	virtual ~ScientificProcessor();
-	void processLabels(int t, CellClassifier *deciderPtr);
+	void processLabels(int t);
 	void printStatistics();
 	void createDotFile(std::string filename);
 	void createCsvFile(std::string filename);

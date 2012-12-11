@@ -101,7 +101,6 @@ int main(int argc, char *argv[]) {
 			} while(removedMarkers);
 		}*/
 
-		is.findCellMarkers(&decider);
 		markers = is.getMarkersPic();
 		paintedWatershed = PictureVis::drawMarkersOnPicture(improvImage, markers);
 		cv::imshow("wsAfter", paintedWatershed);

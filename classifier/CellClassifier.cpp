@@ -19,15 +19,15 @@ CellClassifier::~CellClassifier() {
 /* Stub method until a proper classifier is implemented
  * which will inherit from this class
  */
-std::vector<double> CellClassifier::calculateLogProbFeatures(std::vector<double>& features) {
-	std::vector<double> probList(1, 0);
+double CellClassifier::calculateLogProbFeatures(std::vector<double>& features) {
+	double pr = 0;
 	if(features.size() >= 2) {
 		double w = (features[1] - width )*(features[1] - width )/(2*widthSigma );
 		double h = (features[0] - height)*(features[0] - height)/(2*heightSigma);
-		probList[0] = w + h;
+		pr = w + h;
 	}
 
-	return probList;
+	return pr;
 }
 
 bool CellClassifier::classifyCell(std::vector<double>& probs) {

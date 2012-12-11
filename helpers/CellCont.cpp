@@ -24,20 +24,12 @@ std::set<int> CellCont::getNeighbors() const {
     return neighbors;
 }
 
-std::vector<double> CellCont::getProbs() const {
-    return probs;
-}
-
 void CellCont::setFeatures(std::vector<double> features) {
     this->features = features;
 }
 
 void CellCont::setNeighbors(std::set<int> neighbors) {
     this->neighbors = neighbors;
-}
-
-void CellCont::setProbs(std::vector<double> probs) {
-    this->probs = probs;
 }
 
 bool CellCont::compareByNumNeighbors(CellCont a, CellCont b) {
@@ -71,9 +63,6 @@ void CellCont::printCellInfo() {
 	std::cout << std::endl << "Neighbors: ";
 	for(setIt = this->neighbors.begin(); setIt != this->neighbors.end(); ++setIt)
 		std::cout << *setIt << ", ";
-	std::cout << std::endl << "Probabilites: ";
-	for(vecIt = this->probs.begin(); vecIt != this->probs.end(); ++vecIt)
-		std::cout << *vecIt << ", ";
 	std::cout << std::endl << std::endl;
 }
 
@@ -115,7 +104,7 @@ void CellCont::setTime(double time) {
 }
 
 CellCont CellCont::determineLabelProperties(cv::Mat &currentLabelMask, cv::Mat &markersPic,
-											int i, CellClassifier *decider, int smRadius) {
+											int label, int smRadius) {
 	int boxPadding = 20;
 	double mi, ma;
 	cv::Mat currentLabelCtour;
@@ -140,28 +129,21 @@ CellCont CellCont::determineLabelProperties(cv::Mat &currentLabelMask, cv::Mat &
 	cv::Moments mom = cv::moments(ctours[0]);
 	cv::HuMoments(mom, &features[4]);
 
-	std::vector<double> probList;
-	bool isCell = true;
+	for(uint n = 4; n < 11; n++)
+		features[n] = features[n]*1e6;
 
-	if(decider) {
-		// probability of this being a cell
-		probList = decider->calculateLogProbFeatures(features);
-		isCell = decider->classifyCell(probList);
-	} else {
-		probList.push_back(0);
-	}
+	bool isCell = true;
 
 	//find cell neighbors
 	expandRect(bbox, boxPadding, markersPic.rows, markersPic.cols);
-	ngb = findNearestNeigbors(bbox, currentLabelMask, markersPic, i, smRadius);
+	ngb = findNearestNeigbors(bbox, currentLabelMask, markersPic, label, smRadius);
 
 	CellCont newCell;
 	//save stuff in CellCont
 	newCell.setCenter(mom.m10/mom.m00, mom.m01/mom.m00);
-	newCell.setCurLabel(i);
+	newCell.setCurLabel(label);
 	newCell.setFeatures(features);
 	newCell.setNeighbors(ngb);
-	newCell.setProbs(probList);
 	newCell.setBoundBox(bbox);
 	newCell.setIsCell(isCell);
 

@@ -16,7 +16,7 @@ ScientificProcessor::~ScientificProcessor() {
 
 }
 
-void ScientificProcessor::processLabels(int t, CellClassifier *deciderPtr) {
+void ScientificProcessor::processLabels(int t) {
 	double min, max;
 
 	cv::minMaxLoc(previousMarkersPic,&min,&max);
@@ -25,14 +25,13 @@ void ScientificProcessor::processLabels(int t, CellClassifier *deciderPtr) {
 	cv::minMaxLoc(markersPic,&min,&max);
 	cv::Mat currentLabelMask(markersPic.size(), CV_8U);
 	std::vector<CellCont> cellVector;
-	CellClassifier *decider = deciderPtr;
 
 	for(int i = 2; i < max + 1; i++) { //iterate all cell labels
 		currentLabelMask = cv::Scalar::all(BLACK);
 		cv::compare(markersPic, i, currentLabelMask, cv::CMP_EQ);
 
 		if(ImageProcessor::checkIfEmpty(currentLabelMask)) continue;
-		CellCont newCell = CellCont::determineLabelProperties(currentLabelMask, markersPic, i, decider);
+		CellCont newCell = CellCont::determineLabelProperties(currentLabelMask, markersPic, i);
 		newCell.setTime(t);
 		if(useFluor) CellCont::calcFluorescence(newCell, currentLabelMask, fluorescencePic);
 		if(!firstFrame) {
@@ -54,9 +53,7 @@ void ScientificProcessor::printStatistics() {
 		for(uint j = 0; j < currCells.size(); j++) {
 			if(currCells[j].getPrevLabel() == -1) std::cout << "new cell " << std::endl;
 			else {
-				std::vector<double> pr = currCells[j].getProbs();
 				std::cout << "daughter of " << currCells[j].getPrevLabel();
-				std::cout << "prob " << pr[0] << std::endl;
 			}
 		}
 	}

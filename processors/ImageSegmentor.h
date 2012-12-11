@@ -38,8 +38,9 @@ public:
 	void createMarkersIterative(cv::Mat& origImage, int maxHeight, int maxWidth, int window);
 	void watershed();
 	void removeSmallMarkers(int th);
-	void findCellMarkers(CellClassifier *deciderPtr);
 	void smoothLabels(int kernelSize);
+	void removeBorderMarkers();
+	void deleteMarker(int label);
 
 	//getters and setters
 	cv::Mat getBoostedImage() const;
@@ -57,9 +58,6 @@ private:
 	void addBackgroundMask();
 	void breakLargeContours(cv::Mat &contourStorage, cv::Mat laplace, vector<vector<cv::Point> > &contours, vector<cv::Vec4i> &hierarchy,
 			int i, int maxHeight, int maxWidth);
-	double calcMergedScore(cv::Mat &currentLabelMask, int neighborLabel);
-	CellCont mergeLabels(cv::Mat &currentLabelMask, int neighborLabel, int currentLabel);
-	void removeLabel(cv::Mat &currentLabelMask);
 	void clearBorderValues();
 
 	cv::Mat markersPic;
@@ -67,8 +65,6 @@ private:
 	cv::Mat boostedImage;
 	cv::Mat backgroundMask;
 	markersCont watershedMarkers;
-
-	CellClassifier *decider;
 
 	int mergeSmoothRadius;
 	int boxPadding;

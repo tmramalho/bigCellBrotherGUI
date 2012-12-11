@@ -21,7 +21,6 @@
 #include <exception>
 #include <algorithm>
 #include <utility>
-#include "../classifier/CellClassifier.h"
 #include "../processors/ImageProcessor.h"
 
 
@@ -34,10 +33,8 @@ public:
 
 	std::vector<double> getFeatures() const;
 	std::set<int> getNeighbors() const;
-	std::vector<double> getProbs() const;
 	void setFeatures(std::vector<double> features);
 	void setNeighbors(std::set<int> neighbors);
-	void setProbs(std::vector<double> probs);
 	double getCompactness();
 	void removeNeighbor(int neighbor);
 
@@ -45,7 +42,7 @@ public:
 
 	static bool compareByNumNeighbors(CellCont a, CellCont b);
 	static CellCont determineLabelProperties(cv::Mat &currentLabelMask, cv::Mat &markersPic,
-											int i, CellClassifier *decider = NULL, int smRadius = 27);
+											int i, int smRadius = 27);
 	static void detectHeightWidth(cv::RotatedRect &box, double *hDim, double *wDim);
 	static double calcDistance(CellCont &first, CellCont &second);
 	static void calcFluorescence(CellCont& target, cv::Mat &currentLabelMask,
@@ -71,7 +68,6 @@ private:
 	static std::set<int> findNearestNeigbors(cv::Rect& bbox, cv::Mat& currentLabelMask, cv::Mat& markersPic, int self, int distance);
 	std::vector<double> features;
 	std::set<int> neighbors;
-	std::vector<double> probs;
 	cv::Rect boundBox;
 	int curLabel;
 	bool isCell;

@@ -8,13 +8,37 @@
 #include "NaiveBayes.h"
 
 NaiveBayes::NaiveBayes() {
+	initialized = false;
 }
 
 NaiveBayes::~NaiveBayes() {
 }
 
-void NaiveBayes::addTrainingSample(std::vector<double>& features) {
-	//TODO: implement sequential training
+void NaiveBayes::addTrainingSample(std::vector<double> features) {
+	numFeatures = features.size();
+	if(initialized == false) {
+		averages = features;
+		invVar.resize(numFeatures, 0);
+		for(uint j = 0; j < numFeatures; j++) {
+			invVar[j] = 1/pow(0.5*averages[j],2); //50% initial error
+		}
+		initialized = true;
+		numUsedSamples = 1;
+	} else {
+		double pr = calculateProbFeatures(features);
+		double eta = 1/(double)numUsedSamples;
+		for(uint j = 0; j < numFeatures; j++) {
+			averages[j] += eta*pr*(features[j] - averages[j]);
+			invVar[j] += eta*pr*(invVar[j] - pow((features[j] - averages[j])*invVar[j], 2));
+		}
+		numUsedSamples ++;
+	}
+
+	std::cout << "UNB ";
+	for(uint j = 0; j < numFeatures; j++) {
+		std::cout << averages[j] << " (" << invVar[j] << ", " << sqrt(1/invVar[j]) << "), ";
+	}
+	std::cout << std::endl;
 }
 
 void NaiveBayes::addTrainingSet(
@@ -22,7 +46,7 @@ void NaiveBayes::addTrainingSet(
 	uint numSamples = trainingSet.size();
 	numFeatures = trainingSet[0].size();
 	averages.resize(numFeatures, 0);
-	variances.resize(numFeatures, 0);
+	invVar.resize(numFeatures, 0);
 
 	for(uint i = 0; i < numSamples; i++) {
 		std::vector<double> currentSample = trainingSet[i];
@@ -38,35 +62,47 @@ void NaiveBayes::addTrainingSet(
 	for(uint i = 0; i < trainingSet.size(); i++) {
 		std::vector<double> currentSample = trainingSet[i];
 		for(uint j = 0; j < numFeatures; j++) {
-			variances[j] += pow(currentSample[j] - averages[j], 2);
+			invVar[j] += pow(currentSample[j] - averages[j], 2);
 		} // this should be vectorized
 	}
 
 	for(uint j = 0; j < numFeatures; j++) {
-		variances[j] /= numSamples;
+		invVar[j] = numSamples / invVar[j];
 	} // this should be vectorized
 
 	std::cout << "Initialized naive bayes with " << std::endl;
 	for(uint j = 0; j < numFeatures; j++) {
-		std::cout << averages[j] << " (" << sqrt(variances[j]) << "), ";
+		std::cout << averages[j] << " (" << sqrt(invVar[j]) << "), ";
 	}
 	std::cout << std::endl;
+
+	initialized = true;
 }
 
-std::vector<double> NaiveBayes::calculateLogProbFeatures(
+double NaiveBayes::calculateProbFeatures(
 		std::vector<double>& features) {
-	//only one cell type is supported for now
-	std::vector<double> probList(1, 0);
+	double pr = 0;
 
 	if(features.size() == numFeatures) {
-		double pr = 0;
 		for(uint i = 0; i < numFeatures; i++) {
-			pr += pow(features[i] - averages[i], 2) / (2*variances[i]);
+			pr *= exp( - pow(features[i] - averages[i], 2) * (0.5*invVar[i])) / sqrt(2*PI/invVar[i]);
 		}
-		probList[0] = pr;
 	}
 
-	return probList;
+	return pr;
+}
+
+double NaiveBayes::calculateLogProbFeatures(
+		std::vector<double>& features) {
+	double pr = 0;
+
+	if(features.size() == numFeatures) {
+		for(uint i = 0; i < numFeatures; i++) {
+			pr += pow(features[i] - averages[i], 2) * (0.5*invVar[i]);
+		}
+	}
+
+	return pr;
 }
 
 bool NaiveBayes::classifyCell(std::vector<double>& probs) {

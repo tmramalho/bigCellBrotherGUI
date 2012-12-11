@@ -15,7 +15,7 @@ class CellClassifier {
 public:
 	CellClassifier();
 	virtual ~CellClassifier();
-	virtual std::vector<double> calculateLogProbFeatures(std::vector<double>& features);
+	virtual double calculateLogProbFeatures(std::vector<double>& features);
 	virtual bool classifyCell(std::vector<double>& probs);
 
 	double getHeight() const;
