@@ -19,9 +19,6 @@ public:
 	
 private:
 	Ui::ListClassifier *ui;
-
-public slots:
-	void cellFeaturesAccepted(CellCont selectedCell);
 };
 
 #endif // DIALOG_H

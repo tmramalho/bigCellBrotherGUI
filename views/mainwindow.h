@@ -39,6 +39,9 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+signals:
+	void currentFrameChanged(int);
     
 private slots:
 	void openImage();

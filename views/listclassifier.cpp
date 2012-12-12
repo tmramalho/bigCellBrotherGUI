@@ -18,8 +18,3 @@ void ListClassifier::bindToOp(CreateClassifier *cc)
 	QObject::connect(ui->goodCells, SIGNAL(pressed()), cc, SLOT(setGoodMode()));
 	QObject::connect(ui->badCells,  SIGNAL(pressed()), cc, SLOT(setBadMode()));
 }
-
-void ListClassifier::cellFeaturesAccepted(CellCont selectedCell)
-{
-	//selectedCell.printCellInfo();
-}

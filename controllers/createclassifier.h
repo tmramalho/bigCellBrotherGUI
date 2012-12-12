@@ -22,15 +22,15 @@ public:
 	void createPreview();
 
 public slots:
+	void frameChanged(int fr);
 	void cellPicked(int i, int j, int bt);
 	void setGoodMode();
 	void setBadMode();
 
-signals:
-	void cellFeaturesFound(CellCont);
-
 private:
 	bool mode;
+	int currentFrame;
+	std::map<int, std::set<int> > rejectedLabelsbyFrame;
 
 };
 

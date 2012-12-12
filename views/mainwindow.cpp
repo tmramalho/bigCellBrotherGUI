@@ -89,7 +89,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	cc = new CreateClassifier;
 	cc->controller = opCtr;
 	QObject::connect(imageLabel, SIGNAL(labelChanged(int, int, int)), cc, SLOT(cellPicked(int, int, int)));
-	QObject::connect(cc, SIGNAL(cellFeaturesFound(CellCont)), ls, SLOT(cellFeaturesAccepted(CellCont)));
+	QObject::connect(this, SIGNAL(currentFrameChanged(int)), cc, SLOT(frameChanged(int)));
 	ls->bindToOp(cc);
 	opCtr->operationPipeline.push_back(cc);
 
@@ -294,6 +294,7 @@ void MainWindow::on_framePicker_valueChanged(int value)
 	opCtr->updateSelectedOperationPreview(-1);
 	currentFrame = value;
 	updateFrameNumberDisplay();
+	emit currentFrameChanged(value);
 }
 
 void MainWindow::updatePreview(QImage imagePreview)
