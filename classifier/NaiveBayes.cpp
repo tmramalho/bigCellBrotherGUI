@@ -20,17 +20,17 @@ void NaiveBayes::addTrainingSample(std::vector<double> features) {
 		averages = features;
 		invVar.resize(numFeatures, 0);
 		for(uint j = 0; j < numFeatures; j++) {
-			invVar[j] = 1/pow(0.5*averages[j],2); //50% initial error
+			invVar[j] = 1/pow(averages[j],2); //100% initial error
 		}
 		initialized = true;
 		numUsedSamples = 1;
 	} else {
-		double pr = calculateProbFeatures(features);
-		double eta = 1/(double)numUsedSamples;
+		double eta = (numUsedSamples < 100) ? 0.01 : 1/(double)numUsedSamples;
 		for(uint j = 0; j < numFeatures; j++) {
-			averages[j] += eta*pr*(features[j] - averages[j]);
-			invVar[j] += eta*pr*(invVar[j] - pow((features[j] - averages[j])*invVar[j], 2));
+			averages[j] += eta*(features[j] - averages[j]);
+			invVar[j] += eta*(invVar[j] - pow((features[j] - averages[j])*invVar[j], 2));
 		}
+
 		numUsedSamples ++;
 	}
 

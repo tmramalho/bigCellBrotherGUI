@@ -154,12 +154,41 @@ void PictureVis::drawRotatedRect(cv::Mat& mask, cv::RotatedRect& box) {
 
 }
 
+cv::Mat PictureVis::drawClassyMarkersOnPicture(cv::Mat& targetPicture,
+		cv::Mat& markers, std::set<int> rejectedLabels) {
+	cv::Mat targetColorPicture;
+	cv::Mat colorMarkers(targetPicture.rows, targetPicture.cols, CV_8UC3);
+	double max;
+	cv::minMaxLoc(markers, NULL, &max);
+	vector<cv::Vec3b> colorTab = getRandomColorTab((int)max + 1);
+
+	cv::cvtColor(targetPicture, targetColorPicture, CV_GRAY2BGR);
+
+	for( int i = 0; i < markers.rows; i++ )
+		for( int j = 0; j < markers.cols; j++ )
+		{
+			int idx = markers.at<int>(i,j);
+			if( idx == -1 )
+				colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(WHITE, WHITE, WHITE);
+			else if( idx == 1 )
+				colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, BLACK, BLACK);
+			else if(rejectedLabels.count(idx) > 0) //red
+				colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, BLACK, WHITE);
+			else //green
+				colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, WHITE, BLACK);
+		}
+
+	cv::Mat result = colorMarkers * 0.5 + targetColorPicture * 0.5;
+	return result;
+}
+
 vector<cv::Vec3b> PictureVis::getRandomColorTab(int numComp) {
 	vector<cv::Vec3b> colorTab;
 	for( int i = 0; i < numComp; i++ ) {
-		int b = cv::theRNG().uniform(BLACK, WHITE);
-		int g = cv::theRNG().uniform(BLACK, WHITE);
-		int r = cv::theRNG().uniform(BLACK, WHITE);
+		//start at 100 to make sure colors are bright
+		int b = cv::theRNG().uniform(100, WHITE);
+		int g = cv::theRNG().uniform(100, WHITE);
+		int r = cv::theRNG().uniform(100, WHITE);
 
 		colorTab.push_back(cv::Vec3b((uchar)b, (uchar)g, (uchar)r));
 	}
