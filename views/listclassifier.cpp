@@ -17,4 +17,5 @@ void ListClassifier::bindToOp(CreateClassifier *cc)
 {
 	QObject::connect(ui->goodCells, SIGNAL(pressed()), cc, SLOT(setGoodMode()));
 	QObject::connect(ui->badCells,  SIGNAL(pressed()), cc, SLOT(setBadMode()));
+	QObject::connect(ui->train, SIGNAL(pressed()), cc, SLOT(applyTrainingSet()));
 }

@@ -54,7 +54,7 @@
       </widget>
      </item>
      <item row="5" column="0" colspan="2">
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="train">
        <property name="text">
         <string>Train classifier with these cells</string>
        </property>
