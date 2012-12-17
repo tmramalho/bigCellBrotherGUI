@@ -155,7 +155,7 @@ void PictureVis::drawRotatedRect(cv::Mat& mask, cv::RotatedRect& box) {
 }
 
 cv::Mat PictureVis::drawClassyMarkersOnPicture(cv::Mat& targetPicture,
-		cv::Mat& markers, std::set<int> rejectedLabels) {
+		cv::Mat& markers, std::set<int> rejectedLabels, std::set<int> detectedLabels) {
 	cv::Mat targetColorPicture;
 	cv::Mat colorMarkers(targetPicture.rows, targetPicture.cols, CV_8UC3);
 	double max;
@@ -174,6 +174,8 @@ cv::Mat PictureVis::drawClassyMarkersOnPicture(cv::Mat& targetPicture,
 				colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, BLACK, BLACK);
 			else if(rejectedLabels.count(idx) > 0) //red
 				colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, BLACK, WHITE);
+			else if(detectedLabels.count(idx) > 0) //yellow
+				colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, WHITE, WHITE);
 			else //green
 				colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, WHITE, BLACK);
 		}

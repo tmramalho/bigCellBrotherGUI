@@ -28,6 +28,7 @@ public:
 	void setProbThreshold(double probThreshold);
 
 private:
+	void initializeSamples(std::vector< std::vector<double> >& trainingSet);
 	std::vector<double> averages;
 	std::vector<double> invVar;
 	double probThreshold;

@@ -25,7 +25,8 @@ public:
 	virtual ~PictureVis();
 	static cv::Mat drawMarkers(const markersCont &mc);
 	static cv::Mat drawMarkersOnPicture(cv::Mat& targetPicture, cv::Mat& markers);
-	static cv::Mat drawClassyMarkersOnPicture(cv::Mat& targetPicture, cv::Mat& markers, std::set<int> rejectedLabels);
+	static cv::Mat drawClassyMarkersOnPicture(cv::Mat& targetPicture, cv::Mat& markers,
+			std::set<int> rejectedLabels, std::set<int> detectedLabels);
 	static cv::Mat drawCellsOnPicture(cv::Mat& targetPicture, cv::Mat& markers,
 			std::vector<std::vector<CellCont> > &allCells, int frameNum);
 	static void drawRotatedRect(cv::Mat &mask, vector<cv::RotatedRect> &boxes);

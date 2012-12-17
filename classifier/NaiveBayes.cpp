@@ -8,7 +8,10 @@
 #include "NaiveBayes.h"
 
 NaiveBayes::NaiveBayes() {
+	probThreshold = 1000;
 	initialized = false;
+	numUsedSamples = 0;
+	numFeatures = 0;
 }
 
 NaiveBayes::~NaiveBayes() {
@@ -33,6 +36,18 @@ void NaiveBayes::addTrainingSample(std::vector<double> features) {
 
 		numUsedSamples ++;
 	}
+}
+
+void NaiveBayes::addTrainingSet(
+		std::vector<std::vector<double> >& trainingSet) {
+	if(!initialized) {
+		initializeSamples(trainingSet);
+	} else {
+		for(std::vector<std::vector<double> >::iterator it = trainingSet.begin();
+				it != trainingSet.end(); it++) {
+			addTrainingSample(*it);
+		}
+	}
 
 	std::cout << "UNB ";
 	for(uint j = 0; j < numFeatures; j++) {
@@ -41,7 +56,7 @@ void NaiveBayes::addTrainingSample(std::vector<double> features) {
 	std::cout << std::endl;
 }
 
-void NaiveBayes::addTrainingSet(
+void NaiveBayes::initializeSamples(
 		std::vector<std::vector<double> >& trainingSet) {
 	uint numSamples = trainingSet.size();
 	numFeatures = trainingSet[0].size();
@@ -70,12 +85,7 @@ void NaiveBayes::addTrainingSet(
 		invVar[j] = numSamples / invVar[j];
 	} // this should be vectorized
 
-	std::cout << "Initialized naive bayes with " << std::endl;
-	for(uint j = 0; j < numFeatures; j++) {
-		std::cout << averages[j] << " (" << sqrt(invVar[j]) << "), ";
-	}
-	std::cout << std::endl;
-
+	numUsedSamples = numSamples;
 	initialized = true;
 }
 
@@ -105,9 +115,12 @@ double NaiveBayes::calculateLogProbFeatures(
 	return pr;
 }
 
-bool NaiveBayes::classifyCell(std::vector<double>& probs) {
-	//only one cell type!
-	return probs.at(0) < this->probThreshold;
+bool NaiveBayes::classifyCell(std::vector<double>& features) {
+	if(!initialized) return true;
+	double pr = calculateProbFeatures(features);
+	//prob being cell > prob NOT being cell
+	if(pr > 1-pr) return true;
+	else return false;
 }
 
 double NaiveBayes::getProbThreshold() const {
