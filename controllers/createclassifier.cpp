@@ -1,4 +1,5 @@
 #include "createclassifier.h"
+#include "operationscontroller.h"
 
 CreateClassifier::CreateClassifier()
 {
@@ -21,14 +22,15 @@ void CreateClassifier::execute()
 			controller->is.deleteMarker(i);
 			continue;
 		}
-		cv::compare(markers, i, currentLabelMask, cv::CMP_EQ);
+		/* decider still needs work
+		 *cv::compare(markers, i, currentLabelMask, cv::CMP_EQ);
 		if(ImageProcessor::checkIfEmpty(currentLabelMask)) continue;
 		CellCont selectedCell = CellCont::determineLabelProperties(currentLabelMask, markers, i);
 		std::vector<double> probs = selectedCell.getFeatures();
 		if(!controller->decider->classifyCell(probs)) {
 			controller->is.deleteMarker(i);
 			currentDetectedLabels.insert(i);
-		}
+		}*/
 	}
 	controller->setPipelineImage(6, classifiedMarkers);
 }
@@ -37,8 +39,8 @@ void CreateClassifier::createPreview()
 {
 	cv::Mat original = controller->getPipelineImage(2);
 	cv::Mat markers = controller->getPipelineImage(5);
-	std::set<int> &currentRejectedLabels = rejectedLabelsbyFrame[currentFrame];
-	std::set<int> &currentDetectedLabels = detectedLabelsbyFrame[currentFrame];
+	std::set<int> currentRejectedLabels = rejectedLabelsbyFrame[currentFrame];
+	std::set<int> currentDetectedLabels = detectedLabelsbyFrame[currentFrame];
 	cv::Mat preview = PictureVis::drawClassyMarkersOnPicture(original, markers, currentRejectedLabels, currentDetectedLabels);
 	controller->setPreview(preview);
 }
@@ -68,7 +70,7 @@ void CreateClassifier::cellPicked(int i, int j, int bt)
 		currentRejectedLabels.insert(label);
 	}
 
-	this->createPreview();
+	this->showPreview();
 }
 
 void CreateClassifier::setGoodMode() {

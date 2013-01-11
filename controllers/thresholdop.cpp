@@ -1,4 +1,5 @@
 #include "thresholdop.h"
+#include "operationscontroller.h"
 
 ThresholdOp::ThresholdOp()
 {

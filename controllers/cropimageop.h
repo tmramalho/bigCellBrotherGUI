@@ -19,6 +19,8 @@ public:
 	void createPreview();
 	void showPreview();
 
+	cv::Mat cropExternalImage(cv::Mat &image);
+
 public slots:
 
 	void updateXBegin(int pos);

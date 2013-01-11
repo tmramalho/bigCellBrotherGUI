@@ -1,4 +1,5 @@
 #include "cropimageop.h"
+#include "operationscontroller.h"
 
 CropImageOp::CropImageOp()
 {
@@ -49,4 +50,18 @@ void CropImageOp::updateYEnd(int pos)
 {
 	ye = pos;
 	perform();
+}
+
+
+cv::Mat CropImageOp::cropExternalImage(cv::Mat &image)
+{
+	cv::Rect roi;
+	roi.x = xb;
+	roi.y = yb;
+	roi.width = xe - xb;
+	roi.height = ye - yb;
+	cv::Mat next = image(roi);
+	cv::Mat result;
+	next.copyTo(result);
+	return result;
 }

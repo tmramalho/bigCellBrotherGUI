@@ -13,7 +13,7 @@ class VideoProcessor;
 class VideoProcessor : public QDialog
 {
 	Q_OBJECT
-	
+
 public:
 	explicit VideoProcessor(QWidget *parent = 0);
 	void setExecutor(ExecuteSequence *esP);
@@ -21,7 +21,7 @@ public:
 
 public slots:
 	void incrementProgress(int c);
-	
+
 private slots:
 	void on_pickDOT_clicked();
 

@@ -11,12 +11,12 @@ class CreateMarkers;
 class CreateMarkers : public QDialog
 {
 	Q_OBJECT
-	
+
 public:
 	explicit CreateMarkers(QWidget *parent = 0);
 	~CreateMarkers();
 	void bindToOp(CreateMarkersOp *co);
-	
+
 private:
 	Ui::CreateMarkers *ui;
 };

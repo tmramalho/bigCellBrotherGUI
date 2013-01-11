@@ -1,4 +1,5 @@
 #include "operation.h"
+#include "operationscontroller.h"
 
 Operation::Operation()
 {

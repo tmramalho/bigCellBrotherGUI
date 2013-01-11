@@ -37,10 +37,12 @@ void ExecuteSequence::run()
 		lab.setMarkersPic(currentMarkers);
 		if(haveFluorescence) {
 			cv::Mat fluor = ffs->grabFrameNumber(i);
-			lab.setFluorescencePic(fluor);
+			cv::Mat croppedFluor = ops ->cropImage(fluor);
+			lab.setFluorescencePic(croppedFluor);
 		}
 		lab.processLabels(i);
 		lab.setPreviousMarkersPic(currentMarkers);
+		std::cout << "FRAME" << i << std::endl;
 		emit incrementProgress((i+1)*100/maxFrames);
 	}
 

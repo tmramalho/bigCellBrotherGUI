@@ -7,7 +7,6 @@
 #include <QObject>
 #include <QImage>
 #include <QDialog>
-#include "operation.h"
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -22,7 +21,7 @@ class OperationsController : public QObject
 	Q_OBJECT
 
 public:
-    OperationsController();
+	OperationsController();
 	~OperationsController();
 
 	void resetPipeline(cv::Mat initialFrame);
@@ -34,6 +33,7 @@ public:
 	void showSelectedPreview(cv::Mat result);
 	void updateSelectedOperationPreview(int op);
 	cv::Mat getPreviewForOperation(int op);
+	cv::Mat cropImage(cv::Mat &image);
 
 	void setPipelineImage(int i, cv::Mat result) { pipelineImages[i] = result; }
 	cv::Mat getPipelineImage(int i) { return pipelineImages[i]; }

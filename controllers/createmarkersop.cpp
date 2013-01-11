@@ -1,4 +1,5 @@
 #include "createmarkersop.h"
+#include "operationscontroller.h"
 
 CreateMarkersOp::CreateMarkersOp()
 {

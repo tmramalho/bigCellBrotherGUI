@@ -18,3 +18,8 @@ unix:!symbian|win32: LIBS += -L$$PWD/../bigCellBrother/Library/ -lbigCellBrother
 
 INCLUDEPATH += $$PWD/../bigCellBrother
 DEPENDPATH += $$PWD/../bigCellBrother
+
+macx: LIBS += -L$$PWD/../../../../../opt/local/lib/ -lopencv_core -lopencv_highgui -lopencv_imgproc
+
+INCLUDEPATH += $$PWD/../../../../../opt/local/include
+DEPENDPATH += $$PWD/../../../../../opt/local/include

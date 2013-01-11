@@ -45,7 +45,7 @@ void VideoProcessor::on_pickCSV_clicked()
 	QByteArray ba = filename.toLocal8Bit();
 	const char *c_str = ba.data();
 	const std::string filenameString(c_str);
-	ui->dotFileLabel->setText(tr("CSV file %1").arg(filename));
+	ui->csvFileLabel->setText(tr("CSV file %1").arg(filename));
 	es->setCsvFilename(filenameString);
 }
 
@@ -63,6 +63,6 @@ void VideoProcessor::on_pickAVI_clicked()
 	QByteArray ba = filename.toLocal8Bit();
 	const char *c_str = ba.data();
 	const std::string filenameString(c_str);
-	ui->dotFileLabel->setText(tr("Video file %1").arg(filename));
+	ui->videoFileLabel->setText(tr("Video file %1").arg(filename));
 	es->setAviFilename(filenameString);
 }

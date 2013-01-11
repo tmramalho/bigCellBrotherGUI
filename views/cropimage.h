@@ -14,7 +14,7 @@ class CropImage;
 class CropImage : public QDialog
 {
 	Q_OBJECT
-	
+
 public:
 	explicit CropImage(QWidget *parent = 0);
 	~CropImage();

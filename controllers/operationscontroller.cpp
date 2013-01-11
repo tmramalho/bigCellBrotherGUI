@@ -1,4 +1,7 @@
 #include "operationscontroller.h"
+#include "operation.h"
+#include "cropimageop.h"
+#include "improveimageop.h"
 
 OperationsController::OperationsController()
 {
@@ -35,7 +38,7 @@ void OperationsController::setupPipeline(cv::Mat initialFrame)
 cv::Mat OperationsController::runFullPipeline()
 {
 	runPipelineUntil(operationPipeline.size()-1);
-	return pipelineImages[5];
+	return pipelineImages[6];
 }
 
 void OperationsController::setPreview(cv::Mat result)
@@ -80,6 +83,15 @@ cv::Mat OperationsController::getPreviewForOperation(int op)
 	int pos = op + 1;
 	if(op < -2) pos = operationPipeline.size() - 1;
 	return pipelineVisualization[pos];
+}
+
+cv::Mat OperationsController::cropImage(cv::Mat &image)
+{
+	CropImageOp* cropOp = (CropImageOp*)(operationPipeline[0]);
+	cv::Mat croppedImage = cropOp->cropExternalImage(image);
+	ImproveImageOp *iiOp = (ImproveImageOp*)(operationPipeline[1]);
+	croppedImage = iiOp->pumpImage(croppedImage);
+	return croppedImage;
 }
 
 void OperationsController::runPipelineUntil(int op)

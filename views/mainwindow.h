@@ -34,15 +34,15 @@ class MainWindow;
 
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+	explicit MainWindow(QWidget *parent = 0);
+	~MainWindow();
 
 signals:
 	void currentFrameChanged(int);
-    
+
 private slots:
 	void openImage();
 	void openImageFluorescent();
@@ -66,7 +66,7 @@ private:
 	void updateFrameNumberDisplay();
 
 private:
-    Ui::MainWindow *ui;
+	Ui::MainWindow *ui;
 	double scaleFactor;
 	FileContainer *videoBox;
 	FileContainer *videoBoxFluorescence;

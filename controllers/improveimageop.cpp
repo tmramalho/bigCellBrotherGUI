@@ -1,4 +1,5 @@
 #include "improveimageop.h"
+#include "operationscontroller.h"
 
 ImproveImageOp::ImproveImageOp()
 {
@@ -55,4 +56,20 @@ void ImproveImageOp::updateDoubleRes(int dr)
 {
 	doubleRes = dr;
 	perform();
+}
+
+
+cv::Mat ImproveImageOp::pumpImage(cv::Mat &image)
+{
+	cv::Mat imgPump;
+
+	if(doubleRes == 0) {
+		imgPump = image;
+	} if(doubleRes == 1) {
+		cv::resize(image, imgPump, cv::Size(), 2, 2, cv::INTER_CUBIC);
+	} else if(doubleRes == 2) {
+		cv::resize(image, imgPump, cv::Size(), 4, 4, cv::INTER_CUBIC);
+	}
+
+	return imgPump;
 }

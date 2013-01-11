@@ -1,4 +1,5 @@
 #include "watershedop.h"
+#include "operationscontroller.h"
 
 WatershedOp::WatershedOp()
 {

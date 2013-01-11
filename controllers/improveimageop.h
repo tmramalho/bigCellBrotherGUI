@@ -18,6 +18,8 @@ public:
 	void createPreview();
 	void showPreview();
 
+	cv::Mat pumpImage(cv::Mat &image);
+
 public slots:
 	void updateSmoothing(int sm);
 	void updateContrast(int ct);
