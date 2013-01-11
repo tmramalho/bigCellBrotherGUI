@@ -32,9 +32,9 @@ private:
 	std::vector<double> averages;
 	std::vector<double> invVar;
 	double probThreshold;
-	uint numFeatures;
+	unsigned int numFeatures;
 	double initialized;
-	uint numUsedSamples;
+	unsigned int numUsedSamples;
 };
 
 #endif /* NAIVEBAYES_H_ */

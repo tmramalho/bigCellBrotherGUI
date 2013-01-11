@@ -71,7 +71,7 @@ void ImageSegmentor::createMarkersIterative(cv::Mat& origImage, int maxHeight,
 	cv::findContours(targets, ctours, hrchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
 
 	int nc = 0;
-	for( uint i = 0; i< ctours.size(); i++ ) {
+	for( unsigned int i = 0; i< ctours.size(); i++ ) {
 		if(hrchy[i][3] != -1) continue; //it's a hole!
 		nc++;
 		cv::drawContours(markers, ctours, i, cv::Scalar::all(nc+1), -1, 8, hrchy, INT_MAX);
@@ -95,7 +95,7 @@ void ImageSegmentor::createMarkers(cv::Mat& targetBlobs, int maxHeight, int maxW
 	cv::findContours(contourSourceImage, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
 	cv::Mat laplace = ImageProcessor::laplacian(originalImage, 27);
 
-	for( uint i = 0; i< contours.size(); i++ ) {
+	for( unsigned int i = 0; i< contours.size(); i++ ) {
 		if(hierarchy[i][3] != -1) continue; //it's a hole!
 		this->breakLargeContours(tempStorage, laplace, contours, hierarchy, i, maxHeight, maxWidth);
 		cv::bitwise_or(finalStorage, tempStorage, finalStorage);
@@ -104,7 +104,7 @@ void ImageSegmentor::createMarkers(cv::Mat& targetBlobs, int maxHeight, int maxW
 	cv::findContours(finalStorage, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE);
 
 	int nc = 0;
-	for( uint i = 0; i< contours.size(); i++ ) {
+	for( unsigned int i = 0; i< contours.size(); i++ ) {
 		if(hierarchy[i][3] != -1) continue; //it's a hole!
 		contourList.push_back(i);
 		nc++;

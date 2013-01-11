@@ -129,7 +129,7 @@ CellCont CellCont::determineLabelProperties(cv::Mat &currentLabelMask, cv::Mat &
 	cv::Moments mom = cv::moments(ctours[0]);
 	cv::HuMoments(mom, &features[4]);
 
-	for(uint n = 4; n < 11; n++)
+	for(unsigned int n = 4; n < 11; n++)
 		features[n] = features[n]*1e6;
 
 	bool isCell = true;
@@ -184,8 +184,12 @@ void CellCont::calcFluorescence(CellCont& target, cv::Mat &currentLabelMask,
 	cv::integral(maskFlPic,result);
 	double integral = result.at<double>(result.rows-1, result.cols-1);
 	target.setFluorescence(integral);
-
-
+	/*cv::imshow("FL cropped",maskFlPic);
+	cv::imshow("FL full",fluorescencePic);
+	cv::imshow("Mask cropped",trimLabelMask);
+	cv::imshow("Mask full",currentLabelMask);
+	cv::waitKey(0);
+	*/
 }
 
 std::set<int> CellCont::findNearestNeigbors(cv::Rect &bbox,

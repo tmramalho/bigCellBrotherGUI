@@ -22,14 +22,14 @@ void NaiveBayes::addTrainingSample(std::vector<double> features) {
 	if(initialized == false) {
 		averages = features;
 		invVar.resize(numFeatures, 0);
-		for(uint j = 0; j < numFeatures; j++) {
+		for(unsigned int j = 0; j < numFeatures; j++) {
 			invVar[j] = 1/pow(averages[j],2); //100% initial error
 		}
 		initialized = true;
 		numUsedSamples = 1;
 	} else {
 		double eta = (numUsedSamples < 100) ? 0.01 : 1/(double)numUsedSamples;
-		for(uint j = 0; j < numFeatures; j++) {
+		for(unsigned int j = 0; j < numFeatures; j++) {
 			averages[j] += eta*(features[j] - averages[j]);
 			invVar[j] += eta*(invVar[j] - pow((features[j] - averages[j])*invVar[j], 2));
 		}
@@ -50,7 +50,7 @@ void NaiveBayes::addTrainingSet(
 	}
 
 	std::cout << "UNB ";
-	for(uint j = 0; j < numFeatures; j++) {
+	for(unsigned int j = 0; j < numFeatures; j++) {
 		std::cout << averages[j] << " (" << invVar[j] << ", " << sqrt(1/invVar[j]) << "), ";
 	}
 	std::cout << std::endl;
@@ -58,30 +58,30 @@ void NaiveBayes::addTrainingSet(
 
 void NaiveBayes::initializeSamples(
 		std::vector<std::vector<double> >& trainingSet) {
-	uint numSamples = trainingSet.size();
+	unsigned int numSamples = trainingSet.size();
 	numFeatures = trainingSet[0].size();
 	averages.resize(numFeatures, 0);
 	invVar.resize(numFeatures, 0);
 
-	for(uint i = 0; i < numSamples; i++) {
+	for(unsigned int i = 0; i < numSamples; i++) {
 		std::vector<double> currentSample = trainingSet[i];
-		for(uint j = 0; j < numFeatures; j++) {
+		for(unsigned int j = 0; j < numFeatures; j++) {
 			averages[j] += currentSample[j];
 		} // this should be vectorized
 	}
 
-	for(uint j = 0; j < numFeatures; j++) {
+	for(unsigned int j = 0; j < numFeatures; j++) {
 		averages[j] /= numSamples;
 	} // this should be vectorized
 
-	for(uint i = 0; i < trainingSet.size(); i++) {
+	for(unsigned int i = 0; i < trainingSet.size(); i++) {
 		std::vector<double> currentSample = trainingSet[i];
-		for(uint j = 0; j < numFeatures; j++) {
+		for(unsigned int j = 0; j < numFeatures; j++) {
 			invVar[j] += pow(currentSample[j] - averages[j], 2);
 		} // this should be vectorized
 	}
 
-	for(uint j = 0; j < numFeatures; j++) {
+	for(unsigned int j = 0; j < numFeatures; j++) {
 		invVar[j] = numSamples / invVar[j];
 	} // this should be vectorized
 
@@ -94,7 +94,7 @@ double NaiveBayes::calculateProbFeatures(
 	double pr = 0;
 
 	if(features.size() == numFeatures) {
-		for(uint i = 0; i < numFeatures; i++) {
+		for(unsigned int i = 0; i < numFeatures; i++) {
 			pr *= exp( - pow(features[i] - averages[i], 2) * (0.5*invVar[i])) / sqrt(2*PI/invVar[i]);
 		}
 	}
@@ -107,7 +107,7 @@ double NaiveBayes::calculateLogProbFeatures(
 	double pr = 0;
 
 	if(features.size() == numFeatures) {
-		for(uint i = 0; i < numFeatures; i++) {
+		for(unsigned int i = 0; i < numFeatures; i++) {
 			pr += pow(features[i] - averages[i], 2) * (0.5*invVar[i]);
 		}
 	}

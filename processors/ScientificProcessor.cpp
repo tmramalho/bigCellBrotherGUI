@@ -33,6 +33,7 @@ void ScientificProcessor::processLabels(int t) {
 		if(ImageProcessor::checkIfEmpty(currentLabelMask)) continue;
 		CellCont newCell = CellCont::determineLabelProperties(currentLabelMask, markersPic, i);
 		newCell.setTime(t);
+		//std::cout << "Looking at cell " << i << std::endl;
 		if(useFluor) CellCont::calcFluorescence(newCell, currentLabelMask, fluorescencePic);
 		if(!firstFrame) {
 			int parent = calculateMaxOverlap(newCell, currentLabelMask, labels);
@@ -47,10 +48,10 @@ void ScientificProcessor::processLabels(int t) {
 }
 
 void ScientificProcessor::printStatistics() {
-	for(uint i = 0; i < allCells.size(); i++) {
+	for(unsigned int i = 0; i < allCells.size(); i++) {
 		std::vector<CellCont> currCells = allCells[i];
 		std::cout << "There are " << currCells.size() << " cells here." << std::endl;
-		for(uint j = 0; j < currCells.size(); j++) {
+		for(unsigned int j = 0; j < currCells.size(); j++) {
 			if(currCells[j].getPrevLabel() == -1) std::cout << "new cell " << std::endl;
 			else {
 				std::cout << "daughter of " << currCells[j].getPrevLabel();
@@ -63,14 +64,14 @@ void ScientificProcessor::createDotFile(std::string filename) {
 	std::fstream filestr(filename.c_str(), std::fstream::trunc | std::fstream::out);
 
 	filestr << "digraph test {" << std::endl;
-	for(uint i = 0; i < allCells.size(); i++) {
+	for(unsigned int i = 0; i < allCells.size(); i++) {
 		std::vector<CellCont> currCells = allCells[i];
 		filestr << "{rank=same; ";
-		for(uint j = 0; j < currCells.size(); j++) {
+		for(unsigned int j = 0; j < currCells.size(); j++) {
 			filestr << "nodet" << i << "L" << currCells[j].getCurLabel() << " ";
 		}
 		filestr << "}" << std::endl;
-		for(uint j = 0; j < currCells.size(); j++) {
+		for(unsigned int j = 0; j < currCells.size(); j++) {
 			if(currCells[j].getPrevLabel() != -1) {
 				//parent
 				filestr << "nodet" << i-1 << "L" << currCells[j].getPrevLabel() << "->";
@@ -86,9 +87,9 @@ void ScientificProcessor::createDotFile(std::string filename) {
 void ScientificProcessor::createCsvFile(std::string filename) {
 	std::fstream filestr(filename.c_str(), std::fstream::trunc | std::fstream::out);
 	filestr << "t, label, cx, cy, h, w, area, fl" << std::endl;
-	for(uint i = 0; i < allCells.size(); i++) {
+	for(unsigned int i = 0; i < allCells.size(); i++) {
 		std::vector<CellCont> currCells = allCells[i];
-		for(uint j = 0; j < currCells.size(); j++) {
+		for(unsigned int j = 0; j < currCells.size(); j++) {
 			filestr << i << ", " << currCells[j].getCurLabel() << ", ";
 			cv::Point2f center = currCells[j].getCenter();
 			filestr << center.x << ", " << center.y << ", ";
@@ -106,6 +107,11 @@ cv::Mat ScientificProcessor::getFluorescencePic() const {
 }
 
 void ScientificProcessor::setFluorescencePic(cv::Mat fluorescencePic) {
+	if(fluorescencePic.rows != markersPic.rows || fluorescencePic.cols != markersPic.cols) {
+		std::cerr << "The fluorescence pic is wrong" << std::endl;
+		std::cerr << fluorescencePic.rows << ", " << fluorescencePic.cols << std::endl;
+		std::cerr << markersPic.rows << ", " << markersPic.cols << std::endl;
+	}
 	fluorescencePic.convertTo(this->fluorescencePic, CV_64F, 1, 0);
 }
 
