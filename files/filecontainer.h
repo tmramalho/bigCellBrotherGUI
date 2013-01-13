@@ -13,6 +13,7 @@ public:
 	FileContainer();
 	virtual void openFile(std::string filename)=0;
 	virtual cv::Mat grabFrameNumber(int frameNum)=0;
+	virtual ~FileContainer();
 
 	bool isLoaded() { return loaded; }
 	int getNumFrames() { return numFrames; }

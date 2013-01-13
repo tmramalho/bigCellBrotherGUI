@@ -45,6 +45,7 @@ void ScientificProcessor::processLabels(int t) {
 	if (firstFrame) { firstFrame = false; }
 
 	allCells.push_back(cellVector);
+	std::cout << cellVector.size() << std::endl;
 }
 
 void ScientificProcessor::printStatistics() {

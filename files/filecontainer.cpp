@@ -3,3 +3,6 @@
 FileContainer::FileContainer()
 {
 }
+
+FileContainer::~FileContainer() {
+}

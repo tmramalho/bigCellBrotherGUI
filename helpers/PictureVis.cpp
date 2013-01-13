@@ -96,19 +96,19 @@ cv::Mat PictureVis::drawCellsOnPicture(cv::Mat& targetPicture, cv::Mat& markers,
 	std::vector<CellCont> prevCellVector;
 	if(frameNum > 0) prevCellVector = allCells[frameNum-1];
 	int i = 0;
-	char buf[512];
+	//char buf[512];
 
 	for(std::vector<CellCont>::iterator it = cellVector.begin();
 		it != cellVector.end(); it++) {
-		cv::Scalar colorScalar = cv::Scalar(colorTab[i - 1]);
+		/*cv::Scalar colorScalar = cv::Scalar(colorTab[i - 1]);
 		cv::Rect bbox = it->getBoundBox();
-		//sprintf(buf, "%d", it->getCurLabel());
-		//cv::putText(target, buf, cv::Point(bbox.x, bbox.y - 10), cv::FONT_HERSHEY_SIMPLEX, 0.5, colorScalar);
+		sprintf(buf, "%d", it->getCurLabel());
+		cv::putText(target, buf, cv::Point(bbox.x, bbox.y - 10), cv::FONT_HERSHEY_SIMPLEX, 0.5, colorScalar);
 		double fluorescence = it->getFluorescence();
 		if(fluorescence > 0) {
 			sprintf(buf, "%f", fluorescence);
 			cv::putText(target, buf, cv::Point(bbox.x, bbox.y + bbox.width), cv::FONT_HERSHEY_SIMPLEX, 0.5, colorScalar);
-		}
+		}*/
 		int parentLabel = it->getPrevLabel();
 		if(parentLabel > 0 && frameNum > 0) {
 			for(std::vector<CellCont>::iterator jt = prevCellVector.begin();
