@@ -14,9 +14,11 @@ public:
 
 	virtual void execute()=0;
 	virtual void createPreview()=0;
+	virtual void updateParameters()=0;
 	void showPreview();
 	void perform();
 
+protected:
 	OperationsController *controller;
 };
 

@@ -1,27 +1,28 @@
 #include "thresholdop.h"
 #include "operationscontroller.h"
 
-ThresholdOp::ThresholdOp()
+ThresholdOp::ThresholdOp(OperationsController *_controller)
 {
-	threshold = 0;
-	window = 9;
-	smooth = 7;
-	invert = true;
-	thresholdTH = 2;
-	invertTH = false;
-	thresholdBG = 0;
-	smoothBG = 3;
-	invertBG = false;
+	controller = _controller;
+	updateParameters();
+}
+
+void ThresholdOp::updateParameters() {
+
+	threshold = controller->getPM()->getNamedParameter("tto");
+	window = controller->getPM()->getNamedParameter("ttw");
+	thresholdTH = controller->getPM()->getNamedParameter("ttt");
+	thresholdBG = controller->getPM()->getNamedParameter("ttb");
 }
 
 void ThresholdOp::execute()
 {
 	cv::Mat prev = controller->getPipelineImage(2);
-	cv::Mat thImage = ImageProcessor::adaptiveThreshold(prev, threshold, window, invert);
+	cv::Mat thImage = ImageProcessor::adaptiveThreshold(prev, threshold, window, true);
 	thImage = ImageProcessor::invertImage(thImage);
-	thImage = ImageProcessor::erode(thImage, smooth);
+	thImage = ImageProcessor::erode(thImage, 7);
 
-	cv::Mat bgImage = ImageProcessor::adaptiveThreshold(prev, thresholdBG, window, invertBG);
+	cv::Mat bgImage = ImageProcessor::adaptiveThreshold(prev, thresholdBG, window, false);
 	bgImage = ImageProcessor::applyMorphologyOp(bgImage, cv::MORPH_CLOSE, 3);
 	bgImage = ImageProcessor::applyMorphologyOp(bgImage, cv::MORPH_OPEN, 3);
 
@@ -66,6 +67,7 @@ void ThresholdOp::createPreview()
 void ThresholdOp::updateThreshold(int th)
 {
 	threshold = th;
+	controller->getPM()->setNamedParameter("tto", threshold);
 	perform();
 }
 
@@ -74,49 +76,20 @@ void ThresholdOp::updateWindow(int wi)
 	if(wi != 0 && wi % 2 == 0) wi +=1;
 	std::cout << wi << std::endl;
 	window = wi;
-	perform();
-}
-
-void ThresholdOp::updateSmoothing(int sm)
-{
-	if(sm != 0 && sm % 2 == 0) sm +=1;
-	smooth = sm;
-	perform();
-}
-
-void ThresholdOp::updateInvert(bool in)
-{
-	invert = in;
+	controller->getPM()->setNamedParameter("ttw", window);
 	perform();
 }
 
 void ThresholdOp::updateThresholdTH(int th)
 {
 	thresholdTH = th;
-	perform();
-}
-
-void ThresholdOp::updateInvertTH(bool in)
-{
-	invertTH = in;
+	controller->getPM()->setNamedParameter("ttt", thresholdTH);
 	perform();
 }
 
 void ThresholdOp::updateThresholdBG(int th)
 {
 	thresholdBG = th;
-	perform();
-}
-
-void ThresholdOp::updateSmoothingBG(int sm)
-{
-	if(sm != 0 && sm % 2 == 0) sm +=1;
-	smoothBG = sm;
-	perform();
-}
-
-void ThresholdOp::updateInvertBG(bool in)
-{
-	invertBG = in;
+	controller->getPM()->setNamedParameter("ttb", thresholdBG);
 	perform();
 }

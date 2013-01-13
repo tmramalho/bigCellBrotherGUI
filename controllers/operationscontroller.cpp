@@ -5,9 +5,12 @@
 
 OperationsController::OperationsController()
 {
-	currentStep = 0;
+	currentStep = "Load Image";
 	pipelineReady = false;
 	decider = new NaiveBayes();
+	nst = 0;
+	stepsOrder[currentStep] = this->nst++;
+	steps.push_back(currentStep);
 }
 
 OperationsController::~OperationsController()
@@ -21,11 +24,11 @@ OperationsController::~OperationsController()
 void OperationsController::resetPipeline(cv::Mat initialFrame)
 {
 	pipelineReady = false;
+	currentStep = "Load Image";
 	pipelineVisualization.clear();
-	pipelineVisualization.push_back(initialFrame);
+	pipelineVisualization[currentStep] = initialFrame;
 	this->setPipelineImage(0, initialFrame);
 
-	currentStep = 0;
 	pipelineReady = true;
 }
 
@@ -37,24 +40,26 @@ void OperationsController::setupPipeline(cv::Mat initialFrame)
 
 cv::Mat OperationsController::runFullPipeline()
 {
-	runPipelineUntil(operationPipeline.size()-1);
-	return pipelineImages[6];
+	runPipelineUntil("Watershed");
+	return pipelineImages[5];
+}
+
+void OperationsController::addOperation(std::string name, Operation *op)
+{
+	stepsOrder[name] = this->nst++;
+	operationPipeline[name] = op;
+	steps.push_back(name);
 }
 
 void OperationsController::setPreview(cv::Mat result)
 {
-	if(pipelineVisualization.size() > (uint) currentStep) {
-		pipelineVisualization[currentStep] = result;
-	} else {
-		pipelineVisualization.push_back(result);
-	}
+	pipelineVisualization[currentStep] = result;
 }
 
 void OperationsController::showCurrentPreview()
 {
 	cv::Mat result = pipelineVisualization[currentStep];
 	showSelectedPreview(result);
-
 }
 
 void OperationsController::showSelectedPreview(cv::Mat result)
@@ -70,36 +75,46 @@ void OperationsController::showSelectedPreview(cv::Mat result)
 	emit operationDone(img);
 }
 
-void OperationsController::updateSelectedOperationPreview(int op)
+void OperationsController::updateSelectedOperationPreview(std::string op)
 {
 	if(!pipelineReady) return;
 	runPipelineUntil(op);
-	currentStep = op + 1;
+	currentStep = op;
 	showCurrentPreview();
 }
 
-cv::Mat OperationsController::getPreviewForOperation(int op)
+cv::Mat OperationsController::getPreviewForOperation(std::string op)
 {
-	int pos = op + 1;
-	if(op < -2) pos = operationPipeline.size() - 1;
-	return pipelineVisualization[pos];
+	return pipelineVisualization.at(op);
 }
 
 cv::Mat OperationsController::cropImage(cv::Mat &image)
 {
-	CropImageOp* cropOp = (CropImageOp*)(operationPipeline[0]);
+	CropImageOp* cropOp = (CropImageOp*)(operationPipeline["Crop Image"]);
 	cv::Mat croppedImage = cropOp->cropExternalImage(image);
-	ImproveImageOp *iiOp = (ImproveImageOp*)(operationPipeline[1]);
+	ImproveImageOp *iiOp = (ImproveImageOp*)(operationPipeline["Improve Image"]);
 	croppedImage = iiOp->pumpImage(croppedImage);
 	return croppedImage;
 }
 
-void OperationsController::runPipelineUntil(int op)
+void OperationsController::runPipelineUntil(std::string op)
 {
-	if(currentStep > op) return; //already past it
-	for(int i = currentStep; i < op + 1; i++) {
-		currentStep++; //current step incremented before executing
-		operationPipeline[i]->execute();
-		operationPipeline[i]->createPreview();
+	if(stepsOrder[op] > stepsOrder[currentStep]) {
+		int pos = stepsOrder[currentStep];
+		while(currentStep != op) {
+			++pos;
+			currentStep = steps[pos];
+			operationPipeline[currentStep]->execute();
+			operationPipeline[currentStep]->createPreview();
+		}
 	}
+}
+
+
+void OperationsController::parametersUpdated()
+{
+	for(std::map<std::string, Operation*>::iterator it=operationPipeline.begin();
+		it!=operationPipeline.end(); ++it) {
+		it->second->updateParameters();
+   }
 }

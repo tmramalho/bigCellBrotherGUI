@@ -1,10 +1,15 @@
 #include "createmarkersop.h"
 #include "operationscontroller.h"
 
-CreateMarkersOp::CreateMarkersOp()
+CreateMarkersOp::CreateMarkersOp(OperationsController *_controller)
 {
-	width = 10;
-	height = 80;
+	controller = _controller;
+	updateParameters();
+}
+
+void CreateMarkersOp::updateParameters() {
+	width = controller->getPM()->getNamedParameter("ccw");
+	height = controller->getPM()->getNamedParameter("cch");
 }
 
 void CreateMarkersOp::execute()
@@ -29,11 +34,13 @@ void CreateMarkersOp::createPreview()
 void CreateMarkersOp::updateWidth(int w)
 {
 	width = w;
+	controller->getPM()->setNamedParameter("ccw", width);
 	perform();
 }
 
 void CreateMarkersOp::updateHeight(int h)
 {
 	height = h;
+	controller->getPM()->setNamedParameter("cch", height);
 	perform();
 }

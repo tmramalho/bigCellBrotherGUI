@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <map>
+#include <string>
 #include <iostream>
 #include <QObject>
 #include <QImage>
@@ -13,6 +14,7 @@
 #include "processors/ImageSegmentor.h"
 #include "files/CSVReader.h"
 #include "classifier/NaiveBayes.h"
+#include "parameterloader.h"
 
 class Operation;
 
@@ -27,21 +29,24 @@ public:
 	void resetPipeline(cv::Mat initialFrame);
 	void setupPipeline(cv::Mat initialFrame);
 	cv::Mat runFullPipeline();
+	void addOperation(std::string name, Operation *op);
 
 	void setPreview(cv::Mat result);
 	void showCurrentPreview();
 	void showSelectedPreview(cv::Mat result);
-	void updateSelectedOperationPreview(int op);
-	cv::Mat getPreviewForOperation(int op);
+	void updateSelectedOperationPreview(std::string op);
+	cv::Mat getPreviewForOperation(std::string op);
 	cv::Mat cropImage(cv::Mat &image);
 
+	int getStepOrder(std::string st) { return stepsOrder[st]; }
 	void setPipelineImage(int i, cv::Mat result) { pipelineImages[i] = result; }
 	cv::Mat getPipelineImage(int i) { return pipelineImages[i]; }
 
-	int getCurrentStep() { return currentStep; }
+	std::string getCurrentStep() { return currentStep; }
 
-	std::vector<Operation *> operationPipeline;
-	std::vector<QDialog *> operationDialogs;
+	ParameterLoader* getPM() { return pm; }
+	void setPM(ParameterLoader *_pm) { pm = _pm; }
+
 	ImageSegmentor is;
 	bool pipelineReady;
 	NaiveBayes *decider;
@@ -50,11 +55,19 @@ signals:
 	void operationDone(QImage imagePreview);
 	void newBounds(int xi, int xf, int yi, int yf);
 
+public slots:
+	void parametersUpdated();
+
 private:
-	void runPipelineUntil(int op);
-	int currentStep;
+	void runPipelineUntil(std::string op);
+	std::string currentStep;
 	std::map<int, cv::Mat> pipelineImages;
-	std::vector<cv::Mat> pipelineVisualization;
+	std::map<std::string, Operation *> operationPipeline;
+	std::map<std::string, cv::Mat> pipelineVisualization;
+	std::map<std::string, int> stepsOrder;
+	std::vector<std::string> steps;
+	int nst;
+	ParameterLoader *pm;
 };
 
 #endif // OPERATIONSCONTROLLER_H

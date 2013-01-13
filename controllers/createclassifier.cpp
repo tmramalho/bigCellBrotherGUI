@@ -1,9 +1,14 @@
 #include "createclassifier.h"
 #include "operationscontroller.h"
 
-CreateClassifier::CreateClassifier()
+CreateClassifier::CreateClassifier(OperationsController *_controller)
 {
+	controller = _controller;
 	mode = true;
+}
+
+void CreateClassifier::updateParameters() {
+
 }
 
 void CreateClassifier::execute()
@@ -52,7 +57,7 @@ void CreateClassifier::frameChanged(int fr)
 
 void CreateClassifier::cellPicked(int i, int j, int bt)
 {
-	if(controller->getCurrentStep() < 5) return;
+	if(controller->getCurrentStep() != "Classifier") return;
 	cv::Mat markers = controller->getPipelineImage(5);
 	int label = markers.at<int>(i, j);
 	if(label <= 1) return;

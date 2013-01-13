@@ -13,10 +13,11 @@ class CreateMarkersOp : public QObject, public Operation
 {
 	Q_OBJECT
 public:
-	CreateMarkersOp();
+	CreateMarkersOp(OperationsController *_controller);
 
 	void execute();
 	void createPreview();
+	void updateParameters();
 	void showPreview();
 
 public slots:

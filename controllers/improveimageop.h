@@ -12,10 +12,11 @@ class ImproveImageOp : public QObject, public Operation
 {
 	Q_OBJECT
 public:
-	ImproveImageOp();
+	ImproveImageOp(OperationsController *_controller);
 
 	void execute();
 	void createPreview();
+	void updateParameters();
 	void showPreview();
 
 	cv::Mat pumpImage(cv::Mat &image);

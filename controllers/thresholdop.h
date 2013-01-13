@@ -12,33 +12,24 @@ class ThresholdOp : public QObject, public Operation
 {
 	Q_OBJECT
 public:
-	ThresholdOp();
+	ThresholdOp(OperationsController *_controller);
 
 	void execute();
 	void createPreview();
+	void updateParameters();
 	void showPreview();
 
 public slots:
 	void updateThreshold(int th);
 	void updateWindow(int wi);
-	void updateSmoothing(int sm);
-	void updateInvert(bool in);
 	void updateThresholdTH(int th);
-	void updateInvertTH(bool in);
 	void updateThresholdBG(int th);
-	void updateSmoothingBG(int sm);
-	void updateInvertBG(bool in);
 
 private:
 	int threshold;
 	int window;
-	int smooth;
-	bool invert;
 	int thresholdTH;
-	bool invertTH;
 	int thresholdBG;
-	int smoothBG;
-	bool invertBG;
 };
 
 #endif // THRESHOLDOP_H

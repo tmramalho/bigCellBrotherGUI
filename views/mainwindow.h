@@ -19,6 +19,7 @@
 #include "createclassifier.h"
 #include "picturelabel.h"
 #include "listclassifier.h"
+#include "parameterloader.h"
 #include <iostream>
 #include <QFileDialog>
 #include <QDir>
@@ -50,6 +51,8 @@ private slots:
 	void zoomOut();
 	void normalSize();
 	void fitToWindow();
+	void loadParameters();
+	void saveParameters();
 
 	void on_listWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
 
@@ -75,6 +78,7 @@ private:
 	CreateClassifier *cc;
 	QLabel *imageLabel;
 	int currentFrame;
+	ParameterLoader *parameterManager;
 };
 
 #endif // MAINWINDOW_H

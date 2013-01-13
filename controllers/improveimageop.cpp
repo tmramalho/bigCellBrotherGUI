@@ -1,11 +1,17 @@
 #include "improveimageop.h"
 #include "operationscontroller.h"
 
-ImproveImageOp::ImproveImageOp()
+ImproveImageOp::ImproveImageOp(OperationsController *_controller)
 {
-	blurWindow = 0;
-	stretchMinVal = 0;
-	doubleRes = 0;
+	controller = _controller;
+	updateParameters();
+}
+
+void ImproveImageOp::updateParameters() {
+
+	blurWindow = controller->getPM()->getNamedParameter("iibw");
+	stretchMinVal = controller->getPM()->getNamedParameter("iism");
+	doubleRes = controller->getPM()->getNamedParameter("iidr");
 }
 
 void ImproveImageOp::execute()
@@ -43,18 +49,21 @@ void ImproveImageOp::updateSmoothing(int sm)
 {
 	if(sm != 0 && sm % 2 == 0) sm +=1;
 	blurWindow = sm;
+	controller->getPM()->setNamedParameter("iibw", blurWindow);
 	perform();
 }
 
 void ImproveImageOp::updateContrast(int ct)
 {
 	stretchMinVal = ct;
+	controller->getPM()->setNamedParameter("iism", stretchMinVal);
 	perform();
 }
 
 void ImproveImageOp::updateDoubleRes(int dr)
 {
 	doubleRes = dr;
+	controller->getPM()->setNamedParameter("iidr", doubleRes);
 	perform();
 }
 

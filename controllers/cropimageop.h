@@ -13,10 +13,11 @@ class CropImageOp : public QObject, public Operation
 	Q_OBJECT
 
 public:
-	CropImageOp();
+	CropImageOp(OperationsController *_controller);
 
 	void execute();
 	void createPreview();
+	void updateParameters();
 	void showPreview();
 
 	cv::Mat cropExternalImage(cv::Mat &image);

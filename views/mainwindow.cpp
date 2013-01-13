@@ -2,11 +2,14 @@
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+	QMainWindow(parent),
+	ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
+	ui->setupUi(this);
 	opCtr = new OperationsController;
+	parameterManager = new ParameterLoader;
+	opCtr->setPM(parameterManager);
+	QObject::connect(parameterManager, SIGNAL(parametersRead()), opCtr, SLOT(parametersUpdated()));
 
 	videoBox = NULL;
 	videoBoxFluorescence = NULL;
@@ -19,82 +22,85 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	//set up operations pipeline
 	QObject::connect(opCtr, SIGNAL(operationDone(QImage)), this, SLOT(updatePreview(QImage)));
-	int n = 0;
-	QListWidgetItem *qlw;
-	qlw = new QListWidgetItem(tr("Load Image"), ui->listWidget);
-	qlw->setData(Qt::UserRole, QVariant(-1));
 
+	QListWidgetItem *qlw;
+
+	std::string liStr( "Load Image" );
+	qlw = new QListWidgetItem(tr("Load Image"), ui->listWidget);
+	qlw->setData(Qt::UserRole, QVariant(QString(liStr.c_str())));
+
+	std::string crStr( "Crop Image" );
 	qlw = new QListWidgetItem(tr("Crop Image"), ui->listWidget);
-	qlw->setData(Qt::UserRole, QVariant(n++));
+	qlw->setData(Qt::UserRole, QVariant(QString(crStr.c_str())));
 
 	CropImage *ci = new CropImage();
 	ui->stackedWidget->addWidget(ci);
 	QObject::connect(opCtr, SIGNAL(newBounds(int,int,int,int)), ci, SLOT(updateBounds(int,int,int,int)));
 
-	CropImageOp *cio = new CropImageOp();
-	cio->controller = opCtr;
+	CropImageOp *cio = new CropImageOp(opCtr);
 	ci->bindToOp(cio);
-	opCtr->operationPipeline.push_back(cio);
+	opCtr->addOperation(crStr, cio);
 
+	std::string iiStr( "Improve Image" );
 	qlw = new QListWidgetItem(tr("Improve Image"), ui->listWidget);
-	qlw->setData(Qt::UserRole, QVariant(n++));
+	qlw->setData(Qt::UserRole, QVariant(QString(iiStr.c_str())));
 
 	ImproveImage *ii = new ImproveImage();
 	ui->stackedWidget->addWidget(ii);
 
-	ImproveImageOp *iio = new ImproveImageOp();
-	iio->controller = opCtr;
+	ImproveImageOp *iio = new ImproveImageOp(opCtr);
 	ii->bindToOp(iio);
-	opCtr->operationPipeline.push_back(iio);
+	opCtr->addOperation(iiStr, iio);
 
+	std::string thStr( "Threshold" );
 	qlw = new QListWidgetItem(tr("Threshold"), ui->listWidget);
-	qlw->setData(Qt::UserRole, QVariant(n++));
+	qlw->setData(Qt::UserRole, QVariant(QString(thStr.c_str())));
 
 	Threshold *th = new Threshold();
 	ui->stackedWidget->addWidget(th);
 
-	ThresholdOp *tho = new ThresholdOp();
-	tho->controller = opCtr;
+	ThresholdOp *tho = new ThresholdOp(opCtr);
 	th->bindToOp(tho);
-	opCtr->operationPipeline.push_back(tho);
+	opCtr->addOperation(thStr, tho);
 
+	std::string cmStr( "Create Markers" );
 	qlw = new QListWidgetItem(tr("Create Markers"), ui->listWidget);
-	qlw->setData(Qt::UserRole, QVariant(n++));
+	qlw->setData(Qt::UserRole, QVariant(QString(cmStr.c_str())));
 
 	CreateMarkers *cm = new CreateMarkers();
 	ui->stackedWidget->addWidget(cm);
 
-	CreateMarkersOp *cmo = new CreateMarkersOp();
-	cmo->controller = opCtr;
+	CreateMarkersOp *cmo = new CreateMarkersOp(opCtr);
 	cm->bindToOp(cmo);
-	opCtr->operationPipeline.push_back(cmo);
+	opCtr->addOperation(cmStr, cmo);
 
+	std::string wsStr( "Watershed" );
 	qlw = new QListWidgetItem(tr("Watershed"), ui->listWidget);
-	qlw->setData(Qt::UserRole, QVariant(n++));
+	qlw->setData(Qt::UserRole, QVariant(QString(wsStr.c_str())));
 
 	Watershed *ws = new Watershed();
 	ui->stackedWidget->addWidget(ws);
 
-	WatershedOp *wso = new WatershedOp();
-	wso->controller = opCtr;
+	WatershedOp *wso = new WatershedOp(opCtr);
 	ws->bindToOp(wso);
-	opCtr->operationPipeline.push_back(wso);
+	opCtr->addOperation(wsStr, wso);
 
+	std::string lsStr( "Classifier" );
 	qlw = new QListWidgetItem(tr("Classifier"), ui->listWidget);
-	qlw->setData(Qt::UserRole, QVariant(n++));
+	qlw->setData(Qt::UserRole, QVariant(QString(lsStr.c_str())));
 
 	ListClassifier *ls = new ListClassifier();
 	ui->stackedWidget->addWidget(ls);
 
-	cc = new CreateClassifier;
-	cc->controller = opCtr;
+	cc = new CreateClassifier(opCtr);
 	QObject::connect(imageLabel, SIGNAL(labelChanged(int, int, int)), cc, SLOT(cellPicked(int, int, int)));
 	QObject::connect(this, SIGNAL(currentFrameChanged(int)), cc, SLOT(frameChanged(int)));
 	ls->bindToOp(cc);
-	opCtr->operationPipeline.push_back(cc);
+	opCtr->addOperation(lsStr, cc);
 
+	std::string rsStr( "Results" );
 	qlw = new QListWidgetItem(tr("Results"), ui->listWidget);
-	qlw->setData(Qt::UserRole, QVariant(n++));
+	qlw->setData(Qt::UserRole, QVariant(QString(rsStr.c_str())));
 	qlw->setHidden(true);
 
 	sp = new ExecuteSequence(opCtr);
@@ -154,8 +160,8 @@ void MainWindow::openImage() {
 	ui->zoomOutAct->setEnabled(true);
 	ui->normalSizeAct->setEnabled(true);
 	ui->fitToWindowAct->setEnabled(true);
-	ui->fitToWindowAct->setChecked(true);
-	this->fitToWindow();
+	//ui->fitToWindowAct->setChecked(true);
+	//this->fitToWindow();
 	updateActions();
 
 	if (!ui->fitToWindowAct->isChecked())
@@ -227,6 +233,29 @@ void MainWindow::zoomIn()
 	 updateActions();
  }
 
+ void MainWindow::loadParameters()
+ {
+	 QString fileName = QFileDialog::getOpenFileName(this,
+										tr("Open File"), QDir::homePath());
+	 if (!fileName.isEmpty()) {
+		 QByteArray ba = fileName.toLocal8Bit();
+		 const char *c_str = ba.data();
+		 const std::string filenameString(c_str);
+		 parameterManager->readParametersFromFile(filenameString);
+	 }
+ }
+
+ void MainWindow::saveParameters()
+ {
+	 QString filename = QFileDialog::getSaveFileName(this,
+										tr("Save File as.."), QDir::homePath(),
+										 tr("PXM files(*.pxm)"));
+	 QByteArray ba = filename.toLocal8Bit();
+	 const char *c_str = ba.data();
+	 const std::string filenameString(c_str);
+	 parameterManager->saveParametersToFile(filenameString);
+ }
+
 void MainWindow::updateActions()
 {
 	ui->zoomInAct->setEnabled(!ui->fitToWindowAct->isChecked());
@@ -260,11 +289,18 @@ void MainWindow::adjustScrollBar(QScrollBar *scrollBar, double factor)
 void MainWindow::on_listWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
 {
 	//change pixmap on preview
-	int curOperation = current->data(Qt::UserRole).toInt();
-	ui->stackedWidget->setCurrentIndex(curOperation+1);
-	opCtr->updateSelectedOperationPreview(curOperation);
-	if(curOperation == 6)
+	QString qoperation = current->data(Qt::UserRole).toString();
+	QByteArray ba = qoperation.toLocal8Bit();
+	const char *c_str = ba.data();
+	std::string curOperation(c_str);
+	std::cout << curOperation << std::endl;
+	ui->stackedWidget->setCurrentIndex(opCtr->getStepOrder(curOperation));
+	if(curOperation == "Classifier" && ui->fitToWindowAct->isChecked())
+		ui->fitToWindowAct->trigger();
+	if(curOperation == "Results")
 		sp->debugSequence(currentFrame);
+	else
+		opCtr->updateSelectedOperationPreview(curOperation);
 }
 
 void MainWindow::updateFrameNumberDisplay()
@@ -291,7 +327,7 @@ void MainWindow::on_framePicker_valueChanged(int value)
 	ui->listWidget->setCurrentRow(0);
 	ui->stackedWidget->setCurrentIndex(0);
 	opCtr->resetPipeline(videoBox->grabFrameNumber(value));
-	opCtr->updateSelectedOperationPreview(-1);
+	opCtr->updateSelectedOperationPreview("Load Image");
 	currentFrame = value;
 	updateFrameNumberDisplay();
 	emit currentFrameChanged(value);

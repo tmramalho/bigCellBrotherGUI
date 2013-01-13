@@ -1,12 +1,18 @@
 #include "cropimageop.h"
 #include "operationscontroller.h"
 
-CropImageOp::CropImageOp()
+CropImageOp::CropImageOp(OperationsController *_controller)
 {
-	xb = 0;
-	xe = 100;
-	yb = 0;
-	ye = 100;
+	controller = _controller;
+	updateParameters();
+}
+
+void CropImageOp::updateParameters() {
+
+	xb = controller->getPM()->getNamedParameter("xb");
+	xe = controller->getPM()->getNamedParameter("xe");
+	yb = controller->getPM()->getNamedParameter("yb");
+	ye = controller->getPM()->getNamedParameter("ye");
 }
 
 void CropImageOp::execute()
@@ -31,24 +37,28 @@ void CropImageOp::createPreview()
 void CropImageOp::updateXBegin(int pos)
 {
 	xb = pos;
+	controller->getPM()->setNamedParameter("xb", xb);
 	perform();
 }
 
 void CropImageOp::updateXEnd(int pos)
 {
 	xe = pos;
+	controller->getPM()->setNamedParameter("xe", xe);
 	perform();
 }
 
 void CropImageOp::updateYBegin(int pos)
 {
 	yb = pos;
+	controller->getPM()->setNamedParameter("yb", yb);
 	perform();
 }
 
 void CropImageOp::updateYEnd(int pos)
 {
 	ye = pos;
+	controller->getPM()->setNamedParameter("ye", ye);
 	perform();
 }
 

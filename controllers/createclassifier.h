@@ -17,9 +17,10 @@ class CreateClassifier : public QObject, public Operation
 {
 	Q_OBJECT
 public:
-	CreateClassifier();
+	CreateClassifier(OperationsController* _controller);
 	void execute();
 	void createPreview();
+	void updateParameters();
 
 public slots:
 	void frameChanged(int fr);

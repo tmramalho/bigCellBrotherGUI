@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1000</width>
-    <height>600</height>
+    <width>1200</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -163,7 +163,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1000</width>
+     <width>1200</width>
      <height>25</height>
     </rect>
    </property>
@@ -171,10 +171,11 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="separator"/>
+    <addaction name="separator"/>
     <addaction name="actionOpen"/>
-    <addaction name="separator"/>
-    <addaction name="separator"/>
-    <addaction name="actionOpen_fluorescence"/>
+    <addaction name="actionSave_config"/>
+    <addaction name="actionLoad_config"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -211,6 +212,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionOpen"/>
+   <addaction name="actionOpen_fluorescence"/>
    <addaction name="separator"/>
    <addaction name="zoomInAct"/>
    <addaction name="zoomOutAct"/>
@@ -300,6 +302,25 @@
   <action name="actionOpen_fluorescence">
    <property name="text">
     <string>Open fluorescence</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+K</string>
+   </property>
+  </action>
+  <action name="actionSave_config">
+   <property name="text">
+    <string>Save config</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionLoad_config">
+   <property name="text">
+    <string>Load config</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
    </property>
   </action>
  </widget>
@@ -434,6 +455,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionSave_config</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>saveParameters()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>499</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionLoad_config</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>loadParameters()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>499</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>openImage()</slot>
@@ -443,5 +496,7 @@
   <slot>normalSize()</slot>
   <slot>displayExecutionDialog()</slot>
   <slot>openImageFluorescent()</slot>
+  <slot>loadParameters()</slot>
+  <slot>saveParameters()</slot>
  </slots>
 </ui>

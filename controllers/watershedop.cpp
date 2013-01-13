@@ -1,12 +1,18 @@
 #include "watershedop.h"
 #include "operationscontroller.h"
 
-WatershedOp::WatershedOp()
+WatershedOp::WatershedOp(OperationsController *_controller)
 {
-	size = 3;
-	smoothing = 1;
-	nStep = 50;
-	rmBorder = false;
+	controller = _controller;
+	updateParameters();
+}
+
+void WatershedOp::updateParameters() {
+
+	size = controller->getPM()->getNamedParameter("wsz");
+	smoothing = controller->getPM()->getNamedParameter("wsm");
+	nStep = controller->getPM()->getNamedParameter("wsst");
+	rmBorder = controller->getPM()->getNamedParameter("wsrm");
 }
 
 void WatershedOp::execute()
@@ -45,23 +51,27 @@ void WatershedOp::updateSmoothing(int sm)
 {
 	if(sm % 2 == 0) sm +=1;
 	smoothing = sm;
+	controller->getPM()->setNamedParameter("wsm", smoothing);
 	perform();
 }
 
 void WatershedOp::updateSize(int sz)
 {
 	size = sz;
+	controller->getPM()->setNamedParameter("wsz", size);
 	perform();
 }
 
 void WatershedOp::updateStep(int sp)
 {
 	nStep = sp;
+	controller->getPM()->setNamedParameter("wsst", nStep);
 	perform();
 }
 
 void WatershedOp::removeBorder(bool rm)
 {
 	rmBorder = rm;
+	controller->getPM()->setNamedParameter("wsrm", rmBorder);
 	perform();
 }

@@ -15,9 +15,10 @@ class WatershedOp : public QObject, public Operation
 	Q_OBJECT
 
 public:
-	WatershedOp();
+	WatershedOp(OperationsController *_controller);
 	void execute();
 	void createPreview();
+	void updateParameters();
 	void showPreview();
 
 public slots:
