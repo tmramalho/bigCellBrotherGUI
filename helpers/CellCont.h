@@ -23,7 +23,7 @@
 #include <utility>
 #include "../processors/ImageProcessor.h"
 
-
+#define NUMFEATURES 11
 #define PI 3.14159265
 
 class CellCont {
@@ -62,6 +62,7 @@ public:
 	void setIsCell(bool isCell);
 	double getFluorescence() const;
 	void setFluorescence(double fluorescence);
+	static int getNumFeatures() { return NUMFEATURES; }
 
 private:
 	inline static void expandRect(cv::Rect& bbox, int padding, int imgHeight, int imgWidth);

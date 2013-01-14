@@ -8,8 +8,11 @@
 #include "CellCont.h"
 
 CellCont::CellCont() {
-	this->prevLabel = -1;
-	this->fluorescence = -1;
+	prevLabel = -1;
+	fluorescence = -1;
+	time = 0;
+	isCell = false;
+	curLabel = -1;
 }
 
 CellCont::~CellCont() {
@@ -110,7 +113,7 @@ CellCont CellCont::determineLabelProperties(cv::Mat &currentLabelMask, cv::Mat &
 	cv::Mat currentLabelCtour;
 	std::vector< std::vector<cv::Point> > ctours;
 	std::vector<cv::Vec4i> hrchy;
-	std::vector<double> features (11);
+	std::vector<double> features (NUMFEATURES);
 	std::set<int> ngb;
 
 	// get the contour of this cell label
