@@ -13,7 +13,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include "processors/ImageSegmentor.h"
 #include "files/CSVReader.h"
-#include "classifier/NaiveBayes.h"
+#include "classifier/SVMachine.h"
 #include "parameterloader.h"
 
 class Operation;
@@ -49,7 +49,7 @@ public:
 
 	ImageSegmentor is;
 	bool pipelineReady;
-	NaiveBayes *decider;
+	SVMachine *decider;
 
 signals:
 	void operationDone(QImage imagePreview);

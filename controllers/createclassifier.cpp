@@ -4,7 +4,6 @@
 CreateClassifier::CreateClassifier(OperationsController *_controller)
 {
 	controller = _controller;
-	mode = true;
 }
 
 void CreateClassifier::updateParameters() {
@@ -63,13 +62,11 @@ void CreateClassifier::cellPicked(int i, int j, int bt)
 	if(label <= 1) return;
 	cv::Mat currentLabelMask(markers.size(), CV_8U);
 	cv::compare(markers, label, currentLabelMask, cv::CMP_EQ);
-	std::cout << i << ", " << j << " : " << label << " is " << mode << std::endl;
+	std::cout << i << ", " << j << " : " << label << std::endl;
 	if(ImageProcessor::checkIfEmpty(currentLabelMask)) return;
 	//creates a new set if does not exist
 	std::set<int> &currentRejectedLabels = rejectedLabelsbyFrame[currentFrame];
-	if(mode == 1 && bt == 1) {
-		//CellCont selectedCell = CellCont::determineLabelProperties(currentLabelMask, markers, label);
-		//controller->decider->addTrainingSample(selectedCell.getFeatures());
+	if(bt == 1) {
 		currentRejectedLabels.erase(label);
 	} else {
 		currentRejectedLabels.insert(label);
@@ -78,15 +75,7 @@ void CreateClassifier::cellPicked(int i, int j, int bt)
 	this->showPreview();
 }
 
-void CreateClassifier::setGoodMode() {
-	mode = true;
-}
-
-void CreateClassifier::setBadMode() {
-	mode = false;
-}
-
-void CreateClassifier::applyTrainingSet()
+void CreateClassifier::saveTrainingSamples()
 {
 	std::set<int> &currentRejectedLabels = rejectedLabelsbyFrame[currentFrame];
 	cv::Mat markers = controller->getPipelineImage(5);
@@ -94,14 +83,23 @@ void CreateClassifier::applyTrainingSet()
 	double min, max;
 	cv::minMaxLoc(markers, &min, &max);
 	std::vector<std::vector<double> > goodFeatures;
+	std::vector<std::vector<double> > badFeatures;
 	for(int i = 2; i < max+1; i++) {
-		if(currentRejectedLabels.count(i) > 0) continue;
 		cv::compare(markers, i, currentLabelMask, cv::CMP_EQ);
 		if(ImageProcessor::checkIfEmpty(currentLabelMask)) continue;
 		CellCont selectedCell = CellCont::determineLabelProperties(currentLabelMask, markers, i);
-		goodFeatures.push_back(selectedCell.getFeatures());
+		if(currentRejectedLabels.count(i) > 0) {
+			badFeatures.push_back(selectedCell.getFeatures());
+		} else {
+			goodFeatures.push_back(selectedCell.getFeatures());
+		}
 	}
 
-	controller->decider->addTrainingSet(goodFeatures);
-	perform();
+	controller->decider->addTrainingSet(goodFeatures, badFeatures);
+}
+
+void CreateClassifier::applyTrainingSet()
+{
+	controller->decider->createSVM();
+	//TODO:perform();
 }

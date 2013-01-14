@@ -28,35 +28,28 @@
      <item row="0" column="0" colspan="2">
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>I want to mark</string>
+        <string>Left click on good cells, right click on bad</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QPushButton" name="goodCells">
+     <item row="1" column="0" colspan="2">
+      <widget class="QPushButton" name="save">
        <property name="text">
-        <string>Good cells</string>
+        <string>Save my teachings</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QPushButton" name="badCells">
-       <property name="text">
-        <string>Bad cells</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0" colspan="2">
+     <item row="3" column="0" colspan="2">
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>After cells are marked:</string>
+        <string>There are %n cells in the training set</string>
        </property>
       </widget>
      </item>
-     <item row="5" column="0" colspan="2">
+     <item row="6" column="0" colspan="2">
       <widget class="QPushButton" name="train">
        <property name="text">
-        <string>Train classifier with these cells</string>
+        <string>Train classifier now</string>
        </property>
       </widget>
      </item>

@@ -25,12 +25,10 @@ public:
 public slots:
 	void frameChanged(int fr);
 	void cellPicked(int i, int j, int bt);
-	void setGoodMode();
-	void setBadMode();
+	void saveTrainingSamples();
 	void applyTrainingSet();
 
 private:
-	bool mode;
 	int currentFrame;
 	std::map<int, std::set<int> > detectedLabelsbyFrame;
 	std::map<int, std::set<int> > rejectedLabelsbyFrame;
