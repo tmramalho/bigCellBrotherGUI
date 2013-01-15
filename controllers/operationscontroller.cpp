@@ -7,7 +7,6 @@ OperationsController::OperationsController()
 {
 	currentStep = "Load Image";
 	pipelineReady = false;
-	decider = new SVMachine(CellCont::getNumFeatures());
 	nst = 0;
 	stepsOrder[currentStep] = this->nst++;
 	steps.push_back(currentStep);
@@ -18,7 +17,6 @@ OperationsController::~OperationsController()
 	operationPipeline.clear();
 	pipelineVisualization.clear();
 	pipelineImages.clear();
-	delete decider;
 }
 
 void OperationsController::resetPipeline(cv::Mat initialFrame)

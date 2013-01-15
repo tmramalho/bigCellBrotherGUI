@@ -12,6 +12,8 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include "helpers/PictureVis.h"
+#include "classifier/SVMachine.h"
+#include "helpers/CellCont.h"
 
 class CreateClassifier : public QObject, public Operation
 {
@@ -27,12 +29,16 @@ public slots:
 	void cellPicked(int i, int j, int bt);
 	void saveTrainingSamples();
 	void applyTrainingSet();
+	void markallGood();
+	void markallBad();
 
 private:
 	int currentFrame;
-	std::map<int, std::set<int> > detectedLabelsbyFrame;
-	std::map<int, std::set<int> > rejectedLabelsbyFrame;
-
+	std::map<int, std::set<int> > svmGoodLabelsbyFrame;
+	std::map<int, std::set<int> > svmBadLabelsbyFrame;
+	std::map<int, std::set<int> > goodLabelsbyFrame;
+	std::map<int, std::set<int> > badLabelsbyFrame;
+	SVMachine *decider;
 };
 
 #endif // CREATECLASSIFIER_H
