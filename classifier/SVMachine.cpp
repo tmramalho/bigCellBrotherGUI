@@ -15,21 +15,17 @@ SVMachine::SVMachine(int nf) {
 	numFeatures = nf;
 	a.resize(numFeatures, 0);
 	b.resize(numFeatures, 0);
+	svm_set_print_string_function(&(SVMachine::dummy));
 }
 
 SVMachine::~SVMachine() {
 	svm_free_model_content(model);
 	svm_destroy_param(parameters);
-	//TODO: fix memory leak and segfault
 }
 
 void SVMachine::addTrainingSet(std::vector<std::vector<double> >& goodSamples,
 		std::vector<std::vector<double> >& badSamples) {
-	if(trained) {
-		std::cerr << "You can't add more training samples now." << std::endl;
-		std::cerr << "Delete this SVM and create a new one." << std::endl;
-		return;
-	} else if((unsigned int) numFeatures != goodSamples[0].size()) {
+	if((unsigned int) numFeatures != goodSamples[0].size()) {
 		std::cerr << "These are not the samples I'm looking for." << std::endl;
 		return;
 	}
@@ -46,9 +42,7 @@ void SVMachine::createSVM() {
 		std::cerr << "I want more samples" << std::endl;
 		return;
 	} else if(trained) {
-		std::cerr << "You can't train the model now." << std::endl;
-		std::cerr << "Delete this SVM and create a new one." << std::endl;
-		return;
+		svm_free_model_content(model);
 	}
 
 	rescaleFeatures();
@@ -82,6 +76,8 @@ void SVMachine::createSVM() {
 
 	model = svm_train(problem, parameters);
 
+	trainingLabels.clear();
+	trainingSet.clear();
 	trained = true;
 }
 
@@ -90,19 +86,23 @@ bool SVMachine::classifyCell(std::vector<double>& probs) {
 		std::cerr << "You must train the model before." << std::endl;
 		return false;
 	}
-	svm_node node;
+	svm_node *node = new svm_node[numFeatures+1];
 	for(int i= 0; i< numFeatures; i++) {
 		double val = probs.at(i);
-		node.index = i;
-		node.value = val;
+		node[i].index = i;
+		node[i].value = val;
 	}
-	int svmClass = svm_predict(model, &node);
+	node[numFeatures].index = -1; //end of node
+	rescaleNode(node);
+	double svmClass = svm_predict(model, node);
+	delete node;
 	if(svmClass == 1) return true;
 	else return false;
 }
 
 void SVMachine::saveModel(std::string filename) {
 	if(trained) {
+		//TODO:must save the scaling as well
 		svm_save_model(filename.c_str(), model);
 	}
 }
@@ -118,7 +118,7 @@ void SVMachine::loadModel(std::string filename) {
 void SVMachine::addFeaturesToNodeList(std::vector<std::vector<double> >& someSamples,
 		int label, int numFeatures) {
 	for(std::vector<std::vector<double> >::iterator it = someSamples.begin();
-			it != someSamples.end(); ++it) {
+		it != someSamples.end(); ++it) {
 		svm_node *node = new svm_node[numFeatures+1];
 		for(int i= 0; i< numFeatures; i++) {
 			double val = it->at(i);
@@ -140,7 +140,7 @@ void SVMachine::rescaleFeatures() {
 	}
 
 	for(std::vector<svm_node*>::iterator it = trainingSet.begin();
-			it != trainingSet.end(); ++it) {
+		it != trainingSet.end(); ++it) {
 		rescaleNode(*it);
 	}
 }
@@ -153,16 +153,31 @@ inline void SVMachine::rescaleNode(svm_node *node) {
 
 void SVMachine::findBestParameters() {
 	double *target = new double[problem->l];
+	std::vector<double> metaBest(2, 0);
+	double best = -1e100;
+	for(double j = pow(2,-5); j < pow(2,15); j*=2) {
+		for(double k = pow(2,-15); k < pow(2,3); k*=2) {
+			parameters->C = j;
+			parameters->gamma = k;
+			double score = crossValidate(target);
+			if(score > best) {
+				best = score;
+				metaBest[0] = j;
+				metaBest[1] = k;
+			}
+		}
+	}
+	std::cout << "C: " << metaBest[0] << " g: " << metaBest[1] << " -> " << 100*best/problem->l << std::endl;
+	parameters->C = metaBest[0];
+	parameters->gamma = metaBest[1];
+	delete target;
+}
 
-	//TODO: actually search for parameters
+double SVMachine::crossValidate(double* target) {
 	svm_cross_validation(problem, parameters, 5, target);
-
 	int acc = 0;
 	for(int i = 0; i < problem->l; i++) {
 		if(target[i] == problem->y[i]) ++acc;
 	}
-
-	std::cout << "Cross Validation Accuracy = " << 100.0*acc/problem->l << std::endl;
-
-	delete target;
+	return acc;
 }

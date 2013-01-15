@@ -155,7 +155,8 @@ void PictureVis::drawRotatedRect(cv::Mat& mask, cv::RotatedRect& box) {
 }
 
 cv::Mat PictureVis::drawClassyMarkersOnPicture(cv::Mat& targetPicture,
-		cv::Mat& markers, std::set<int> rejectedLabels, std::set<int> detectedLabels) {
+		cv::Mat& markers, std::set<int> markedBadLabels, std::set<int> markedGoodLabels, std::set<int> foundBadLabels,
+		std::set<int> foundGoodLabels) {
 	cv::Mat targetColorPicture;
 	cv::Mat colorMarkers(targetPicture.rows, targetPicture.cols, CV_8UC3);
 	double max;
@@ -172,12 +173,16 @@ cv::Mat PictureVis::drawClassyMarkersOnPicture(cv::Mat& targetPicture,
 				colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(WHITE, WHITE, WHITE);
 			else if( idx == 1 )
 				colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, BLACK, BLACK);
-			else if(rejectedLabels.count(idx) > 0) //red
+			else if(markedBadLabels.count(idx) > 0) //red
 				colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, BLACK, WHITE);
-			else if(detectedLabels.count(idx) > 0) //yellow
-				colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, WHITE, WHITE);
-			else //green
+			else if(markedGoodLabels.count(idx) > 0) //green
 				colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, WHITE, BLACK);
+			else if(foundBadLabels.count(idx) > 0) //yellow
+				colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, WHITE, WHITE);
+			else if(foundGoodLabels.count(idx) > 0) //cyan
+				colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(WHITE, WHITE, BLACK);
+			else
+				colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(  160,   160,   160);
 		}
 
 	cv::Mat result = colorMarkers * 0.5 + targetColorPicture * 0.5;

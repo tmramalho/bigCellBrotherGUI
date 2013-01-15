@@ -10,6 +10,7 @@
 
 #include <string>
 #include <iostream>
+#include <cmath>
 #include "libsvm/svm.h"
 
 #include "CellClassifier.h"
@@ -26,11 +27,15 @@ public:
 	void saveModel(std::string filename);
 	void loadModel(std::string filename);
 
+	bool isTrained() { return trained; }
+
 private:
 	void addFeaturesToNodeList(std::vector<std::vector<double> >& someSamples, int label, int numFeatures);
 	void rescaleFeatures();
 	inline void rescaleNode(svm_node *node);
 	void findBestParameters();
+	double crossValidate(double *target);
+	static void dummy(const char *) {}
 	svm_model *model;
 	svm_problem *problem;
 	svm_parameter *parameters;
