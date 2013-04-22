@@ -293,7 +293,7 @@ void MainWindow::on_listWidget_currentItemChanged(QListWidgetItem *current, QLis
 	QByteArray ba = qoperation.toLocal8Bit();
 	const char *c_str = ba.data();
 	std::string curOperation(c_str);
-	std::cout << curOperation << std::endl;
+    //std::cout << curOperation << std::endl;
 	ui->stackedWidget->setCurrentIndex(opCtr->getStepOrder(curOperation));
 	if(curOperation == "Classifier" && ui->fitToWindowAct->isChecked())
 		ui->fitToWindowAct->trigger();

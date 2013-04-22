@@ -37,7 +37,7 @@ void ParameterLoader::readParametersFromFile(std::string filename)
 
 	for (std::map<std::string, double>::iterator it=parameters.begin();
 		 it!=parameters.end(); ++it) {
-		std::cout << it->first << ", " << it->second << std::endl;
+        std::cout << it->first << ", " << it->second << std::endl;
 	}
 
 	emit parametersRead();
