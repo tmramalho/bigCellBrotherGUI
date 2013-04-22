@@ -9,6 +9,7 @@
 
 ImageSegmentor::ImageSegmentor() {
 	boxPadding = 20;
+	mergeSmoothRadius = 20;
 }
 
 ImageSegmentor::~ImageSegmentor() {
@@ -18,7 +19,6 @@ ImageSegmentor::~ImageSegmentor() {
 void ImageSegmentor::watershed() {
 	cv::Mat wsTargetImage;
 	cv::cvtColor(boostedImage, wsTargetImage, CV_GRAY2BGR);
-
 	addBackgroundMask();
 	cv::watershed( wsTargetImage, markersPic );
 }
@@ -49,7 +49,8 @@ void ImageSegmentor::createMarkersIterative(cv::Mat& origImage, int maxHeight,
 	blobs = ImageProcessor::applyMorphologyOp(blobs, cv::MORPH_CLOSE, 3);
 	blobs = ImageProcessor::applyMorphologyOp(blobs, cv::MORPH_OPEN, 3);
 	cv::Mat distTrans = ImageProcessor::distanceTransform(blobs);
-	cv::Mat landscape = distTrans*0.5 + laplace*0.5 - topHat - backgroundMask;
+	cv::Mat landscape = distTrans*0.7 + laplace*0.3 - topHat - backgroundMask;
+	//cv::imshow("landscape", landscape);
 
 	for (int th = 20; th < 250; th += 10) { //increase threshold for distance transf.
 		cv::Mat threshResult = ImageProcessor::threshold(landscape, th, false);

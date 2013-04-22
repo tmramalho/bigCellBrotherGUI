@@ -11,7 +11,7 @@
 #include <string>
 #include <iostream>
 #include <cmath>
-#include "libsvm/svm.h"
+#include "svm.h"
 
 #include "CellClassifier.h"
 
