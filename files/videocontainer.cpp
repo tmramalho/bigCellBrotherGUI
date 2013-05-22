@@ -11,11 +11,7 @@ VideoContainer::~VideoContainer() {
 
 void VideoContainer::openFile(std::string filename)
 {
-
-	if(loaded) {
-		capture.release();
-		loaded = false;
-	}
+	this->closeFile();
 	capture.open(filename);
 
 	if (!capture.isOpened()) {
@@ -31,6 +27,13 @@ void VideoContainer::openFile(std::string filename)
 	fourcc = capture.get(CV_CAP_PROP_FOURCC);
 	numFrames = capture.get(CV_CAP_PROP_FRAME_COUNT);
 	curFrame = 0;
+}
+
+void VideoContainer::closeFile() {
+	if(loaded) {
+		capture.release();
+		loaded = false;
+	}
 }
 
 cv::Mat VideoContainer::grabFrameNumber(int frameNum)

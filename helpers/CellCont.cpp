@@ -13,6 +13,7 @@ CellCont::CellCont() {
 	time = 0;
 	isCell = false;
 	curLabel = -1;
+	angle = 0;
 }
 
 CellCont::~CellCont() {
@@ -144,6 +145,7 @@ CellCont CellCont::determineLabelProperties(cv::Mat &currentLabelMask, cv::Mat &
 	CellCont newCell;
 	//save stuff in CellCont
 	newCell.setCenter(mom.m10/mom.m00, mom.m01/mom.m00);
+	newCell.setAngle(box.angle);
 	newCell.setCurLabel(label);
 	newCell.setFeatures(features);
 	newCell.setNeighbors(ngb);

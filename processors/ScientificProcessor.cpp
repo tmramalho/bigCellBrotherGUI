@@ -87,7 +87,7 @@ void ScientificProcessor::createDotFile(std::string filename) {
 
 void ScientificProcessor::createCsvFile(std::string filename) {
 	std::fstream filestr(filename.c_str(), std::fstream::trunc | std::fstream::out);
-	filestr << "t, label, cx, cy, h, w, area, fl" << std::endl;
+	filestr << "t, label, cx, cy, h, w, area, angle, fl" << std::endl;
 	for(unsigned int i = 0; i < allCells.size(); i++) {
 		std::vector<CellCont> currCells = allCells[i];
 		for(unsigned int j = 0; j < currCells.size(); j++) {
@@ -96,6 +96,7 @@ void ScientificProcessor::createCsvFile(std::string filename) {
 			filestr << center.x << ", " << center.y << ", ";
 			std::vector <double> feats = currCells[j].getFeatures();
 			filestr << feats[0] << ", " << feats[1] << ", " << feats[2] << ", ";
+			filestr << currCells[j].getAngle() << ", ";
 			filestr << currCells[j].getFluorescence() << std::endl;
 		}
 	}

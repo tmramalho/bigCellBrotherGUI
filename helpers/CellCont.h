@@ -63,6 +63,8 @@ public:
 	double getFluorescence() const;
 	void setFluorescence(double fluorescence);
 	static int getNumFeatures() { return NUMFEATURES; }
+	double getAngle() const { return angle; }
+	void setAngle(double angle) { this->angle = angle; }
 
 private:
 	inline static void expandRect(cv::Rect& bbox, int padding, int imgHeight, int imgWidth);
@@ -76,6 +78,7 @@ private:
 	//tracking stuff
 	int prevLabel;
 	double time;
+	double angle;
 	cv::Point2f center;
 };
 

@@ -13,6 +13,7 @@ public:
     VideoContainer();
     ~VideoContainer();
 	void openFile(std::string filename);
+	void closeFile();
 	cv::Mat grabFrameNumber(int frameNum);
 
 private:

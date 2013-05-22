@@ -5,6 +5,11 @@ TiffContainer::TiffContainer()
 	loaded = false;
 	tif = NULL;
 	curFrame = -1;
+	bpp = 0;
+	height = 0;
+	width = 0;
+	spp = 0;
+	photo = 0;
 }
 
 TiffContainer::~TiffContainer()
@@ -14,12 +19,7 @@ TiffContainer::~TiffContainer()
 
 void TiffContainer::openFile(std::string filename)
 {
-
-	if(loaded) {
-		TIFFClose(tif);
-		tif = NULL;
-		loaded = false;
-	}
+	this->closeFile();
 
 	tif = TIFFOpen(filename.c_str(), "r");
 	if (!tif) return;
@@ -43,6 +43,14 @@ void TiffContainer::openFile(std::string filename)
 	if(spp == 1 && photo == 1) loaded = true;
 	else { // format not implemented
 		TIFFClose(tif);
+	}
+}
+
+void TiffContainer::closeFile() {
+	if(loaded) {
+		TIFFClose(tif);
+		tif = NULL;
+		loaded = false;
 	}
 }
 
