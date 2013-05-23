@@ -17,6 +17,10 @@ public:
 	~ListClassifier();
 	void bindToOp(CreateClassifier *cc);
 
+public slots:
+    void setTrainingSetSize(int size);
+    void setSVMTrained(double result);
+
 private:
 	Ui::ListClassifier *ui;
 };

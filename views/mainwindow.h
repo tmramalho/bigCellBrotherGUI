@@ -71,14 +71,15 @@ private:
 private:
 	Ui::MainWindow *ui;
 	double scaleFactor;
-	FileContainer *videoBox;
-	FileContainer *videoBoxFluorescence;
-	OperationsController *opCtr;
-	ExecuteSequence *sp;
-	CreateClassifier *cc;
-	QLabel *imageLabel;
-	int currentFrame;
-	ParameterLoader *parameterManager;
+    FileContainer *videoBox;
+    FileContainer *videoBoxFluorescence;
+    OperationsController opCtr;
+    ExecuteSequence *sp;
+    CreateClassifier *cc;
+    QLabel *imageLabel;
+    int currentFrame;
+    ParameterLoader *parameterManager;
+    VideoProcessor *execution;
 };
 
 #endif // MAINWINDOW_H

@@ -5,9 +5,6 @@ CreateClassifier::CreateClassifier(OperationsController *_controller)
 {
 	controller = _controller;
 	decider = new SVMachine(CellCont::getNumFeatures());
-	int debug[] = {41, 98,346,482,503,597,605,705,735,889,936,951,965,1073,1122,1207,1283,1331,1340,1349,1384,1570,1666,1874,1982,2058,2090,2125,2294,2298};
-	std::set<int> test(debug, debug+30);
-	badLabelsbyFrame[0] = test;
 }
 
 void CreateClassifier::updateParameters() {
@@ -58,7 +55,7 @@ void CreateClassifier::createPreview()
 	cv::Mat original = controller->getPipelineImage(2);
 	cv::Mat markers = controller->getPipelineImage(5);
 	std::set<int> &currentgoodLabels = goodLabelsbyFrame[currentFrame];
-	std::set<int> currentbadLabels = badLabelsbyFrame[currentFrame];
+    std::set<int> &currentbadLabels = badLabelsbyFrame[currentFrame];
 	std::set<int> &svmBadLabels = svmBadLabelsbyFrame[currentFrame];
 	std::set<int> &svmGoodLabels = svmGoodLabelsbyFrame[currentFrame];
 	cv::Mat preview = PictureVis::drawClassyMarkersOnPicture(original, markers,
@@ -120,11 +117,15 @@ void CreateClassifier::saveTrainingSamples()
 	}
 
 	decider->addTrainingSet(goodFeatures, badFeatures);
+    int size = decider->getTrainingSetSize();
+    trainingSetUpdated(size);
 }
 
 void CreateClassifier::applyTrainingSet()
 {
 	decider->createSVM();
+    double accuracy = decider->getAccuracy();
+    SVMTrained(accuracy);
 	perform();
 }
 

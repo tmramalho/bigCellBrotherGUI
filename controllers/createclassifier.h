@@ -32,6 +32,10 @@ public slots:
 	void markallGood();
 	void markallBad();
 
+signals:
+    void trainingSetUpdated(int size);
+    void SVMTrained(double result);
+
 private:
 	int currentFrame;
 	std::map<int, std::set<int> > svmGoodLabelsbyFrame;

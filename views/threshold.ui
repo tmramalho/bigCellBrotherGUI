@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>350</width>
-    <height>170</height>
+    <height>194</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -39,6 +39,9 @@
        </property>
        <property name="singleStep">
         <number>2</number>
+       </property>
+       <property name="value">
+        <number>27</number>
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -81,10 +84,13 @@
         <number>1</number>
        </property>
        <property name="maximum">
-        <number>60</number>
+        <number>255</number>
+       </property>
+       <property name="pageStep">
+        <number>30</number>
        </property>
        <property name="value">
-        <number>2</number>
+        <number>255</number>
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
