@@ -45,6 +45,7 @@ public:
 	static cv::Mat laplacian(cv::Mat &targetImage, int kernelSize);
 	static cv::Mat sobel(cv::Mat &targetImage, int kernelSize);
 	static cv::Mat harrisCorners(cv::Mat &targetImage, int blockSize, double k, double threshold);
+	static cv::Mat covariance(cv::Mat &targetImage, int window);
 	static bool checkIfEmpty(cv::Mat &origImage);
 };
 

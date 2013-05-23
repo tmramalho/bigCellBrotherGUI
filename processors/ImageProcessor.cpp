@@ -178,6 +178,32 @@ cv::Mat ImageProcessor::sobel(cv::Mat& targetImage, int kernelSize) {
 	return grad;
 }
 
+cv::Mat ImageProcessor::covariance(cv::Mat& targetImage, int window) {
+	cv::Mat kernel = cv::Mat::ones( window, window, CV_32F );
+	cv::Mat originalImage;
+	targetImage.convertTo(originalImage, CV_32F);
+	//calculate mean
+	cv::Mat mean(originalImage.size(), CV_32F);
+	cv::filter2D(originalImage, mean, -1, kernel, cv::Point(-1,-1), 0, cv::BORDER_WRAP);
+	//calculate second moment
+	cv::Mat squareImage(originalImage.size(), CV_32F);
+	cv::pow(originalImage, 2, squareImage);
+	cv::Mat varImage(originalImage.size(), CV_32F);
+	cv::filter2D(squareImage, varImage, -1, kernel, cv::Point(-1,-1), 0, cv::BORDER_WRAP);
+	cv::Mat meanSq(originalImage.size(), CV_32F);
+	cv::pow(mean, 2, meanSq);
+	cv::Mat variance = varImage - meanSq;
+
+	//rescale
+	double lapmin, lapmax;
+	cv::minMaxLoc(variance,&lapmin,&lapmax);
+
+	double scale = 255/ std::max(-lapmin,lapmax);
+	cv::Mat resultImage;
+	cv::convertScaleAbs(variance, resultImage, scale);
+	return resultImage;
+}
+
 bool ImageProcessor::checkIfEmpty(cv::Mat& origImage) {
 	if(origImage.type() != CV_8U) return true;
 

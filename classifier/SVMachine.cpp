@@ -76,8 +76,6 @@ void SVMachine::createSVM() {
 
 	model = svm_train(problem, parameters);
 
-	trainingLabels.clear();
-	trainingSet.clear();
 	trained = true;
 }
 
@@ -167,7 +165,7 @@ void SVMachine::findBestParameters() {
 			}
 		}
 	}
-	std::cout << "C: " << metaBest[0] << " g: " << metaBest[1] << " -> " << 100*best/problem->l << std::endl;
+	std::cerr << "C: " << metaBest[0] << " g: " << metaBest[1] << " -> " << 100*best/problem->l << std::endl;
 	parameters->C = metaBest[0];
 	parameters->gamma = metaBest[1];
 	delete target;
@@ -181,3 +179,19 @@ double SVMachine::crossValidate(double* target) {
 	}
 	return acc;
 }
+
+double SVMachine::getAccuracy() {
+	if(trained) {
+		int correct = 0;
+		int acc = 0;
+		for(unsigned int i = 0; i < trainingSet.size(); i++) {
+			double svmClass = svm_predict(model, trainingSet[i]);
+			if(svmClass == trainingLabels[i]) correct++;
+			acc++;
+		}
+		return correct / (double) acc;
+	} else {
+		return 0;
+	}
+}
+

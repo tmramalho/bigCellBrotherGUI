@@ -26,7 +26,8 @@ public:
 	bool classifyCell(std::vector<double>& probs);
 	void saveModel(std::string filename);
 	void loadModel(std::string filename);
-
+	double getAccuracy();
+	int getTrainingSetSize() const { return trainingSet.size(); }
 	bool isTrained() { return trained; }
 
 private:
