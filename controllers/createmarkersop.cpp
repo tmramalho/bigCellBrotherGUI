@@ -19,7 +19,17 @@ void CreateMarkersOp::execute()
 	cv::Mat originalImage = controller->getPipelineImage(2);
 	controller->is.setOriginalImage(originalImage);
 
-	controller->is.createMarkersIterative(originalImage, height, width, 27);
+    int window = controller->getPM()->getNamedParameter("ttw");
+    cv::Mat topHat = ImageProcessor::applyMorphologyOp(originalImage, cv::MORPH_TOPHAT, window);
+
+    cv::Mat blobs = ImageProcessor::adaptiveThreshold(originalImage, 0, window, true);
+    blobs = blobs - topHat - backgroundMask;
+
+    cv::Mat laplace = ImageProcessor::laplacian(originalImage, window);
+    cv::Mat distTrans = ImageProcessor::distanceTransform(blobs);
+    cv::Mat landscape = distTrans*0.7 + laplace*0.3 - topHat - backgroundMask;
+
+    controller->is.createMarkersIterative(originalImage, landscape, height, width);
 	controller->setPipelineImage(4, controller->is.getMarkersPic());
 }
 

@@ -12,7 +12,7 @@ TEMPLATE = app
 include(./views/views.pri)
 include(./controllers/controllers.pri)
 
-unix|win32|macx: LIBS += -L/opt/local/lib/ -L$$PWD/../bigCellBrother/Maclib/ -lbigCellBrother -lopencv_core -lopencv_highgui -lopencv_imgproc -ltiff
+unix|win32|macx: LIBS += -L/opt/local/lib/ -L$$PWD/../bigCellBrother/Maclib/ -lbigCellBrother -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_photo -ltiff
 
 INCLUDEPATH += $$PWD/../bigCellBrother
 DEPENDPATH += $$PWD/../bigCellBrother

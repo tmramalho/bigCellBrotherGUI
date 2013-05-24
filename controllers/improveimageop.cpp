@@ -4,6 +4,7 @@
 ImproveImageOp::ImproveImageOp(OperationsController *_controller)
 {
 	controller = _controller;
+    denoisingStrength = 3;
 	updateParameters();
 }
 
@@ -12,15 +13,36 @@ void ImproveImageOp::updateParameters() {
 	blurWindow = controller->getPM()->getNamedParameter("iibw");
 	stretchMinVal = controller->getPM()->getNamedParameter("iism");
 	doubleRes = controller->getPM()->getNamedParameter("iidr");
+    denoisingStrength = controller->getPM()->getNamedParameter("dns");
 }
 
 void ImproveImageOp::execute()
 {
 	cv::Mat prev = controller->getPipelineImage(1);
-	cv::Mat improveImg = ImageProcessor::simplifyImage(prev, blurWindow, stretchMinVal);
-	cv::Mat boostedImg = ImageProcessor::simplifyImage(prev, blurWindow, stretchMinVal, true);
-	cv::Mat improveImgPump;
-	cv::Mat boostedImgPump;
+    cv::Mat improveImg;
+    cv::Mat boostedImg;
+    cv::Mat improveImgPump;
+    cv::Mat boostedImgPump;
+
+    if(stretchMinVal > -1) {
+        improveImg = ImageProcessor::simplifyImage(prev, 0, stretchMinVal);
+        boostedImg = ImageProcessor::simplifyImage(prev, 0, stretchMinVal, true);
+    } else {
+        prev.copyTo(improveImg);
+        boostedImg = ImageProcessor::simplifyImage(prev, 0, 0, true);
+    }
+
+    if(denoisingStrength > 0) {
+        cv::fastNlMeansDenoising(improveImg, improveImg, denoisingStrength);
+    }
+
+    if(blurWindow > 0) {
+        cv::Mat tmp;
+        cv::GaussianBlur(improveImg, tmp, cv::Size(blurWindow,blurWindow), blurWindow);
+        cv::addWeighted(improveImg, 1.5, tmp, -0.5, 0, improveImg);
+        cv::GaussianBlur(boostedImg, tmp, cv::Size(blurWindow,blurWindow), blurWindow);
+        cv::addWeighted(boostedImg, 1.5, tmp, -0.5, 0, boostedImg);
+    }
 
 	if(doubleRes == 0) {
 		improveImgPump = improveImg;
@@ -64,7 +86,14 @@ void ImproveImageOp::updateDoubleRes(int dr)
 {
 	doubleRes = dr;
 	controller->getPM()->setNamedParameter("iidr", doubleRes);
-	perform();
+    perform();
+}
+
+void ImproveImageOp::updateNoise(int ds)
+{
+    denoisingStrength = ds;
+    controller->getPM()->setNamedParameter("dns", denoisingStrength);
+    perform();
 }
 
 

@@ -38,8 +38,8 @@ void OperationsController::setupPipeline(cv::Mat initialFrame)
 
 cv::Mat OperationsController::runFullPipeline()
 {
-	runPipelineUntil("Watershed");
-	return pipelineImages[5];
+    runPipelineUntil("Classifier");
+    return pipelineImages[6];
 }
 
 void OperationsController::addOperation(std::string name, Operation *op)

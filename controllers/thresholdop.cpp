@@ -22,25 +22,31 @@ void ThresholdOp::updateParameters() {
 void ThresholdOp::execute()
 {
 	cv::Mat prev = controller->getPipelineImage(2);
-    /*cv::Mat thImage = ImageProcessor::adaptiveThreshold(prev, threshold, window, true);
-	thImage = ImageProcessor::invertImage(thImage);
-    thImage = ImageProcessor::erode(thImage, 7);*/
 
-	cv::Mat bgImage = ImageProcessor::adaptiveThreshold(prev, thresholdBG, window, false);
-    bgImage = ImageProcessor::applyMorphologyOp(bgImage, cv::MORPH_CLOSE, 3);
-    //bgImage = ImageProcessor::applyMorphologyOp(bgImage, cv::MORPH_OPEN, 3);
+    cv::Mat background = ImageProcessor::adaptiveThreshold(prev, thresholdBG, window, false, cv::ADAPTIVE_THRESH_MEAN_C);
 
-	cv::Mat background = bgImage;
-
+    //global threshold
     if(thresholdTH > 0) {
         cv::Mat filledBG = ImageProcessor::threshold(prev, thresholdTH, false);
         filledBG = ImageProcessor::applyMorphologyOp(filledBG, cv::MORPH_CLOSE, 3);
 		cv::add(background, filledBG, background);
     }
 
-    //controller->setPipelineImage(22, thImage);
-	controller->setPipelineImage(23, bgImage);
-	controller->setPipelineImage(24, background);
+    //remove large smooth areas
+    if(threshold > 0) {
+        cv::Mat smoothBG;
+        cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(window, window));
+        cv::morphologyEx(prev, smoothBG, cv::MORPH_TOPHAT, kernel);
+        cv::dilate(smoothBG, smoothBG, kernel);
+        cv::threshold(smoothBG, smoothBG, threshold, 255, cv::THRESH_BINARY_INV);
+        cv::morphologyEx(smoothBG, smoothBG, cv::MORPH_OPEN, kernel);
+        cv::add(background, smoothBG, background);
+    }
+
+    //remove small specks
+    background = ImageProcessor::applyMorphologyOp(background, cv::MORPH_OPEN, 3);
+
+    controller->setPipelineImage(24, background);
 }
 
 void ThresholdOp::createPreview()

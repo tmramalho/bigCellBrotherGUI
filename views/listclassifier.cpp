@@ -30,6 +30,6 @@ void ListClassifier::setTrainingSetSize(int size)
 
 void ListClassifier::setSVMTrained(double result)
 {
-    int percent = (int) result*100;
+    int percent = (int) (result*100);
     ui->trainedLabel->setText(tr("Classifier ready with %1 \% accuracy").arg(percent));
 }

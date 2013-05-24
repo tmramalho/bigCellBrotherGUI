@@ -9,6 +9,7 @@ ParameterLoader::ParameterLoader()
 	parameters["xe"]  = 100;
 	parameters["yb"]  = 0;
 	parameters["ye"]  = 100;
+    parameters["dns"] = 3;
 	parameters["iibw"]  = 0;
 	parameters["iism"]  = 0;
 	parameters["iidr"]  = 0;

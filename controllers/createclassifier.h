@@ -38,6 +38,8 @@ signals:
 
 private:
 	int currentFrame;
+    std::vector<std::vector<double> > goodFeatures;
+    std::vector<std::vector<double> > badFeatures;
 	std::map<int, std::set<int> > svmGoodLabelsbyFrame;
 	std::map<int, std::set<int> > svmBadLabelsbyFrame;
 	std::map<int, std::set<int> > goodLabelsbyFrame;

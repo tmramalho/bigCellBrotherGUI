@@ -99,9 +99,7 @@ void CreateClassifier::saveTrainingSamples()
 	cv::Mat markers = controller->getPipelineImage(5);
 	cv::Mat currentLabelMask(markers.size(), CV_8U);
 	double min, max;
-	cv::minMaxLoc(markers, &min, &max);
-	std::vector<std::vector<double> > goodFeatures;
-	std::vector<std::vector<double> > badFeatures;
+    cv::minMaxLoc(markers, &min, &max);
 	for(int i = 2; i < max+1; i++) {
 		bool isBadCell = currentbadLabels.count(i) > 0;
 		bool isGoodCell = currentgoodLabels.count(i) > 0;
@@ -114,18 +112,24 @@ void CreateClassifier::saveTrainingSamples()
 		} else {
 			goodFeatures.push_back(selectedCell.getFeatures());
 		}
-	}
+    }
 
-	decider->addTrainingSet(goodFeatures, badFeatures);
-    int size = decider->getTrainingSetSize();
+    int size = goodFeatures.size() + badFeatures.size();
     trainingSetUpdated(size);
 }
 
 void CreateClassifier::applyTrainingSet()
 {
-	decider->createSVM();
+    decider->addTrainingSet(goodFeatures, badFeatures);
+    decider->createSVM();
     double accuracy = decider->getAccuracy();
+    std::cout << accuracy << std::endl;
     SVMTrained(accuracy);
+    goodFeatures.clear();
+    badFeatures.clear();
+    svmBadLabelsbyFrame.clear();
+    svmGoodLabelsbyFrame.clear();
+    trainingSetUpdated(0);
 	perform();
 }
 
