@@ -13,6 +13,7 @@ SVMachine::SVMachine(int nf) {
 	model = new svm_model;
 	problem = new svm_problem;
 	numFeatures = nf;
+	accuracy = 0;
 	a.resize(numFeatures, 0);
 	b.resize(numFeatures, 0);
 	svm_set_print_string_function(&(SVMachine::dummy));
@@ -75,6 +76,9 @@ void SVMachine::createSVM() {
 	findBestParameters();
 
 	model = svm_train(problem, parameters);
+	calcAcc();
+	trainingLabels.clear();
+	trainingSet.clear();
 
 	trained = true;
 }
@@ -165,7 +169,7 @@ void SVMachine::findBestParameters() {
 			}
 		}
 	}
-	std::cerr << "C: " << metaBest[0] << " g: " << metaBest[1] << " -> " << 100*best/problem->l << std::endl;
+	std::cout << "C: " << metaBest[0] << " g: " << metaBest[1] << " -> " << 100*best/problem->l << std::endl;
 	parameters->C = metaBest[0];
 	parameters->gamma = metaBest[1];
 	delete target;
@@ -180,18 +184,13 @@ double SVMachine::crossValidate(double* target) {
 	return acc;
 }
 
-double SVMachine::getAccuracy() {
-	if(trained) {
-		int correct = 0;
-		int acc = 0;
-		for(unsigned int i = 0; i < trainingSet.size(); i++) {
-			double svmClass = svm_predict(model, trainingSet[i]);
-			if(svmClass == trainingLabels[i]) correct++;
-			acc++;
-		}
-		return correct / (double) acc;
-	} else {
-		return 0;
+void SVMachine::calcAcc() {
+	int correct = 0;
+	int acc = 0;
+	for(unsigned int i = 0; i < trainingSet.size(); i++) {
+		double svmClass = svm_predict(model, trainingSet[i]);
+		if(svmClass == trainingLabels[i]) correct++;
+		acc++;
 	}
+	accuracy = (double) correct / (double) acc;
 }
-

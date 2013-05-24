@@ -46,14 +46,14 @@ cv::Mat ImageProcessor::threshold(cv::Mat &origImage, int thresholdVal, bool inv
 	return binaryImage;
 }
 
-cv::Mat ImageProcessor::adaptiveThreshold(cv::Mat &origImage, int thresholdVal, int adaptiveWindow, bool invert) {
+cv::Mat ImageProcessor::adaptiveThreshold(cv::Mat &origImage, int thresholdVal, int adaptiveWindow, bool invert, int method) {
 	cv::Mat binaryImage;
 
 	if(invert) {
-		cv::adaptiveThreshold(origImage, binaryImage, WHITE, cv::ADAPTIVE_THRESH_GAUSSIAN_C ,
+		cv::adaptiveThreshold(origImage, binaryImage, WHITE, method,
 					cv::THRESH_BINARY_INV, adaptiveWindow, thresholdVal);
 	} else {
-		cv::adaptiveThreshold(origImage, binaryImage, WHITE, cv::ADAPTIVE_THRESH_GAUSSIAN_C ,
+		cv::adaptiveThreshold(origImage, binaryImage, WHITE, method,
 					cv::THRESH_BINARY, adaptiveWindow, thresholdVal);
 	}
 

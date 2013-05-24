@@ -35,22 +35,13 @@ void ImageSegmentor::addBackgroundMask() {
 	}
 }
 
-void ImageSegmentor::createMarkersIterative(cv::Mat& origImage, int maxHeight,
-		int maxWidth, int window) {
+void ImageSegmentor::createMarkersIterative(cv::Mat& origImage, cv::Mat &landscape,
+		int maxHeight, int maxWidth) {
 	std::vector< vector<cv::Point> > ctours;
 	std::vector<cv::Vec4i> hrchy;
 	double hDim, wDim;
 	cv::Mat targets(origImage.size(), CV_8U, cv::Scalar::all(BLACK));
-	cv::Mat topHat = ImageProcessor::applyMorphologyOp(origImage, cv::MORPH_TOPHAT, window);
-	cv::Mat laplace = ImageProcessor::laplacian(origImage, 27);
 
-	cv::Mat blobs = ImageProcessor::adaptiveThreshold(origImage, 0, window, true);
-	blobs = blobs - backgroundMask;
-	blobs = ImageProcessor::applyMorphologyOp(blobs, cv::MORPH_CLOSE, 3);
-	blobs = ImageProcessor::applyMorphologyOp(blobs, cv::MORPH_OPEN, 3);
-	cv::Mat distTrans = ImageProcessor::distanceTransform(blobs);
-	cv::Mat landscape = distTrans*0.7 + laplace*0.3 - topHat - backgroundMask;
-	//cv::imshow("landscape", landscape);
 
 	for (int th = 20; th < 250; th += 10) { //increase threshold for distance transf.
 		cv::Mat threshResult = ImageProcessor::threshold(landscape, th, false);

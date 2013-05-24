@@ -32,7 +32,7 @@ public:
 	//basic image processing stuff
 	static cv::Mat simplifyImage(cv::Mat &origImage, int blurWindow, int stretchMinVal, int equalize = false);
 	static cv::Mat threshold(cv::Mat &origImage, int thresholdVal, bool invert);
-	static cv::Mat adaptiveThreshold(cv::Mat &origImage, int thresholdVal, int adaptiveWindow, bool invert);
+	static cv::Mat adaptiveThreshold(cv::Mat &origImage, int thresholdVal, int adaptiveWindow, bool invert, int method = cv::ADAPTIVE_THRESH_GAUSSIAN_C);
 	static cv::Mat applyMorphologyOp(cv::Mat &origImage, int operation, int kernelSize);
 	static cv::Mat floodBackground(cv::Mat &origImage, int x, int y, int bound);
 	static cv::Mat cannyOp(cv::Mat &origImage, int ub, int lb, int windowSize);

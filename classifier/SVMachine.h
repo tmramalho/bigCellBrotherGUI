@@ -26,7 +26,7 @@ public:
 	bool classifyCell(std::vector<double>& probs);
 	void saveModel(std::string filename);
 	void loadModel(std::string filename);
-	double getAccuracy();
+	double getAccuracy() const { return accuracy; }
 	int getTrainingSetSize() const { return trainingSet.size(); }
 	bool isTrained() { return trained; }
 
@@ -36,6 +36,7 @@ private:
 	inline void rescaleNode(svm_node *node);
 	void findBestParameters();
 	double crossValidate(double *target);
+	void calcAcc();
 	static void dummy(const char *) {}
 	svm_model *model;
 	svm_problem *problem;
@@ -47,6 +48,7 @@ private:
 	std::vector<double> min;
 	std::vector<double> a;
 	std::vector<double> b;
+	double accuracy;
 	int numFeatures;
 };
 

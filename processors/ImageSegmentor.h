@@ -35,7 +35,8 @@ public:
 	~ImageSegmentor();
 
 	void createMarkers(cv::Mat& origImage, int maxHeight, int maxWidth);
-	void createMarkersIterative(cv::Mat& origImage, int maxHeight, int maxWidth, int window);
+	void createMarkersIterative(cv::Mat& origImage, cv::Mat &landscape,
+			int maxHeight, int maxWidth);
 	void watershed();
 	void removeSmallMarkers(int th);
 	void smoothLabels(int kernelSize);
