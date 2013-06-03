@@ -25,7 +25,8 @@ void CreateMarkersOp::execute()
     cv::Mat blobs = ImageProcessor::adaptiveThreshold(originalImage, 0, window, true);
     blobs = blobs - topHat - backgroundMask;
 
-    cv::Mat laplace = ImageProcessor::laplacian(originalImage, window);
+    int laplaceWindow = (window < 32) ? window : 31;
+    cv::Mat laplace = ImageProcessor::laplacian(originalImage, laplaceWindow);
     cv::Mat distTrans = ImageProcessor::distanceTransform(blobs);
     cv::Mat landscape = distTrans*0.7 + laplace*0.3 - topHat - backgroundMask;
 
