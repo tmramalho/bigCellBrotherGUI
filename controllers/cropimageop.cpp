@@ -36,6 +36,7 @@ void CropImageOp::createPreview()
 
 void CropImageOp::updateXBegin(int pos)
 {
+    if(pos >= xe) return;
 	xb = pos;
 	controller->getPM()->setNamedParameter("xb", xb);
 	perform();
@@ -43,6 +44,7 @@ void CropImageOp::updateXBegin(int pos)
 
 void CropImageOp::updateXEnd(int pos)
 {
+    if(pos <= xb) return;
 	xe = pos;
 	controller->getPM()->setNamedParameter("xe", xe);
 	perform();
@@ -50,6 +52,7 @@ void CropImageOp::updateXEnd(int pos)
 
 void CropImageOp::updateYBegin(int pos)
 {
+    if(pos >= ye) return;
 	yb = pos;
 	controller->getPM()->setNamedParameter("yb", yb);
 	perform();
@@ -57,6 +60,7 @@ void CropImageOp::updateYBegin(int pos)
 
 void CropImageOp::updateYEnd(int pos)
 {
+    if(pos <= yb) return;
 	ye = pos;
 	controller->getPM()->setNamedParameter("ye", ye);
 	perform();

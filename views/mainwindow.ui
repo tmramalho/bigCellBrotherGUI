@@ -193,15 +193,8 @@
     </property>
     <addaction name="actionHelp"/>
    </widget>
-   <widget class="QMenu" name="menuActions">
-    <property name="title">
-     <string>Actions</string>
-    </property>
-    <addaction name="actionApply"/>
-   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
-   <addaction name="menuActions"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -218,6 +211,8 @@
    <addaction name="zoomOutAct"/>
    <addaction name="normalSizeAct"/>
    <addaction name="fitToWindowAct"/>
+   <addaction name="separator"/>
+   <addaction name="actionApply"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">

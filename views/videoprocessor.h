@@ -4,6 +4,8 @@
 #include <QDialog>
 #include <QFileDialog>
 #include <QDir>
+#include <QFuture>
+#include <QtConcurrentRun>
 #include "executesequence.h"
 
 namespace Ui {
@@ -25,11 +27,7 @@ public slots:
 private slots:
 	void on_pickDOT_clicked();
 
-	void on_pickCSV_clicked();
-
 	void on_goButton_clicked();
-
-	void on_pickAVI_clicked();
 
 private:
 	Ui::VideoProcessor *ui;

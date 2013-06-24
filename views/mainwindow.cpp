@@ -138,7 +138,7 @@ void MainWindow::openImage() {
 		else if(ext == "tif" || ext == "tiff")
             videoBox = new TiffContainer();
 		else {
-			QMessageBox::information(this, tr("Image Viewer"),
+            QMessageBox::information(this, tr("Big Cell Brother"),
 									 tr("%1 is not a supported format.").arg(fileName));
 			return;
 		}
@@ -149,7 +149,7 @@ void MainWindow::openImage() {
         videoBox->openFile(filenameString);
 
         if (!videoBox->isLoaded()) {
-			QMessageBox::information(this, tr("Image Viewer"),
+            QMessageBox::information(this, tr("Big Cell Brother"),
 									 tr("Cannot load %1.").arg(fileName));
 		return;
 	}
@@ -201,7 +201,7 @@ void MainWindow::openImageFluorescent()
 		else if(ext == "tif" || ext == "tiff")
             videoBoxFluorescence = new TiffContainer();
 		else {
-			QMessageBox::information(this, tr("Image Viewer"),
+            QMessageBox::information(this, tr("Big Cell Brother"),
 									 tr("%1 is not a supported format.").arg(fileName));
 			return;
 		}
@@ -212,9 +212,12 @@ void MainWindow::openImageFluorescent()
         videoBoxFluorescence->openFile(filenameString);
 
         if (!videoBoxFluorescence->isLoaded()) {
-			QMessageBox::information(this, tr("Image Viewer"),
+            QMessageBox::information(this, tr("Big Cell Brother"),
 									 tr("Cannot load %1.").arg(fileName));
-		}
+        } else {
+            QMessageBox::information(this, tr("Big Cell Brother"),
+                                     tr("Successfully loaded %1. The fluorescence values will show up upon export").arg(fileName));
+        }
 
 		sp->setFluorFileSource(videoBoxFluorescence);
 

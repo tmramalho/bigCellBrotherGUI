@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>350</width>
-    <height>239</height>
+    <height>241</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -55,25 +55,6 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="0" colspan="2">
-      <widget class="QSlider" name="smoothSlider">
-       <property name="minimum">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <number>41</number>
-       </property>
-       <property name="singleStep">
-        <number>2</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="tickPosition">
-        <enum>QSlider::TicksBelow</enum>
-       </property>
-      </widget>
-     </item>
      <item row="8" column="0">
       <widget class="QLabel" name="label_3">
        <property name="text">
@@ -81,7 +62,14 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0" colspan="2">
+     <item row="6" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Sharpening</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
       <widget class="QSlider" name="contrastSlider">
        <property name="minimum">
         <number>-1</number>
@@ -97,14 +85,7 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Sharpening</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0" colspan="2">
+     <item row="5" column="0">
       <widget class="QSlider" name="noiseSlider">
        <property name="minimum">
         <number>0</number>
@@ -129,6 +110,52 @@
        </property>
        <property name="tickInterval">
         <number>3</number>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QSlider" name="smoothSlider">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>41</number>
+       </property>
+       <property name="singleStep">
+        <number>2</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="tickPosition">
+        <enum>QSlider::TicksBelow</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QSpinBox" name="contrastBox">
+       <property name="minimum">
+        <number>-1</number>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QSpinBox" name="noiseBox">
+       <property name="maximum">
+        <number>27</number>
+       </property>
+       <property name="value">
+        <number>3</number>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QSpinBox" name="smoothBox">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>41</number>
        </property>
       </widget>
      </item>

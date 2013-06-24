@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>350</width>
-    <height>198</height>
+    <height>222</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -21,44 +21,8 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Remove markers smaller than</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QSlider" name="sizeSlider">
-       <property name="minimum">
-        <number>3</number>
-       </property>
-       <property name="maximum">
-        <number>300</number>
-       </property>
-       <property name="singleStep">
-        <number>2</number>
-       </property>
-       <property name="value">
-        <number>3</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="tickPosition">
-        <enum>QSlider::TicksBelow</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Smoothing</string>
-       </property>
-      </widget>
-     </item>
-     <item>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="3" column="0">
       <widget class="QSlider" name="smoothingSlider">
        <property name="minimum">
         <number>1</number>
@@ -83,14 +47,14 @@
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QLabel" name="label_3">
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Step (small values are slower but better)</string>
+        <string>Smoothing</string>
        </property>
       </widget>
      </item>
-     <item>
+     <item row="5" column="0">
       <widget class="QSlider" name="stepSlider">
        <property name="minimum">
         <number>3</number>
@@ -99,7 +63,7 @@
         <number>100</number>
        </property>
        <property name="value">
-        <number>50</number>
+        <number>20</number>
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -109,13 +73,91 @@
        </property>
       </widget>
      </item>
-     <item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Step (small values are slower but better)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
       <widget class="QCheckBox" name="checkBox">
        <property name="enabled">
         <bool>true</bool>
        </property>
        <property name="text">
         <string>Remove cells touching border</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Remove markers smaller than</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QSlider" name="sizeSlider">
+       <property name="minimum">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <number>300</number>
+       </property>
+       <property name="singleStep">
+        <number>2</number>
+       </property>
+       <property name="value">
+        <number>3</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="tickPosition">
+        <enum>QSlider::TicksBelow</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QSpinBox" name="sizeBox">
+       <property name="minimum">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <number>300</number>
+       </property>
+       <property name="singleStep">
+        <number>2</number>
+       </property>
+       <property name="value">
+        <number>3</number>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QSpinBox" name="smoothingBox">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>11</number>
+       </property>
+       <property name="singleStep">
+        <number>2</number>
+       </property>
+       <property name="value">
+        <number>1</number>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QSpinBox" name="stepBox">
+       <property name="minimum">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <number>100</number>
        </property>
       </widget>
      </item>

@@ -21,15 +21,8 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Width</string>
-       </property>
-      </widget>
-     </item>
-     <item>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="1" column="0">
       <widget class="QSlider" name="widthSlider">
        <property name="minimum">
         <number>5</number>
@@ -48,14 +41,27 @@
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QLabel" name="label_2">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
        <property name="text">
-        <string>Height</string>
+        <string>Width</string>
        </property>
       </widget>
      </item>
-     <item>
+     <item row="1" column="1">
+      <widget class="QSpinBox" name="widthBox">
+       <property name="minimum">
+        <number>5</number>
+       </property>
+       <property name="maximum">
+        <number>200</number>
+       </property>
+       <property name="value">
+        <number>10</number>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
       <widget class="QSlider" name="heightSlider">
        <property name="minimum">
         <number>5</number>
@@ -71,6 +77,26 @@
        </property>
        <property name="tickPosition">
         <enum>QSlider::TicksBelow</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Height</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QSpinBox" name="heightBox">
+       <property name="minimum">
+        <number>5</number>
+       </property>
+       <property name="maximum">
+        <number>200</number>
+       </property>
+       <property name="value">
+        <number>80</number>
        </property>
       </widget>
      </item>

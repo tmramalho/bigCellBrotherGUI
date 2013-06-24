@@ -29,40 +29,21 @@ void VideoProcessor::on_pickDOT_clicked()
 
 	QString filename = QFileDialog::getSaveFileName(this,
 									   tr("Save File as.."), QDir::homePath(),
-										tr("Dot files(*.dot)"));
+                                        tr("Avi files(*.avi)"));
 	QByteArray ba = filename.toLocal8Bit();
 	const char *c_str = ba.data();
-	const std::string filenameString(c_str);
-	ui->dotFileLabel->setText(tr("DOT file %1").arg(filename));
-	es->setDotFilename(filenameString);
-}
-
-void VideoProcessor::on_pickCSV_clicked()
-{
-	QString filename = QFileDialog::getSaveFileName(this,
-									   tr("Save File as.."), QDir::homePath(),
-										tr("CSV files(*.csv)"));
-	QByteArray ba = filename.toLocal8Bit();
-	const char *c_str = ba.data();
-	const std::string filenameString(c_str);
-	ui->csvFileLabel->setText(tr("CSV file %1").arg(filename));
-	es->setCsvFilename(filenameString);
+    std::string filenameString(c_str);
+    es->setAviFilename(filenameString);
+    size_t index = 0;
+    index = filenameString.find("avi", index);
+    filenameString.replace(index, 3, "csv");
+    es->setCsvFilename(filenameString);
+    filenameString.replace(index, 3, "dot");
+    es->setDotFilename(filenameString);
 }
 
 void VideoProcessor::on_goButton_clicked()
 {
 	ui->goButton->setEnabled(false);
-	es->run();
-}
-
-void VideoProcessor::on_pickAVI_clicked()
-{
-	QString filename = QFileDialog::getSaveFileName(this,
-									   tr("Save File as.."), QDir::homePath(),
-										tr("AVI files(*.avi)"));
-	QByteArray ba = filename.toLocal8Bit();
-	const char *c_str = ba.data();
-	const std::string filenameString(c_str);
-	ui->videoFileLabel->setText(tr("Video file %1").arg(filename));
-	es->setAviFilename(filenameString);
+    QFuture<void> future = QtConcurrent::run(es, &ExecuteSequence::run);
 }

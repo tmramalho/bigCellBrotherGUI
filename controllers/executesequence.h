@@ -16,13 +16,12 @@ public:
 	ExecuteSequence(OperationsController *opCtr);
 	void debugSequence(int frameNum);
 	void setFileSource(FileContainer *source) { fs = source; }
-	void setFluorFileSource(FileContainer *source) { ffs = source; haveFluorescence = true; }
+    void setFluorFileSource(FileContainer *source);
 	void setDotFilename(std::string fn) { dotFilename = fn; }
 	void setCsvFilename(std::string fn) { csvFilename = fn; }
 	void setAviFilename(std::string fn) { aviFilename = fn; }
 
-public slots:
-	void run();
+    void run();
 
 signals:
 	void incrementProgress(int);
