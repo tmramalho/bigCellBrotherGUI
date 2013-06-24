@@ -34,6 +34,7 @@ public:
 	void showCurrentPreview();
 	void showSelectedPreview(cv::Mat result);
 	void updateSelectedOperationPreview(std::string op);
+    void setOperationState(std::string op);
 	cv::Mat getPreviewForOperation(std::string op);
 	cv::Mat cropImage(cv::Mat &image);
 

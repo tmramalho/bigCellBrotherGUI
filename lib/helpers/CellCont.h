@@ -45,8 +45,8 @@ public:
 											int i, int smRadius = 27);
 	static void detectHeightWidth(cv::RotatedRect &box, double *hDim, double *wDim);
 	static double calcDistance(CellCont &first, CellCont &second);
-	static void calcFluorescence(CellCont& target, cv::Mat &currentLabelMask,
-								cv::Mat &fluorescencePic);
+    static void calcFluorescence(CellCont& target, cv::Mat &currentLabelMask,
+                                std::vector<cv::Mat> &fluorescenceArr);
 
 	int getCurLabel() const;
 	void setCurLabel(int curLabel);
@@ -60,8 +60,8 @@ public:
 	void setTime(double time);
 	bool getIsCell() const;
 	void setIsCell(bool isCell);
-	double getFluorescence() const;
-	void setFluorescence(double fluorescence);
+    std::vector<double> getFluorescence() const;
+    void setFluorescence(double fluorescence, int j);
 	static int getNumFeatures() { return NUMFEATURES; }
 	double getAngle() const { return angle; }
 	void setAngle(double angle) { this->angle = angle; }
@@ -74,7 +74,7 @@ private:
 	cv::Rect boundBox;
 	int curLabel;
 	bool isCell;
-	double fluorescence;
+    std::vector<double> fluorescence;
 	//tracking stuff
 	int prevLabel;
 	double time;

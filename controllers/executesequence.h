@@ -2,6 +2,7 @@
 #define EXECUTESEQUENCE_H
 
 #include <QObject>
+#include <vector>
 #include "operationscontroller.h"
 #include "lib/files/filecontainer.h"
 #include "lib/processors/ScientificProcessor.h"
@@ -14,6 +15,7 @@ class ExecuteSequence : public QObject
 public:
 
 	ExecuteSequence(OperationsController *opCtr);
+    ~ExecuteSequence();
 	void debugSequence(int frameNum);
 	void setFileSource(FileContainer *source) { fs = source; }
     void setFluorFileSource(FileContainer *source);
@@ -30,7 +32,7 @@ signals:
 private:
 	OperationsController *ops;
 	FileContainer *fs;
-	FileContainer *ffs;
+    std::vector<FileContainer *> ffs;
 	std::string dotFilename;
 	std::string csvFilename;
 	std::string aviFilename;

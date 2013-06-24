@@ -9,7 +9,6 @@
 
 CellCont::CellCont() {
 	prevLabel = -1;
-	fluorescence = -1;
 	time = 0;
 	isCell = false;
 	curLabel = -1;
@@ -177,24 +176,23 @@ double CellCont::calcDistance(CellCont& first, CellCont& second) {
 }
 
 void CellCont::calcFluorescence(CellCont& target, cv::Mat &currentLabelMask,
-								cv::Mat &fluorescencePic) {
-	//look only at roi
-	cv::Rect roi = target.getBoundBox();
-	cv::Mat trimFlPic = fluorescencePic(roi);
-	cv::Mat trimLabelMask = currentLabelMask(roi);
-	//mask
-	cv::Mat maskFlPic;
-	trimFlPic.copyTo(maskFlPic, trimLabelMask);
-	cv::Mat result;
-	cv::integral(maskFlPic,result);
-	double integral = result.at<double>(result.rows-1, result.cols-1);
-	target.setFluorescence(integral);
-	/*cv::imshow("FL cropped",maskFlPic);
-	cv::imshow("FL full",fluorescencePic);
-	cv::imshow("Mask cropped",trimLabelMask);
-	cv::imshow("Mask full",currentLabelMask);
-	cv::waitKey(0);
-	*/
+                                std::vector<cv::Mat> &fluorescenceArr) {
+    if(fluorescenceArr.size() < 1) return;
+    target.fluorescence.resize(fluorescenceArr.size());
+    for(unsigned int j = 0; j < fluorescenceArr.size(); j++) {
+        cv::Mat fluorescencePic = fluorescenceArr[j];
+        //look only at roi
+        cv::Rect roi = target.getBoundBox();
+        cv::Mat trimFlPic = fluorescencePic(roi);
+        cv::Mat trimLabelMask = currentLabelMask(roi);
+        //mask
+        cv::Mat maskFlPic;
+        trimFlPic.copyTo(maskFlPic, trimLabelMask);
+        cv::Mat result;
+        cv::integral(maskFlPic,result);
+        double integral = result.at<double>(result.rows-1, result.cols-1);
+        target.fluorescence[j] = integral;
+    }
 }
 
 std::set<int> CellCont::findNearestNeigbors(cv::Rect &bbox,
@@ -238,12 +236,12 @@ void CellCont::setIsCell(bool isCell) {
 	this->isCell = isCell;
 }
 
-double CellCont::getFluorescence() const {
+std::vector<double> CellCont::getFluorescence() const {
 	return fluorescence;
 }
 
-void CellCont::setFluorescence(double fluorescence) {
-	this->fluorescence = fluorescence;
+void CellCont::setFluorescence(double fl, int j) {
+    fluorescence[j] = fl;
 }
 
 

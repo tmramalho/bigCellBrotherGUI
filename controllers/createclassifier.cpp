@@ -71,6 +71,7 @@ void CreateClassifier::frameChanged(int fr)
 
 void CreateClassifier::cellPicked(int i, int j, int bt)
 {
+    std::cout << controller->getCurrentStep() << std::endl;
 	if(controller->getCurrentStep() != "Classifier") return;
 	cv::Mat markers = controller->getPipelineImage(5);
 	int label = markers.at<int>(i, j);

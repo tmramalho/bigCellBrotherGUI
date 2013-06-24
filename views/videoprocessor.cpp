@@ -12,6 +12,7 @@ void VideoProcessor::setExecutor(ExecuteSequence *esP)
 {
 	es = esP;
 	QObject::connect(es, SIGNAL(incrementProgress(int)), this, SLOT(incrementProgress(int)));
+    QObject::connect(es, SIGNAL(sequenceDone()), this, SLOT(exportDone()));
 }
 
 VideoProcessor::~VideoProcessor()
@@ -21,7 +22,12 @@ VideoProcessor::~VideoProcessor()
 
 void VideoProcessor::incrementProgress(int c)
 {
-	ui->progressBar->setValue(c);
+    ui->progressBar->setValue(c);
+}
+
+void VideoProcessor::exportDone()
+{
+    ui->pickDOT->setEnabled(true);
 }
 
 void VideoProcessor::on_pickDOT_clicked()
@@ -40,10 +46,12 @@ void VideoProcessor::on_pickDOT_clicked()
     es->setCsvFilename(filenameString);
     filenameString.replace(index, 3, "dot");
     es->setDotFilename(filenameString);
+    ui->goButton->setEnabled(true);
 }
 
 void VideoProcessor::on_goButton_clicked()
 {
 	ui->goButton->setEnabled(false);
+    ui->pickDOT->setEnabled(false);
     QFuture<void> future = QtConcurrent::run(es, &ExecuteSequence::run);
 }

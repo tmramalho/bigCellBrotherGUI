@@ -33,8 +33,7 @@ public:
 	void printStatistics();
 	void createDotFile(std::string filename);
 	void createCsvFile(std::string filename);
-    cv::Mat getFluorescencePic() const;
-    void setFluorescencePic(cv::Mat fluorescencePic);
+    void addFluorescencePic(cv::Mat fluorescencePic, int j);
     cv::Mat getMarkersPic() const;
     void setMarkersPic(cv::Mat markersPic);
 	bool isUseFluor() const;
@@ -51,7 +50,7 @@ private:
 	std::vector<std::vector<CellCont> > allCells;
 	cv::Mat markersPic;
 	cv::Mat previousMarkersPic;
-	cv::Mat fluorescencePic;
+    std::vector<cv::Mat> fluorescenceArray;
 	bool useFluor;
 	bool firstFrame;
 };

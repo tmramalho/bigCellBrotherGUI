@@ -34,7 +34,7 @@ void ScientificProcessor::processLabels(int t) {
 		CellCont newCell = CellCont::determineLabelProperties(currentLabelMask, markersPic, i);
 		newCell.setTime(t);
 		//std::cout << "Looking at cell " << i << std::endl;
-		if(useFluor) CellCont::calcFluorescence(newCell, currentLabelMask, fluorescencePic);
+        CellCont::calcFluorescence(newCell, currentLabelMask, fluorescenceArray);
 		if(!firstFrame) {
 			int parent = calculateMaxOverlap(newCell, currentLabelMask, labels);
 			newCell.setPrevLabel(parent);
@@ -87,34 +87,40 @@ void ScientificProcessor::createDotFile(std::string filename) {
 
 void ScientificProcessor::createCsvFile(std::string filename) {
 	std::fstream filestr(filename.c_str(), std::fstream::trunc | std::fstream::out);
-	filestr << "t, label, cx, cy, h, w, area, angle, fl" << std::endl;
+    filestr << "t, label, parent, cx, cy, h, w, area, angle, fl" << std::endl;
 	for(unsigned int i = 0; i < allCells.size(); i++) {
 		std::vector<CellCont> currCells = allCells[i];
 		for(unsigned int j = 0; j < currCells.size(); j++) {
 			filestr << i << ", " << currCells[j].getCurLabel() << ", ";
+            filestr << i << ", " << currCells[j].getPrevLavel() << ", ";
 			cv::Point2f center = currCells[j].getCenter();
 			filestr << center.x << ", " << center.y << ", ";
 			std::vector <double> feats = currCells[j].getFeatures();
 			filestr << feats[0] << ", " << feats[1] << ", " << feats[2] << ", ";
-			filestr << currCells[j].getAngle() << ", ";
-			filestr << currCells[j].getFluorescence() << std::endl;
+            filestr << currCells[j].getAngle();
+            std::vector <double> flVal = currCells[j].getFluorescence();
+            for(unsigned int j = 0; j < flVal.size(); j++) {
+                filestr << ", " << flVal[j];
+            }
+            filestr << std::endl;
 		}
 	}
 
 	filestr.close();
 }
 
-cv::Mat ScientificProcessor::getFluorescencePic() const {
-	return fluorescencePic;
-}
-
-void ScientificProcessor::setFluorescencePic(cv::Mat fluorescencePic) {
+void ScientificProcessor::addFluorescencePic(cv::Mat fluorescencePic, int j) {
+    cv::Mat target;
 	if(fluorescencePic.rows != markersPic.rows || fluorescencePic.cols != markersPic.cols) {
 		std::cerr << "The fluorescence pic is wrong" << std::endl;
 		std::cerr << fluorescencePic.rows << ", " << fluorescencePic.cols << std::endl;
 		std::cerr << markersPic.rows << ", " << markersPic.cols << std::endl;
 	}
-	fluorescencePic.convertTo(this->fluorescencePic, CV_64F, 1, 0);
+    fluorescencePic.convertTo(target, CV_64F, 1, 0);
+    /* this assumes the caller always provides the pictures in order.
+     * it's not a great idea but I'm sure I will always provide it in order */
+    if(fluorescenceArray.size() <= (unsigned int) j) fluorescenceArray.push_back(target);
+    else fluorescenceArray[j] = target;
 }
 
 cv::Mat ScientificProcessor::getMarkersPic() const {

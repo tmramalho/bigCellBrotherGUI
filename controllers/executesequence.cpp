@@ -4,11 +4,15 @@ ExecuteSequence::ExecuteSequence(OperationsController *opCtr)
 {
 	ops = opCtr;
 	fs = NULL;
-	ffs = NULL;
 	dotFilename = "";
 	csvFilename = "";
 	haveFluorescence = false;
-	executed = false;
+    executed = false;
+}
+
+ExecuteSequence::~ExecuteSequence()
+{
+    ffs.erase(ffs.begin(), ffs.end());
 }
 
 void ExecuteSequence::debugSequence(int frameNum)
@@ -24,7 +28,7 @@ void ExecuteSequence::debugSequence(int frameNum)
 
 void ExecuteSequence::setFluorFileSource(FileContainer *source)
 {
-     ffs = source;
+     ffs.push_back(source);
      haveFluorescence = true;
 }
 
@@ -34,6 +38,7 @@ void ExecuteSequence::run()
     int maxFrames = fs->getNumFrames();
     if(haveFluorescence) lab.setUseFluor(true);
 	cv::Size finalSize;
+    std::cout << ffs.size() << std::endl;
 
 	for(int i=0; i<maxFrames; i++) {
         cv::Mat nextFrame = fs->grabFrameNumber(i);
@@ -42,10 +47,12 @@ void ExecuteSequence::run()
 		finalSize = currentMarkers.size();
         lab.setMarkersPic(currentMarkers);
         if(haveFluorescence) {
-            cv::Mat fluor = ffs->grabFrameNumber(i);
-            cv::Mat croppedFluor = ops->cropImage(fluor);
-            lab.setFluorescencePic(croppedFluor);
-		}
+            for (unsigned int j=0; j < ffs.size(); j++) {
+                cv::Mat fluor = ffs[j]->grabFrameNumber(i);
+                cv::Mat croppedFluor = ops->cropImage(fluor);
+                lab.addFluorescencePic(croppedFluor, j);
+            }
+        }
         lab.processLabels(i);
         lab.setPreviousMarkersPic(currentMarkers);
 		std::cout << "FRAME" << i << std::endl;

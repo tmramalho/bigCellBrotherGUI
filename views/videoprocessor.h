@@ -23,6 +23,7 @@ public:
 
 public slots:
 	void incrementProgress(int c);
+    void exportDone();
 
 private slots:
 	void on_pickDOT_clicked();

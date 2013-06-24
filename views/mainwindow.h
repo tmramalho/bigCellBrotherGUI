@@ -72,7 +72,6 @@ private:
 	Ui::MainWindow *ui;
 	double scaleFactor;
     FileContainer *videoBox;
-    FileContainer *videoBoxFluorescence;
     OperationsController opCtr;
     ExecuteSequence *sp;
     CreateClassifier *cc;

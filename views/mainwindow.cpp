@@ -11,7 +11,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(parameterManager, SIGNAL(parametersRead()), &opCtr, SLOT(parametersUpdated()));
 
 	videoBox = NULL;
-	videoBoxFluorescence = NULL;
 
     imageLabel = new PictureLabel();
 	imageLabel->setBackgroundRole(QPalette::Base);
@@ -113,10 +112,6 @@ MainWindow::~MainWindow()
         videoBox->closeFile();
         delete videoBox;
     }
-    if(videoBoxFluorescence != NULL) {
-        videoBoxFluorescence->closeFile();
-        delete videoBoxFluorescence;
-    }
     delete ui;
     delete sp;
     delete cc;
@@ -187,13 +182,10 @@ void MainWindow::openImage() {
 
 void MainWindow::openImageFluorescent()
 {
+    FileContainer* videoBoxFluorescence;
 	QString fileName = QFileDialog::getOpenFileName(this,
 									   tr("Open File"), QDir::homePath());
 	if (!fileName.isEmpty()) {
-        if(videoBoxFluorescence != NULL) {
-            videoBoxFluorescence->closeFile();
-            delete videoBoxFluorescence;
-        }
         QFileInfo fi(fileName);
 		QString ext = fi.suffix();
 		if(ext == "avi")
@@ -319,13 +311,15 @@ void MainWindow::on_listWidget_currentItemChanged(QListWidgetItem *current, QLis
 	QByteArray ba = qoperation.toLocal8Bit();
 	const char *c_str = ba.data();
 	std::string curOperation(c_str);
-    //std::cout << curOperation << std::endl;
     ui->stackedWidget->setCurrentIndex(opCtr.getStepOrder(curOperation));
-	if(curOperation == "Classifier" && ui->fitToWindowAct->isChecked())
+    if(curOperation == "Classifier" && ui->fitToWindowAct->isChecked()) {
+        opCtr.setOperationState(curOperation);
 		ui->fitToWindowAct->trigger();
-	if(curOperation == "Results")
+    }
+    if(curOperation == "Results") {
+        opCtr.setOperationState(curOperation);
 		sp->debugSequence(currentFrame);
-    else
+    } else
         opCtr.updateSelectedOperationPreview(curOperation);
 }
 

@@ -78,7 +78,12 @@ void OperationsController::updateSelectedOperationPreview(std::string op)
 	if(!pipelineReady) return;
 	runPipelineUntil(op);
 	currentStep = op;
-	showCurrentPreview();
+    showCurrentPreview();
+}
+
+void OperationsController::setOperationState(std::string op)
+{
+    currentStep = op;
 }
 
 cv::Mat OperationsController::getPreviewForOperation(std::string op)
