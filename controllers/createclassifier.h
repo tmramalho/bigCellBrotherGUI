@@ -11,9 +11,9 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include "helpers/PictureVis.h"
-#include "classifier/SVMachine.h"
-#include "helpers/CellCont.h"
+#include "lib/helpers/PictureVis.h"
+#include "lib/classifier/SVMachine.h"
+#include "lib/helpers/CellCont.h"
 
 class CreateClassifier : public QObject, public Operation
 {

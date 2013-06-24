@@ -11,8 +11,8 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include "processors/ImageSegmentor.h"
-#include "files/CSVReader.h"
+#include "lib/processors/ImageSegmentor.h"
+#include "lib/files/CSVReader.h"
 #include "parameterloader.h"
 
 class Operation;

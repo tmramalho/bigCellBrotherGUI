@@ -1,8 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "files/videocontainer.h"
-#include "files/tiffcontainer.h"
+#include "lib/files/videocontainer.h"
+#include "lib/files/tiffcontainer.h"
 #include "operationscontroller.h"
 #include "improveimage.h"
 #include "cropimage.h"

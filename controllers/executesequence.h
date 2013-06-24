@@ -3,9 +3,9 @@
 
 #include <QObject>
 #include "operationscontroller.h"
-#include "files/filecontainer.h"
-#include "processors/ScientificProcessor.h"
-#include "helpers/PictureVis.h"
+#include "lib/files/filecontainer.h"
+#include "lib/processors/ScientificProcessor.h"
+#include "lib/helpers/PictureVis.h"
 
 class ExecuteSequence : public QObject
 {

@@ -3,12 +3,12 @@
 
 #include <QObject>
 #include "operation.h"
-#include "helpers/PictureVis.h"
+#include "lib/helpers/PictureVis.h"
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include "processors/ImageProcessor.h"
-#include "processors/ImageSegmentor.h"
+#include "lib/processors/ImageProcessor.h"
+#include "lib/processors/ImageSegmentor.h"
 
 class WatershedOp : public QObject, public Operation
 {

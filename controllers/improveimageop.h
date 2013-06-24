@@ -7,7 +7,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/photo/photo.hpp>
-#include "processors/ImageProcessor.h"
+#include "lib/processors/ImageProcessor.h"
 
 class ImproveImageOp : public QObject, public Operation
 {
