@@ -90,8 +90,8 @@ void ScientificProcessor::createCsvFile(std::string filename) {
     /* Header */
     filestr << "t, label, parent, cx, cy, h, w, area, angle, ";
     for(unsigned int i = 0; i < fluorescenceArray.size(); i++)
-        std::cout << "fl" << i << ", flsq" << i << ", ";
-    std::cout << std::endl;
+        filestr << "fl" << i << ", flsq" << i << ", ";
+    filestr << std::endl;
     /* Data */
     for(unsigned int i = 0; i < allCells.size(); i++) {
 		std::vector<CellCont> currCells = allCells[i];

@@ -59,7 +59,7 @@ public:
 	double getTime() const;
 	void setTime(double time);
 	bool getIsCell() const;
-	void setIsCell(bool isCell);
+    void setIsCell(bool isCell);
     std::vector<double> getFluorescence() const;
     void setFluorescence(double fluorescence, int j);
 	static int getNumFeatures() { return NUMFEATURES; }

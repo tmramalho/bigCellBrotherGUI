@@ -225,7 +225,7 @@ std::set<int> CellCont::findNearestNeigbors(cv::Rect &bbox,
 }
 
 void CellCont::detectHeightWidth(cv::RotatedRect &box, double *hDim, double *wDim) {
-	if(box.size.width > box.size.height) {
+    if(box.size.width > box.size.height) {
 		*hDim = box.size.width;
 		*wDim = box.size.height;
 	} else {
