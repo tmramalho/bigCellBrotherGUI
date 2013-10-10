@@ -87,20 +87,26 @@ void ScientificProcessor::createDotFile(std::string filename) {
 
 void ScientificProcessor::createCsvFile(std::string filename) {
 	std::fstream filestr(filename.c_str(), std::fstream::trunc | std::fstream::out);
-    filestr << "t, label, parent, cx, cy, h, w, area, angle, fl" << std::endl;
-	for(unsigned int i = 0; i < allCells.size(); i++) {
+    /* Header */
+    filestr << "t, label, parent, cx, cy, h, w, area, angle, ";
+    for(unsigned int i = 0; i < fluorescenceArray.size(); i++)
+        std::cout << "fl" << i << ", flsq" << i << ", ";
+    std::cout << std::endl;
+    /* Data */
+    for(unsigned int i = 0; i < allCells.size(); i++) {
 		std::vector<CellCont> currCells = allCells[i];
 		for(unsigned int j = 0; j < currCells.size(); j++) {
 			filestr << i << ", " << currCells[j].getCurLabel() << ", ";
-            filestr << i << ", " << currCells[j].getPrevLavel() << ", ";
+            filestr << currCells[j].getPrevLabel() << ", ";
 			cv::Point2f center = currCells[j].getCenter();
 			filestr << center.x << ", " << center.y << ", ";
 			std::vector <double> feats = currCells[j].getFeatures();
 			filestr << feats[0] << ", " << feats[1] << ", " << feats[2] << ", ";
             filestr << currCells[j].getAngle();
             std::vector <double> flVal = currCells[j].getFluorescence();
+            std::vector <double> flValSq = currCells[j].getFluorescenceSq();
             for(unsigned int j = 0; j < flVal.size(); j++) {
-                filestr << ", " << flVal[j];
+                filestr << ", " << flVal[j] << ", " << flValSq[j];
             }
             filestr << std::endl;
 		}

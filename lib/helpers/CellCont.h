@@ -65,16 +65,19 @@ public:
 	static int getNumFeatures() { return NUMFEATURES; }
 	double getAngle() const { return angle; }
 	void setAngle(double angle) { this->angle = angle; }
+    std::vector<double> getFluorescenceSq() const;
+    void setFluorescenceSq(const std::vector<double> &value);
 
 private:
-	inline static void expandRect(cv::Rect& bbox, int padding, int imgHeight, int imgWidth);
-	static std::set<int> findNearestNeigbors(cv::Rect& bbox, cv::Mat& currentLabelMask, cv::Mat& markersPic, int self, int distance);
+    inline static void expandRect(cv::Rect& bbox, int padding, int imgHeight, int imgWidth);
+    static std::set<int> findNearestNeigbors(cv::Rect& bbox, cv::Mat& currentLabelMask, cv::Mat& markersPic, int self, int distance);
 	std::vector<double> features;
 	std::set<int> neighbors;
 	cv::Rect boundBox;
 	int curLabel;
 	bool isCell;
     std::vector<double> fluorescence;
+    std::vector<double> fluorescenceSq;
 	//tracking stuff
 	int prevLabel;
 	double time;

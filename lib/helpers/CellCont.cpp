@@ -179,6 +179,7 @@ void CellCont::calcFluorescence(CellCont& target, cv::Mat &currentLabelMask,
                                 std::vector<cv::Mat> &fluorescenceArr) {
     if(fluorescenceArr.size() < 1) return;
     target.fluorescence.resize(fluorescenceArr.size());
+    target.fluorescenceSq.resize(fluorescenceArr.size());
     for(unsigned int j = 0; j < fluorescenceArr.size(); j++) {
         cv::Mat fluorescencePic = fluorescenceArr[j];
         //look only at roi
@@ -192,6 +193,11 @@ void CellCont::calcFluorescence(CellCont& target, cv::Mat &currentLabelMask,
         cv::integral(maskFlPic,result);
         double integral = result.at<double>(result.rows-1, result.cols-1);
         target.fluorescence[j] = integral;
+        cv::Mat sqFlPic;
+        cv::pow(maskFlPic, 2, sqFlPic);
+        cv::integral(sqFlPic,result);
+        double integralSq = result.at<double>(result.rows-1, result.cols-1);
+        target.fluorescenceSq[j] = integralSq;
     }
 }
 
@@ -244,9 +250,12 @@ void CellCont::setFluorescence(double fl, int j) {
     fluorescence[j] = fl;
 }
 
+std::vector<double> CellCont::getFluorescenceSq() const
+{
+    return fluorescenceSq;
+}
 
-
-
-
-
-
+void CellCont::setFluorescenceSq(const std::vector<double> &value)
+{
+    fluorescenceSq = value;
+}
