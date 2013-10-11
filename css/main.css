@@ -2,3 +2,68 @@ body {
   padding-top: 50px;
   padding-bottom: 20px;
 }
+
+.jumbotron {
+	margin-bottom: 0px;
+}
+
+#about {
+	padding-top: 50px;
+}
+
+#download {
+	padding-top: 50px;
+}
+
+#docs {
+	padding-top: 50px;
+}
+
+.blurb {
+	text-align: center;
+	margin: 50px;
+	font-size: 24px;
+	font-weight: 300;
+	color: #4f4f4f;
+}
+
+.img-center {
+	margin: auto;
+}
+
+.spaced {
+	margin-bottom: 80px;
+}
+
+.win {
+	background-color: #3498db;
+}
+
+.lin {
+	background-color: #e74c3c;
+}
+
+.mac {
+	background-color: #27ae60;
+}
+
+.download-panel {
+	height: 100px;
+	border-radius: 10px;
+	color: #fff;
+	padding: 15px;
+	margin: 15px;
+}
+
+.download-panel a {
+	color: #fff;
+	font-size: 20px;
+	margin: 15px;
+}
+
+#docs p {
+	color: #4f4f4f;
+	margin: 25px;
+	font-size: 16px;
+	line-height: 25px;
+}

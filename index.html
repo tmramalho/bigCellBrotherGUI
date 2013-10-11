@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="favicon.png">
 
-    <title>Jumbotron Template for Bootstrap</title>
+    <title>Cell segmentation and tracking</title>
 
     <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.css" rel="stylesheet">
@@ -23,9 +23,9 @@
     <![endif]-->
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#top-bar">
 
-    <div class="navbar navbar-inverse navbar-fixed-top">
+    <div id="top-bar" class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -37,9 +37,9 @@
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
+            <li class="active"><a href="#home">Home</a></li>
             <li><a href="#about">About</a></li>
-            <li><a href="#contact">Download</a></li>
+            <li><a href="#download">Download</a></li>
             <li><a href="#docs">Documentation</a></li>
           </ul>
         </div><!--/.navbar-collapse -->
@@ -47,54 +47,184 @@
     </div>
 
     <!-- Main jumbotron for a primary marketing message or call to action -->
-    <div class="jumbotron">
+    <div id="home" class="jumbotron">
       <div class="container">
         <h1>Big Cell Brother</h1>
         <p>A simple to use segmentation and cell tracking software.</p>
-        <p><a class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
       </div>
     </div>
 
-    <div class="container">
+    <div id="about" class="container">
       <!-- Example row of columns -->
       <div class="row">
       	<div class="col-md-12">
-      	<h2>Segment brightfield images</h2>
+	      	<h2>About</h2>
+	      </div>
+	   </div>
+	   <div class="row">
+      	<div class="col-md-12">
+      	<h3>Segment brightfield images</h3>
       	</div>
       </div>
-      <div class="row">
+      <div class="row spaced">
         <div class="col-md-6">
-          <p>Improve image contrast and apply noise reduction before applying time tested segmentation methods to identify cells in brightfield microscopy images.</p>
+          <p class="blurb">Improve image contrast and apply noise reduction before applying time tested segmentation methods to identify cells in brightfield microscopy images.</p>
         </div>
         <div class="col-md-6">
-          <img src="assets/info1.png" alt="info1" width="460" height="460" class="img-responsive img-rounded" />
+          <img src="assets/info1.png" alt="info1" width="460" height="460" class="img-responsive img-rounded  img-center" />
        </div>
       </div>
       <div class="row">
 	      <div class="col-md-12">
-	      	<h2>Classify segmented output</h2>
+	      	<h3>Classify segmented output</h3>
 	      </div>
 	  </div>
-      <div class="row">
+      <div class="row spaced">
         <div class="col-md-6">
-          <p>Train a machine learning system to remove misclassified cells.</p>
+          <p class="blurb">Train a machine learning system to remove misclassified cells.</p>
         </div>
         <div class="col-md-6">
-          <img src="assets/info2.png" alt="info1" width="460" height="460" class="img-responsive img-rounded" />
+          <img src="assets/info2.png" alt="info1" width="460" height="460" class="img-responsive img-rounded img-center" />
        </div>
+     </div>
+     </div>
+     
+     <div id="download" class="container"> 
+      <div class="row">
+      	<div class="col-md-12">
+	      	<h2>Download</h2>
+	      </div>
+	   </div>
+	   <div class="row">
+        <div class="col-md-4">
+        	<div class="win download-panel">
+        		<a href="#win">Windows</a>
+        		<span class="hint">Coming soon</span>
+        	</div>
+        </div>
+        <div class="col-md-4">
+        	<div class="mac download-panel">
+        		<a href="#mac">Mac OS X</a>
+        	</div>
+        </div>
+        <div class="col-md-4">
+        	<div class="lin download-panel">
+        		<a href="#lin">Linux</a>
+        		<span class="hint">Coming soon</span>
+        	</div>
+        </div>
       </div>
+    </div>
+    
+    <div id="docs" class="container"> 
+      <div class="row">
+      	<div class="col-md-12">
+	      	<h2>Documentation</h2>
+	      </div>
+	   </div>
+	   <div class="row">
+	   <div class="col-md-12">
+      	<h3>Loading images</h3>
+      </div>
+      </div>
+	   <div class="row">
+		   <div class="col-md-6">
+	          <p>Use the <b>Load brightfield</b> button to load the brightfield image stack. Optionally load a number of fluorescence stacks if desired using the <b>Load fluorescence</b> button (you can also do this at a later step). You can now progress through the command pipeline (list to the left of the main image). You can use the <b>Crop image</b> action to select a region of interest in your image stack. <b>Improve image</b> allows you to change the contrast, reduce noise, and apply a sharpening filter to the image to enhance the performance of subsequent steps. It is recommended to not tune these parameters to too high effects, as it might result in information loss. If the images are of a very low resolution, it is recommended to use the resolution toggle to upscale them 2 or 4 times.</p>
+	        </div>
+	        <div class="col-md-6">
+	          <a href="assets/screen1.png"><img src="assets/screen1.png" alt="info1" class="img-responsive img-center" /></a>
+	       </div>
+       </div>
+       <div class="row">
+       <div class="col-md-12">
+      	<h3>Threshold</h3>
+      </div>
+      </div>
+	   <div class="row">
+		   <div class="col-md-6">
+	          <p>With the <b>Threshold</b> action a set of filters are applied to the image in order to mark areas as background. The more pixels are marked as background, the better the performance of subsequent steps will be. However caution must be taken to ensure that the chosen parameters are not over optimized for the current frame leaving other frames with a poor background (it is possible to use the slider under the main picture frame to look at later frames).</p>
+	          <p>The <b>window</b> and <b>threshold</b> parameters control the adaptive threshold algorithm, which marks a pixel as background if its average value is lower than that of its neighbors within a window of the given size. The <b>global threshold</b> parameter controls a simple brightness filter: any pixel under that brightness is marked as background. <b>Smooth background</b> controls an adaptive filter which might mark certain small objects as background.</p>
+	        </div>
+	        <div class="col-md-6">
+	          <a href="assets/screen2.png"><img src="assets/screen2.png" alt="info1" class="img-responsive img-center" /></a>
+	       </div>
+       </div>
+       <div class="row">
+       <div class="col-md-12">
+      	<h3>Create markers</h3>
+      </div>
+      </div>
+	   <div class="row">
+		   <div class="col-md-6">
+	          <p>Once the background is defined, seed markers are defined in the remaining region. By providing the expected maximum cell <b>width</b> and <b>height</b>, it is possible to break up markers using gradient and brightness information to improve performance in the next step.</p>
+	        </div>
+	        <div class="col-md-6">
+	          <a href="assets/screen3.png"><img src="assets/screen3.png" alt="info1" class="img-responsive img-center" /></a>
+	       </div>
+       </div>
+
+       <div class="row">
+       <div class="col-md-12">
+      	<h3>Watershed</h3>
+      </div>
+      </div>
+	   <div class="row">
+		   <div class="col-md-6">
+	          <p>The Watershed algorithm refines the cell positions to conform to the boundaries defined by the image gradients and brightness. It is possible to filter detected cells by removing markers smaller than a predefined value. The <b>step</b> controls the number of steps in the iterative process by which smaller labels are removed (once a small label is removed larger labels may expand towards that area). Jagged edged in the detected cells might be removed by adjusting the <b>smoothing</b> parameter. It is also possible to remove cells touching the border by marking the appropriate box.</p>
+	        </div>
+	        <div class="col-md-6">
+	          <a href="assets/screen4.png"><img src="assets/screen4.png" alt="info1" class="img-responsive img-center" /></a>
+	       </div>
+       </div>
+<div class="row">
+       <div class="col-md-12">
+      	<h3>Classifier</h3>
+      </div>
+      </div>
+	   <div class="row">
+		   <div class="col-md-6">
+	          <p>Once the labels are defined, you can additionally train a statistical classifier (support vector machine) to detect incorrectly labeled cells. A left click will mark cells as good and right click as bad. It is also possible to mark them all as bad and good using the corresponding buttons. You may do this process for several frames to increase the training dataset. Once you have classified at least 30 cells, you may save the dataset with the <b>Save my teachings</b> button. Finally you can train the classifier.</p>
+	        </div>
+	        <div class="col-md-6">
+	          <a href="assets/screen5.png"><img src="assets/screen5.png" alt="info1" class="img-responsive img-center" /></a>
+	       </div>
+	       <div class="row">
+		   <div class="col-md-6">
+	          <p>Once the classifier has run you can see the results where yellow denotes classified as bad and cyan classified as good. You can classify more data and retrain the classifier if necessary.</p>
+	        </div>
+	        <div class="col-md-6">
+	          <a href="assets/screen6.png"><img src="assets/screen6.png" alt="info1" class="img-responsive img-center" /></a>
+	       </div>
+       </div>
+       
+       <div class="row">
+       <div class="col-md-12">
+      	<h3>Export</h3>
+      </div>
+      </div>
+	   <div class="row">
+		   <div class="col-md-6">
+	          <p>Finally, export the data to a specific file. Three files will be created: a CSV with the numerical data, a DOT file to generate the cell lineage and an AVI video for debugging purposes.</p>
+	        </div>
+	        <div class="col-md-6">
+	          <a href="assets/screen8.png"><img src="assets/screen8.png" alt="info1" class="img-responsive img-center" /></a>
+	       </div>
+       </div>
+
+
+	</div>
+	
+	<div class="container">
       <hr>
-
       <footer>
-        <p>&copy; Company 2013</p>
+        <p><a href="http://www.nehalemlabs.net">Tiago Ramalho</a> 2013</p>
       </footer>
-    </div> <!-- /container -->
-
+    </div>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="../../assets/js/jquery.js"></script>
-    <script src="../../dist/js/bootstrap.min.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
   </body>
 </html>
