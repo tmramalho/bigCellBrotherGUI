@@ -31,23 +31,32 @@ public:
 	virtual ~ScientificProcessor();
 	void processLabels(int t);
 	void printStatistics();
-	void createDotFile(std::string filename);
-	void createCsvFile(std::string filename);
+    void createDotFile(std::fstream &filestr);
+    void updateDotFile(std::fstream &filestr, int i);
+    void finishDotFile(std::fstream &filestr);
+    void createCsvFile(std::fstream &filestr, unsigned int nfl);
+    void updateCsvFile(std::fstream &filestr, int i);
+    void finishCsvFile(std::fstream &filestr);
     void addFluorescencePic(cv::Mat fluorescencePic, int j);
     cv::Mat getMarkersPic() const;
     void setMarkersPic(cv::Mat markersPic);
 	bool isUseFluor() const;
 	void setUseFluor(bool useFluor);
 	cv::Mat getPreviousMarkersPic() const;
-	void setPreviousMarkersPic(cv::Mat previousMarkersPic);
-	std::vector<std::vector<CellCont> > &getAllCells();
-	void setAllCells(std::vector<std::vector<CellCont> > allCells);
+    void setPreviousMarkersPic(cv::Mat previousMarkersPic);
 	bool isFirstFrame() const;
 	void setFirstFrame(bool firstFrame);
 
+    std::vector<CellCont> getCurrentCells() const;
+    void setCurrentCells(const std::vector<CellCont> &value);
+
+    std::vector<CellCont> getPreviousCells() const;
+    void setPreviousCells(const std::vector<CellCont> &value);
+
 private:
-	int calculateMaxOverlap(CellCont &newCell, cv::Mat &currentLabelMask, std::vector<int> &labels);
-	std::vector<std::vector<CellCont> > allCells;
+    int calculateMaxOverlap(CellCont &newCell, cv::Mat &currentLabelMask, std::vector<int> &labels);
+    std::vector<CellCont> currentCells;
+    std::vector<CellCont> previousCells;
 	cv::Mat markersPic;
 	cv::Mat previousMarkersPic;
     std::vector<cv::Mat> fluorescenceArray;

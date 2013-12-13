@@ -13,6 +13,7 @@
 #include "createmarkers.h"
 #include "createmarkersop.h"
 #include "watershed.h"
+#include "loadimage.h"
 #include "watershedop.h"
 #include "executesequence.h"
 #include "videoprocessor.h"
@@ -53,6 +54,7 @@ private slots:
 	void fitToWindow();
 	void loadParameters();
 	void saveParameters();
+    void resetPipeline();
 
 	void on_listWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
 
@@ -77,8 +79,17 @@ private:
     CreateClassifier *cc;
     QLabel *imageLabel;
     int currentFrame;
+    int bIndex;
     ParameterLoader *parameterManager;
     VideoProcessor *execution;
+    QListWidgetItem *qlw;
+    CropImage *ci;
+    ImproveImage *ii;
+    Threshold *th;
+    CreateMarkers *cm;
+    Watershed *ws;
+    ListClassifier *ls;
+    LoadImage *li;
 };
 
 #endif // MAINWINDOW_H

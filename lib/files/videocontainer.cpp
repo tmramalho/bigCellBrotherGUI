@@ -6,7 +6,7 @@ VideoContainer::VideoContainer()
 }
 
 VideoContainer::~VideoContainer() {
-
+    this->closeFile();
 }
 
 void VideoContainer::openFile(std::string filename)

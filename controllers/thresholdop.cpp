@@ -32,15 +32,12 @@ void ThresholdOp::execute()
 		cv::add(background, filledBG, background);
     }
 
-    //remove large smooth areas
     if(threshold > 0) {
-        cv::Mat smoothBG;
-        cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(window, window));
-        cv::morphologyEx(prev, smoothBG, cv::MORPH_TOPHAT, kernel);
-        cv::dilate(smoothBG, smoothBG, kernel);
-        cv::threshold(smoothBG, smoothBG, threshold, 255, cv::THRESH_BINARY_INV);
-        cv::morphologyEx(smoothBG, smoothBG, cv::MORPH_OPEN, kernel);
-        cv::add(background, smoothBG, background);
+        cv::Mat mask = ImageProcessor::invertImage(background);
+        cv::Mat maskedImage;
+        cv::bitwise_and(prev, mask, maskedImage);
+        cv::Mat maskedBG = ImageProcessor::adaptiveThreshold(maskedImage, threshold-128, window, false, cv::ADAPTIVE_THRESH_MEAN_C);
+        cv::add(background, maskedBG, background);
     }
 
     //remove small specks

@@ -28,8 +28,8 @@ public:
 	static cv::Mat drawClassyMarkersOnPicture(cv::Mat& targetPicture, cv::Mat& markers,
 			std::set<int> markedBadLabels, std::set<int> markedGoodLabels, std::set<int> foundBadLabels,
 			std::set<int> foundGoodLabels);
-	static cv::Mat drawCellsOnPicture(cv::Mat& targetPicture, cv::Mat& markers,
-			std::vector<std::vector<CellCont> > &allCells, int frameNum);
+    static cv::Mat drawCellsOnPicture(cv::Mat& targetPicture, cv::Mat& markers,
+                                      std::vector<CellCont>& cellVector, std::vector<CellCont>& prevCellVector, int frameNum);
 	static void drawRotatedRect(cv::Mat &mask, vector<cv::RotatedRect> &boxes);
 	static void drawRotatedRect(cv::Mat &mask, cv::RotatedRect &boxes);
 

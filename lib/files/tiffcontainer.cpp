@@ -10,6 +10,8 @@ TiffContainer::TiffContainer()
 	width = 0;
 	spp = 0;
 	photo = 0;
+    vMin = 0;
+    vMax = 65536;
 }
 
 TiffContainer::~TiffContainer()
@@ -44,6 +46,9 @@ void TiffContainer::openFile(std::string filename)
 	else { // format not implemented
 		TIFFClose(tif);
 	}
+
+    if(bpp == 16) isHDR = true;
+    else isHDR = false;
 }
 
 void TiffContainer::closeFile() {
@@ -56,7 +61,7 @@ void TiffContainer::closeFile() {
 
 cv::Mat TiffContainer::grabFrameNumber(int frameNum)
 {
-	if(frameNum == curFrame) return currentFrame;
+    // if(frameNum == curFrame) return currentFrame;
 	curFrame = frameNum;
 	TIFFSetDirectory(tif, frameNum);
 	cv::Mat readFrame(100, 100, CV_8U);
@@ -80,8 +85,11 @@ cv::Mat TiffContainer::grabFrameNumber(int frameNum)
 	if(bpp == 16) {
 		double min, max;
 		cv::minMaxLoc(readFrame, &min, &max);
+        if(vMin > min) min = vMin;
+        if(vMax < max) max = vMax;
 		double scale = 255 / (max-min);
 		double b = - min * scale;
+        std::cout << min << " : " << max << std::endl;
 		readFrame.convertTo(currentFrame, CV_8U, scale, b);
 	} else if(bpp == 8) {
 		readFrame.copyTo(currentFrame);

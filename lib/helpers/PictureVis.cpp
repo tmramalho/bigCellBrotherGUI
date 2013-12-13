@@ -71,7 +71,7 @@ cv::Mat PictureVis::drawMarkersOnPicture(cv::Mat& targetPicture, cv::Mat& marker
 }
 
 cv::Mat PictureVis::drawCellsOnPicture(cv::Mat& targetPicture, cv::Mat& markers,
-		std::vector<std::vector<CellCont> >& allCells, int frameNum) {
+        std::vector<CellCont>& cellVector, std::vector<CellCont>& prevCellVector, int frameNum) {
 	cv::Mat target(targetPicture.rows, targetPicture.cols, CV_8UC3);
 	double max;
 	cv::minMaxLoc(markers, NULL, &max);
@@ -92,9 +92,6 @@ cv::Mat PictureVis::drawCellsOnPicture(cv::Mat& targetPicture, cv::Mat& markers,
 				target.at<cv::Vec3b>(i,j) = colorTab[idx - 1];
 		}
 
-	std::vector<CellCont> cellVector = allCells[frameNum];
-	std::vector<CellCont> prevCellVector;
-	if(frameNum > 0) prevCellVector = allCells[frameNum-1];
 	int i = 0;
 	//char buf[512];
 

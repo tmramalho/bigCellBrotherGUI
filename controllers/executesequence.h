@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <vector>
+#include <time.h>
 #include "operationscontroller.h"
 #include "lib/files/filecontainer.h"
 #include "lib/processors/ScientificProcessor.h"

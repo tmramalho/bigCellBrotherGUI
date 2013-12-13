@@ -23,7 +23,7 @@ void OperationsController::resetPipeline(cv::Mat initialFrame)
 {
 	pipelineReady = false;
 	currentStep = "Load Image";
-	pipelineVisualization.clear();
+    pipelineVisualization.clear();
 	pipelineVisualization[currentStep] = initialFrame;
 	this->setPipelineImage(0, initialFrame);
 

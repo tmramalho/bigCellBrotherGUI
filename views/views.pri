@@ -7,8 +7,9 @@ HEADERS += $$PWD/mainwindow.h \
     $$PWD/threshold.h \
     $$PWD/createmarkers.h \
     $$PWD/watershed.h \
+    $$PWD/loadimage.h \
     $$PWD/videoprocessor.h \
-    views/listclassifier.h
+    $$PWD/listclassifier.h
 SOURCES  +=  $$PWD/mainwindow.cpp \
     $$PWD/operation.cpp \
     $$PWD/picturelabel.cpp  \
@@ -18,7 +19,8 @@ SOURCES  +=  $$PWD/mainwindow.cpp \
     $$PWD/createmarkers.cpp \
     $$PWD/watershed.cpp \
     $$PWD/videoprocessor.cpp \
-    views/listclassifier.cpp
+    $$PWD/loadimage.cpp \
+    $$PWD/listclassifier.cpp
 FORMS    += $$PWD/mainwindow.ui \
     $$PWD/cropimage.ui \
     $$PWD/improveimage.ui \
@@ -26,4 +28,5 @@ FORMS    += $$PWD/mainwindow.ui \
     $$PWD/createmarkers.ui \
     $$PWD/watershed.ui \
     $$PWD/videoprocessor.ui \
-    views/listclassifier.ui
+    $$PWD/loadimage.ui \
+    $$PWD/listclassifier.ui

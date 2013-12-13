@@ -16,12 +16,12 @@ public:
 	~TiffContainer();
 	void openFile(std::string filename);
 	void closeFile();
-	cv::Mat grabFrameNumber(int frameNum);
+    cv::Mat grabFrameNumber(int frameNum);
 
 private:
-	TIFF *tif;
-	uint16 spp, bpp, photo;
-	uint32 width, height;
+    TIFF *tif;
+    uint16 spp, bpp, photo;
+    uint32 width, height;
 	cv::Mat currentFrame;
 };
 

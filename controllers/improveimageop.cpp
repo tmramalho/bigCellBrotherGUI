@@ -53,7 +53,7 @@ void ImproveImageOp::execute()
 	} else if(doubleRes == 2) {
 		cv::resize(improveImg, improveImgPump, cv::Size(), 4, 4, cv::INTER_CUBIC);
 		cv::resize(boostedImg, boostedImgPump, cv::Size(), 4, 4, cv::INTER_CUBIC);
-	}
+    }
 
 	controller->setPipelineImage(2, improveImgPump);
 	controller->setPipelineImage(32, boostedImgPump);

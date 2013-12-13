@@ -19,13 +19,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->scrollArea->setWidget(imageLabel);
 
     //create qt objects
-    QListWidgetItem *qlw;
-    CropImage *ci = new CropImage();
-    ImproveImage *ii = new ImproveImage();
-    Threshold *th = new Threshold();
-    CreateMarkers *cm = new CreateMarkers();
-    Watershed *ws = new Watershed();
-    ListClassifier *ls = new ListClassifier();
+    ci = new CropImage();
+    ii = new ImproveImage();
+    th = new Threshold();
+    cm = new CreateMarkers();
+    ws = new Watershed();
+    ls = new ListClassifier();
+    li = new LoadImage();
 
     //add qt widgets to stackedwidget
     ui->stackedWidget->addWidget(ci);
@@ -34,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->stackedWidget->addWidget(cm);
     ui->stackedWidget->addWidget(ws);
     ui->stackedWidget->addWidget(ls);
+    bIndex = ui->stackedWidget->addWidget(li);
 
     //create operation classes
     CropImageOp *cio = new CropImageOp(&opCtr);
@@ -46,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
     execution = new VideoProcessor();
 
     //bind operations to widgets
+    li->bindToOps();
     ci->bindToOp(cio);
     ii->bindToOp(iio);
     th->bindToOp(tho);
@@ -119,10 +121,11 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::openImage() {
-	QString fileName = QFileDialog::getOpenFileName(this,
+    QString fileName = QFileDialog::getOpenFileName(this,
 									   tr("Open File"), QDir::homePath());
 	if (!fileName.isEmpty()) {
         if(videoBox != NULL) {
+            QObject::disconnect(videoBox, SIGNAL(paramsChanged()), this, SLOT(resetPipeline()));
             videoBox->closeFile();
             delete videoBox;
         }
@@ -146,33 +149,36 @@ void MainWindow::openImage() {
         if (!videoBox->isLoaded()) {
             QMessageBox::information(this, tr("Big Cell Brother"),
 									 tr("Cannot load %1.").arg(fileName));
-		return;
-	}
+            return;
+        }
 
-	ui->framePicker->setEnabled(true);
-	ui->framePicker->setMinimum(0);
-    ui->framePicker->setMaximum(videoBox->getNumFrames()-1);
-	ui->framePicker->setTickPosition(QSlider::TicksBelow);
-	ui->framePicker->setSingleStep(1);
-    ui->framePicker->setTickInterval(videoBox->getNumFrames()/10);
-	updateFrameNumberDisplay();
+        QObject::connect(videoBox, SIGNAL(paramsChanged()), this, SLOT(resetPipeline()));
+        li->bindToFile(videoBox);
+        ui->framePicker->setEnabled(true);
+        ui->framePicker->setMinimum(0);
+        ui->framePicker->setMaximum(videoBox->getNumFrames()-1);
+        ui->framePicker->setTickPosition(QSlider::TicksBelow);
+        ui->framePicker->setSingleStep(1);
+        ui->framePicker->setTickInterval(videoBox->getNumFrames()/10);
+        updateFrameNumberDisplay();
 
-	on_framePicker_valueChanged(0);
-    opCtr.setupPipeline(videoBox->grabFrameNumber(0));
-	sp->setFileSource(videoBox);
-	scaleFactor = 1.0;
+        on_framePicker_valueChanged(0);
+        opCtr.setupPipeline(videoBox->grabFrameNumber(0));
+        sp->setFileSource(videoBox);
+        scaleFactor = 1.0;
 
-	ui->actionApply->setEnabled(true);
-	ui->zoomInAct->setEnabled(true);
-	ui->zoomOutAct->setEnabled(true);
-	ui->normalSizeAct->setEnabled(true);
-	ui->fitToWindowAct->setEnabled(true);
-	//ui->fitToWindowAct->setChecked(true);
-	//this->fitToWindow();
-	updateActions();
+        if(videoBox->getIsHDR()) ui->stackedWidget->setCurrentIndex(bIndex);
+        ui->actionApply->setEnabled(true);
+        ui->zoomInAct->setEnabled(true);
+        ui->zoomOutAct->setEnabled(true);
+        ui->normalSizeAct->setEnabled(true);
+        ui->fitToWindowAct->setEnabled(true);
+        //ui->fitToWindowAct->setChecked(true);
+        //this->fitToWindow();
+        updateActions();
 
-	if (!ui->fitToWindowAct->isChecked())
-		imageLabel->adjustSize();
+        if (!ui->fitToWindowAct->isChecked())
+            imageLabel->adjustSize();
 	}
 }
 
@@ -310,8 +316,10 @@ void MainWindow::on_listWidget_currentItemChanged(QListWidgetItem *current, QLis
 	QString qoperation = current->data(Qt::UserRole).toString();
 	QByteArray ba = qoperation.toLocal8Bit();
 	const char *c_str = ba.data();
-	std::string curOperation(c_str);
-    ui->stackedWidget->setCurrentIndex(opCtr.getStepOrder(curOperation));
+    std::string curOperation(c_str);
+    int op = opCtr.getStepOrder(curOperation);
+    if(videoBox->getIsHDR() && op == 0) op = bIndex;
+    ui->stackedWidget->setCurrentIndex(op);
     if(curOperation == "Classifier" && ui->fitToWindowAct->isChecked()) {
         opCtr.setOperationState(curOperation);
 		ui->fitToWindowAct->trigger();
@@ -343,7 +351,9 @@ void MainWindow::sequenceProcessingFinished()
 void MainWindow::on_framePicker_valueChanged(int value)
 {
 	ui->listWidget->setCurrentRow(0);
-	ui->stackedWidget->setCurrentIndex(0);
+    int op = 0;
+    if(videoBox->getIsHDR()) op = bIndex;
+    ui->stackedWidget->setCurrentIndex(op);
     opCtr.resetPipeline(videoBox->grabFrameNumber(value));
     opCtr.updateSelectedOperationPreview("Load Image");
 	currentFrame = value;
@@ -358,4 +368,9 @@ void MainWindow::updatePreview(QImage imagePreview)
 	imageLabel->setPixmap(QPixmap::fromImage(imagePreview));
 	imageLabel->setScaledContents(true);
 	imageLabel->resize(scaleFactor * imageLabel->pixmap()->size());
+}
+
+void MainWindow::resetPipeline() {
+    int value = ui->framePicker->value();
+    on_framePicker_valueChanged(value);
 }

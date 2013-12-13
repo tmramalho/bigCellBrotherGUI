@@ -17,7 +17,8 @@ public:
 	cv::Mat grabFrameNumber(int frameNum);
 
 private:
-	cv::VideoCapture capture;
+    cv::VideoCapture capture;
+    double rate, fourcc;
 };
 
 #endif // VIDEOCONTAINER_H
