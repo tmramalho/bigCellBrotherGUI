@@ -16,12 +16,6 @@ LoadImage::~LoadImage()
 
 void LoadImage::bindToFile(FileContainer *fi)
 {
-    if (file != NULL) {
-        QObject::disconnect(ui->maxSlider, SIGNAL(valueChanged(int)), file, SLOT(changeVMax(int)));
-        QObject::disconnect(ui->minSlider, SIGNAL(valueChanged(int)), file, SLOT(changeVMin(int)));
-        QObject::disconnect(ui->maxBox, SIGNAL(valueChanged(int)), file, SLOT(changeVMax(int)));
-        QObject::disconnect(ui->minBox, SIGNAL(valueChanged(int)), file, SLOT(changeVMin(int)));
-    }
     file = fi;
     QObject::connect(ui->maxSlider, SIGNAL(valueChanged(int)), file, SLOT(changeVMax(int)));
     QObject::connect(ui->minSlider, SIGNAL(valueChanged(int)), file, SLOT(changeVMin(int)));

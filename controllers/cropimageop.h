@@ -21,6 +21,7 @@ public:
 	void showPreview();
 
 	cv::Mat cropExternalImage(cv::Mat &image);
+    void resetParameters(int xi, int xf, int yi, int yf);
 
 public slots:
 

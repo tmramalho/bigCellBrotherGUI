@@ -9,7 +9,8 @@ HEADERS += $$PWD/mainwindow.h \
     $$PWD/watershed.h \
     $$PWD/loadimage.h \
     $$PWD/videoprocessor.h \
-    $$PWD/listclassifier.h
+    $$PWD/listclassifier.h \
+    views/listopenfiles.h
 SOURCES  +=  $$PWD/mainwindow.cpp \
     $$PWD/operation.cpp \
     $$PWD/picturelabel.cpp  \
@@ -20,7 +21,8 @@ SOURCES  +=  $$PWD/mainwindow.cpp \
     $$PWD/watershed.cpp \
     $$PWD/videoprocessor.cpp \
     $$PWD/loadimage.cpp \
-    $$PWD/listclassifier.cpp
+    $$PWD/listclassifier.cpp \
+    views/listopenfiles.cpp
 FORMS    += $$PWD/mainwindow.ui \
     $$PWD/cropimage.ui \
     $$PWD/improveimage.ui \
@@ -29,4 +31,5 @@ FORMS    += $$PWD/mainwindow.ui \
     $$PWD/watershed.ui \
     $$PWD/videoprocessor.ui \
     $$PWD/loadimage.ui \
-    $$PWD/listclassifier.ui
+    $$PWD/listclassifier.ui \
+    views/listopenfiles.ui

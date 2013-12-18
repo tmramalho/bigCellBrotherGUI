@@ -47,3 +47,8 @@ bool FileContainer::getIsHDR() const
     return isHDR;
 }
 
+
+std::string FileContainer::getFilepath() const
+{
+    return filepath;
+}

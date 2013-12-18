@@ -26,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ws = new Watershed();
     ls = new ListClassifier();
     li = new LoadImage();
+    lo = new ListOpenFiles();
 
     //add qt widgets to stackedwidget
     ui->stackedWidget->addWidget(ci);
@@ -55,6 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ws->bindToOp(wso);
     ls->bindToOp(cc);
     execution->setExecutor(sp);
+    lo->setOp(sp);
 
     //define operation names
     std::string liStr( "Load Image" );
@@ -212,9 +214,6 @@ void MainWindow::openImageFluorescent()
         if (!videoBoxFluorescence->isLoaded()) {
             QMessageBox::information(this, tr("Big Cell Brother"),
 									 tr("Cannot load %1.").arg(fileName));
-        } else {
-            QMessageBox::information(this, tr("Big Cell Brother"),
-                                     tr("Successfully loaded %1. The fluorescence values will show up upon export").arg(fileName));
         }
 
 		sp->setFluorFileSource(videoBoxFluorescence);
@@ -339,6 +338,11 @@ void MainWindow::updateFrameNumberDisplay()
 void MainWindow::displayExecutionDialog()
 {
     execution->show();
+}
+
+void MainWindow::displayOpenFiles()
+{
+    lo->show();
 }
 
 void MainWindow::sequenceProcessingFinished()

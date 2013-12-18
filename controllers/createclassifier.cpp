@@ -107,11 +107,17 @@ void CreateClassifier::saveTrainingSamples()
 		if(!isBadCell && !isGoodCell) continue;
 		cv::compare(markers, i, currentLabelMask, cv::CMP_EQ);
 		if(ImageProcessor::checkIfEmpty(currentLabelMask)) continue;
+        std::pair<int, int> pos(currentFrame, i);
 		CellCont selectedCell = CellCont::determineLabelProperties(currentLabelMask, markers, i);
+        /* make sure to erase from complementary array,
+         * in case the user had previously marked it and
+         * changed their mind */
 		if(isBadCell) {
-			badFeatures.push_back(selectedCell.getFeatures());
+            goodFeatures.erase(pos);
+            badFeatures[pos] = selectedCell.getFeatures();
 		} else {
-			goodFeatures.push_back(selectedCell.getFeatures());
+            badFeatures.erase(pos);
+            goodFeatures[pos] = selectedCell.getFeatures();
 		}
     }
 
@@ -121,16 +127,22 @@ void CreateClassifier::saveTrainingSamples()
 
 void CreateClassifier::applyTrainingSet()
 {
-    decider->addTrainingSet(goodFeatures, badFeatures);
+    std::map<std::pair<int,int>, std::vector<double> >::iterator it;
+    std::vector<std::vector<double> > gf;
+    for(it = goodFeatures.begin(); it != goodFeatures.end(); ++it) {
+        gf.push_back(it->second);
+    }
+    std::vector<std::vector<double> > bf;
+    for(it = badFeatures.begin(); it != badFeatures.end(); ++it) {
+        bf.push_back(it->second);
+    }
+    decider->addTrainingSet(gf, bf);
     decider->createSVM();
     double accuracy = decider->getAccuracy();
     std::cout << accuracy << std::endl;
     SVMTrained(accuracy);
-    goodFeatures.clear();
-    badFeatures.clear();
     svmBadLabelsbyFrame.clear();
     svmGoodLabelsbyFrame.clear();
-    trainingSetUpdated(0);
 	perform();
 }
 
@@ -140,12 +152,14 @@ void CreateClassifier::markallGood()
 	cv::Mat currentLabelMask(markers.size(), CV_8U);
 	double min, max;
 	cv::minMaxLoc(markers, &min, &max);
+    badLabelsbyFrame[currentFrame].clear();
 	std::set<int> &currentgoodLabels = goodLabelsbyFrame[currentFrame];
 	for(int i = 2; i < max+1; i++) {
 		cv::compare(markers, i, currentLabelMask, cv::CMP_EQ);
 		if(ImageProcessor::checkIfEmpty(currentLabelMask)) continue;
 		currentgoodLabels.insert(i);
 	}
+    this->showPreview();
 }
 
 void CreateClassifier::markallBad()
@@ -154,10 +168,12 @@ void CreateClassifier::markallBad()
 	cv::Mat currentLabelMask(markers.size(), CV_8U);
 	double min, max;
 	cv::minMaxLoc(markers, &min, &max);
+    goodLabelsbyFrame[currentFrame].clear();
 	std::set<int> &currentbadLabels = badLabelsbyFrame[currentFrame];
 	for(int i = 2; i < max+1; i++) {
 		cv::compare(markers, i, currentLabelMask, cv::CMP_EQ);
 		if(ImageProcessor::checkIfEmpty(currentLabelMask)) continue;
 		currentbadLabels.insert(i);
 	}
+    this->showPreview();
 }

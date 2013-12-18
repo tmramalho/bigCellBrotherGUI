@@ -9,6 +9,7 @@
 #include "improveimageop.h"
 #include "cropimageop.h"
 #include "threshold.h"
+#include "listopenfiles.h"
 #include "thresholdop.h"
 #include "createmarkers.h"
 #include "createmarkersop.h"
@@ -62,6 +63,7 @@ private slots:
 
 	void updatePreview(QImage imagePreview);
 	void displayExecutionDialog();
+    void displayOpenFiles();
 	void sequenceProcessingFinished();
 
 private:
@@ -90,6 +92,7 @@ private:
     Watershed *ws;
     ListClassifier *ls;
     LoadImage *li;
+    ListOpenFiles *lo;
 };
 
 #endif // MAINWINDOW_H

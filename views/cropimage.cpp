@@ -15,6 +15,7 @@ CropImage::~CropImage()
 
 void CropImage::bindToOp(CropImageOp *co)
 {
+    cropper = co;
 	QObject::connect(ui->xbs, SIGNAL(valueChanged(int)), co, SLOT(updateXBegin(int)));
     QObject::connect(ui->xbs, SIGNAL(valueChanged(int)), ui->spinBox, SLOT(setValue(int)));
 	QObject::connect(ui->xes, SIGNAL(valueChanged(int)), co, SLOT(updateXEnd(int)));
@@ -36,6 +37,7 @@ void CropImage::bindToOp(CropImageOp *co)
 
 void CropImage::updateBounds(int xi, int xf, int yi, int yf)
 {
+    cropper->resetParameters(xi, xf, yi, yf);
 	ui->xbs->setMaximum(xf);
 	ui->xbs->setSingleStep(1);
 	ui->xbs->setTickInterval(xf/10);

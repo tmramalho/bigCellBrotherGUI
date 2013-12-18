@@ -27,6 +27,7 @@ void VideoContainer::openFile(std::string filename)
 	fourcc = capture.get(CV_CAP_PROP_FOURCC);
 	numFrames = capture.get(CV_CAP_PROP_FRAME_COUNT);
 	curFrame = 0;
+    filepath = filename;
 }
 
 void VideoContainer::closeFile() {

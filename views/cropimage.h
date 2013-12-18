@@ -25,6 +25,7 @@ public slots:
 
 private:
 	Ui::CropImage *ui;
+    CropImageOp *cropper;
 };
 
 #endif // CROPIMAGE_H

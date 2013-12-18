@@ -77,5 +77,17 @@ cv::Mat CropImageOp::cropExternalImage(cv::Mat &image)
 	cv::Mat next = image(roi);
 	cv::Mat result;
 	next.copyTo(result);
-	return result;
+    return result;
+}
+
+void CropImageOp::resetParameters(int xi, int xf, int yi, int yf)
+{
+    xb = xi;
+    xe = xf;
+    yb = yi;
+    ye = yf;
+    controller->getPM()->setNamedParameter("xb", xb);
+    controller->getPM()->setNamedParameter("xe", xe);
+    controller->getPM()->setNamedParameter("yb", yb);
+    controller->getPM()->setNamedParameter("ye", ye);
 }

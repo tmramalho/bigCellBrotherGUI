@@ -15,7 +15,7 @@ ListClassifier::~ListClassifier()
 
 void ListClassifier::bindToOp(CreateClassifier *cc)
 {
-	QObject::connect(ui->train, SIGNAL(pressed()), cc, SLOT(applyTrainingSet()));
+    ccl = cc;
 	QObject::connect(ui->save, SIGNAL(pressed()), cc, SLOT(saveTrainingSamples()));
 	QObject::connect(ui->allbad, SIGNAL(pressed()), cc, SLOT(markallBad()));
 	QObject::connect(ui->allgood, SIGNAL(pressed()), cc, SLOT(markallGood()));
@@ -32,4 +32,11 @@ void ListClassifier::setSVMTrained(double result)
 {
     int percent = (int) (result*100);
     ui->trainedLabel->setText(tr("Classifier ready with %1 \% accuracy").arg(percent));
+    ui->train->setEnabled(true);
+}
+
+void ListClassifier::on_train_released()
+{
+    ui->train->setDisabled(true);
+    QFuture<void> future = QtConcurrent::run(ccl, &CreateClassifier::applyTrainingSet);
 }

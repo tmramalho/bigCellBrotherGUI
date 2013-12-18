@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1200</width>
-    <height>700</height>
+    <height>800</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -171,11 +171,11 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="separator"/>
-    <addaction name="separator"/>
     <addaction name="actionOpen"/>
+    <addaction name="separator"/>
     <addaction name="actionSave_config"/>
     <addaction name="actionLoad_config"/>
+    <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -186,6 +186,8 @@
     <addaction name="zoomOutAct"/>
     <addaction name="normalSizeAct"/>
     <addaction name="fitToWindowAct"/>
+    <addaction name="separator"/>
+    <addaction name="showLoaded"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -198,6 +200,15 @@
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
+   <property name="iconSize">
+    <size>
+     <width>16</width>
+     <height>16</height>
+    </size>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonTextBesideIcon</enum>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
@@ -206,6 +217,7 @@
    </attribute>
    <addaction name="actionOpen"/>
    <addaction name="actionOpen_fluorescence"/>
+   <addaction name="showLoaded"/>
    <addaction name="separator"/>
    <addaction name="zoomInAct"/>
    <addaction name="zoomOutAct"/>
@@ -216,6 +228,10 @@
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="../assets/icons.qrc">
+     <normaloff>:/small/document_alt_fill_12x16.png</normaloff>:/small/document_alt_fill_12x16.png</iconset>
+   </property>
    <property name="text">
     <string>Open brightfield</string>
    </property>
@@ -227,7 +243,14 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../assets/icons.qrc">
+     <normaloff>:/small/plus_alt_16x16.png</normaloff>:/small/plus_alt_16x16.png</iconset>
+   </property>
    <property name="text">
+    <string>Zoom In</string>
+   </property>
+   <property name="iconText">
     <string>Zoom In</string>
    </property>
    <property name="shortcut">
@@ -237,6 +260,10 @@
   <action name="zoomOutAct">
    <property name="enabled">
     <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../assets/icons.qrc">
+     <normaloff>:/small/minus_alt_16x16.png</normaloff>:/small/minus_alt_16x16.png</iconset>
    </property>
    <property name="text">
     <string>Zoom Out</string>
@@ -248,6 +275,10 @@
   <action name="normalSizeAct">
    <property name="enabled">
     <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../assets/icons.qrc">
+     <normaloff>:/small/fullscreen_16x16.png</normaloff>:/small/fullscreen_16x16.png</iconset>
    </property>
    <property name="text">
     <string>100%</string>
@@ -262,6 +293,10 @@
    </property>
    <property name="enabled">
     <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../assets/icons.qrc">
+     <normaloff>:/small/fullscreen_exit_16x16.png</normaloff>:/small/fullscreen_exit_16x16.png</iconset>
    </property>
    <property name="text">
     <string>Fit to window</string>
@@ -290,11 +325,19 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../assets/icons.qrc">
+     <normaloff>:/small/pen_16x16.png</normaloff>:/small/pen_16x16.png</iconset>
+   </property>
    <property name="text">
     <string>Apply to sequence</string>
    </property>
   </action>
   <action name="actionOpen_fluorescence">
+   <property name="icon">
+    <iconset resource="../assets/icons.qrc">
+     <normaloff>:/small/document_alt_stroke_12x16.png</normaloff>:/small/document_alt_stroke_12x16.png</iconset>
+   </property>
    <property name="text">
     <string>Open fluorescence</string>
    </property>
@@ -318,9 +361,23 @@
     <string>Ctrl+L</string>
    </property>
   </action>
+  <action name="showLoaded">
+   <property name="icon">
+    <iconset resource="../assets/icons.qrc">
+     <normaloff>:/small/book_14x16.png</normaloff>:/small/book_14x16.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show loaded files</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+1</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="../assets/icons.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>actionOpen</sender>
@@ -482,6 +539,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>showLoaded</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>displayOpenFiles()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>599</x>
+     <y>399</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>openImage()</slot>
@@ -493,5 +566,6 @@
   <slot>openImageFluorescent()</slot>
   <slot>loadParameters()</slot>
   <slot>saveParameters()</slot>
+  <slot>displayOpenFiles()</slot>
  </slots>
 </ui>

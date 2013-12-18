@@ -49,6 +49,7 @@ void TiffContainer::openFile(std::string filename)
 
     if(bpp == 16) isHDR = true;
     else isHDR = false;
+    filepath = filename;
 }
 
 void TiffContainer::closeFile() {

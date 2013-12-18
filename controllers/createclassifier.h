@@ -24,11 +24,12 @@ public:
 	void createPreview();
 	void updateParameters();
 
+    void applyTrainingSet();
+
 public slots:
 	void frameChanged(int fr);
 	void cellPicked(int i, int j, int bt);
-	void saveTrainingSamples();
-	void applyTrainingSet();
+    void saveTrainingSamples();
 	void markallGood();
 	void markallBad();
 
@@ -38,8 +39,8 @@ signals:
 
 private:
 	int currentFrame;
-    std::vector<std::vector<double> > goodFeatures;
-    std::vector<std::vector<double> > badFeatures;
+    std::map<std::pair<int, int>, std::vector<double> > goodFeatures;
+    std::map<std::pair<int, int>, std::vector<double> > badFeatures;
 	std::map<int, std::set<int> > svmGoodLabelsbyFrame;
 	std::map<int, std::set<int> > svmBadLabelsbyFrame;
 	std::map<int, std::set<int> > goodLabelsbyFrame;

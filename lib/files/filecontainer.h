@@ -33,6 +33,8 @@ public:
 
     bool getIsHDR() const;
 
+    std::string getFilepath() const;
+
 signals:
     void paramsChanged();
 
@@ -47,6 +49,7 @@ protected:
 	int curFrame;
     int vMin, vMax;
 	cv::Size frameSize;
+    std::string filepath;
 };
 
 #endif // FILECONTAINER_H

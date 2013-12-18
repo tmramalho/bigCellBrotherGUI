@@ -47,6 +47,9 @@ void VideoProcessor::on_pickDOT_clicked()
     filenameString.replace(index, 3, "dot");
     es->setDotFilename(filenameString);
     ui->goButton->setEnabled(true);
+    QString fname(filenameString.c_str());
+    ui->filename->setText(fname);
+    ui->filename->setWordWrap(true);
 }
 
 void VideoProcessor::on_goButton_clicked()

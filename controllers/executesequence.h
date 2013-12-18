@@ -18,7 +18,7 @@ public:
 	ExecuteSequence(OperationsController *opCtr);
     ~ExecuteSequence();
 	void debugSequence(int frameNum);
-	void setFileSource(FileContainer *source) { fs = source; }
+    void setFileSource(FileContainer *source);
     void setFluorFileSource(FileContainer *source);
 	void setDotFilename(std::string fn) { dotFilename = fn; }
 	void setCsvFilename(std::string fn) { csvFilename = fn; }
@@ -27,11 +27,13 @@ public:
     void run();
 
 signals:
-	void incrementProgress(int);
-	void sequenceDone();
+    void incrementProgress(int);
+    void sequenceDone();
+    void brightfieldAdded(std::string);
+    void fluorescenceAdded(std::string);
 
 private:
-	OperationsController *ops;
+    OperationsController *ops;
 	FileContainer *fs;
     std::vector<FileContainer *> ffs;
 	std::string dotFilename;

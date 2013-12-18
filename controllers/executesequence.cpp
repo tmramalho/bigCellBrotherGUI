@@ -26,10 +26,19 @@ void ExecuteSequence::debugSequence(int frameNum)
     ops->showSelectedPreview(target);
 }
 
+void ExecuteSequence::setFileSource(FileContainer *source)
+{
+    fs = source;
+    ffs.clear();
+    haveFluorescence = false;
+    emit brightfieldAdded(fs->getFilepath());
+}
+
 void ExecuteSequence::setFluorFileSource(FileContainer *source)
 {
      ffs.push_back(source);
      haveFluorescence = true;
+     emit fluorescenceAdded(source->getFilepath());
 }
 
 void ExecuteSequence::run()

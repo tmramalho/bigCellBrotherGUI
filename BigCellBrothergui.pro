@@ -17,3 +17,6 @@ unix|win32|macx: LIBS += -L/opt/local/lib/ -lopencv_core -lopencv_highgui -lopen
 
 INCLUDEPATH += /opt/local/include
 DEPENDPATH += /opt/local/include
+
+RESOURCES += \
+    assets/icons.qrc

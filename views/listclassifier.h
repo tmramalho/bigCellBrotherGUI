@@ -2,6 +2,8 @@
 #define DIALOG_H
 
 #include <QDialog>
+#include <QFuture>
+#include <QtConcurrentRun>
 #include "createclassifier.h"
 
 namespace Ui {
@@ -21,8 +23,12 @@ public slots:
     void setTrainingSetSize(int size);
     void setSVMTrained(double result);
 
+private slots:
+    void on_train_released();
+
 private:
 	Ui::ListClassifier *ui;
+    CreateClassifier *ccl;
 };
 
 #endif // DIALOG_H
