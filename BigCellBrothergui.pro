@@ -20,3 +20,5 @@ DEPENDPATH += /opt/local/include
 
 RESOURCES += \
     assets/icons.qrc
+
+

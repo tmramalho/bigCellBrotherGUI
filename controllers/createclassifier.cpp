@@ -177,3 +177,11 @@ void CreateClassifier::markallBad()
 	}
     this->showPreview();
 }
+
+void CreateClassifier::reset()
+{
+    svmBadLabelsbyFrame.clear();
+    svmGoodLabelsbyFrame.clear();
+    badLabelsbyFrame.clear();
+    goodLabelsbyFrame.clear();
+}

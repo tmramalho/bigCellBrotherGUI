@@ -32,6 +32,7 @@ public slots:
     void saveTrainingSamples();
 	void markallGood();
 	void markallBad();
+    void reset();
 
 signals:
     void trainingSetUpdated(int size);

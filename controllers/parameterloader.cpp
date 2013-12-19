@@ -19,7 +19,7 @@ ParameterLoader::ParameterLoader()
 	parameters["ttb"]  = 0;
 	parameters["wsz"]  = 3;
 	parameters["wsm"]  = 1;
-	parameters["wsst"]  = 50;
+    parameters["wsst"]  = 3;
 	parameters["wsrm"]  = 0;
 }
 
