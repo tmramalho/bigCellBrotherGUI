@@ -12,7 +12,7 @@
 class TiffContainer : public FileContainer
 {
 public:
-	TiffContainer();
+    TiffContainer(bool _rescale = true);
 	~TiffContainer();
 	void openFile(std::string filename);
 	void closeFile();
@@ -23,6 +23,7 @@ private:
     uint16 spp, bpp, photo;
     uint32 width, height;
 	cv::Mat currentFrame;
+    bool rescale;
 };
 
 #endif // TIFFCONTAINER_H

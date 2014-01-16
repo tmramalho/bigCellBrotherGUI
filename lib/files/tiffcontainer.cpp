@@ -1,6 +1,6 @@
 #include "tiffcontainer.h"
 
-TiffContainer::TiffContainer()
+TiffContainer::TiffContainer(bool _rescale)
 {
 	loaded = false;
 	tif = NULL;
@@ -12,6 +12,7 @@ TiffContainer::TiffContainer()
 	photo = 0;
     vMin = 0;
     vMax = 65536;
+    rescale = _rescale;
 }
 
 TiffContainer::~TiffContainer()
@@ -83,7 +84,7 @@ cv::Mat TiffContainer::grabFrameNumber(int frameNum)
 		}
 	}
 
-	if(bpp == 16) {
+    if(bpp == 16 && rescale) {
 		double min, max;
 		cv::minMaxLoc(readFrame, &min, &max);
         if(vMin > min) min = vMin;
@@ -92,7 +93,7 @@ cv::Mat TiffContainer::grabFrameNumber(int frameNum)
 		double b = - min * scale;
         std::cout << min << " : " << max << std::endl;
 		readFrame.convertTo(currentFrame, CV_8U, scale, b);
-	} else if(bpp == 8) {
+    } else {
 		readFrame.copyTo(currentFrame);
 	}
 

@@ -196,11 +196,11 @@ void MainWindow::openImageFluorescent()
 	if (!fileName.isEmpty()) {
         QFileInfo fi(fileName);
 		QString ext = fi.suffix();
-		if(ext == "avi")
+        if(ext == "avi") {
             videoBoxFluorescence = new VideoContainer();
-		else if(ext == "tif" || ext == "tiff")
-            videoBoxFluorescence = new TiffContainer();
-		else {
+        } else if(ext == "tif" || ext == "tiff") {
+            videoBoxFluorescence = new TiffContainer(false);
+        } else {
             QMessageBox::information(this, tr("Big Cell Brother"),
 									 tr("%1 is not a supported format.").arg(fileName));
 			return;
