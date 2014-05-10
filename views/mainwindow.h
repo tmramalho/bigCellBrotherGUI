@@ -23,13 +23,13 @@
 #include "listclassifier.h"
 #include "parameterloader.h"
 #include <iostream>
-#include <QFileDialog>
+#include <QtWidgets/QFileDialog>
 #include <QDir>
-#include <QMessageBox>
+#include <QtWidgets/QMessageBox>
 #include <QVariant>
-#include <QMainWindow>
-#include <QScrollBar>
-#include <QListWidgetItem>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QScrollBar>
+#include <QtWidgets/QListWidgetItem>
 
 namespace Ui {
 class MainWindow;

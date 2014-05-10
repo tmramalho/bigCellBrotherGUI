@@ -1,7 +1,7 @@
 #ifndef CREATEMARKERS_H
 #define CREATEMARKERS_H
 
-#include <QDialog>
+#include <QtWidgets/QDialog>
 #include "createmarkersop.h"
 
 namespace Ui {

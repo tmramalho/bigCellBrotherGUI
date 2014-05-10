@@ -1,9 +1,9 @@
 #ifndef DIALOG_H
 #define DIALOG_H
 
-#include <QDialog>
+#include <QtWidgets/QDialog>
 #include <QFuture>
-#include <QtConcurrentRun>
+#include <QtConcurrent/QtConcurrent>
 #include "createclassifier.h"
 
 namespace Ui {

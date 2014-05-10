@@ -1,7 +1,7 @@
 #ifndef THRESHOLD_H
 #define THRESHOLD_H
 
-#include <QDialog>
+#include <QtWidgets/QDialog>
 #include "thresholdop.h"
 
 namespace Ui {

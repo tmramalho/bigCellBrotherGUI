@@ -1,7 +1,7 @@
 #ifndef LISTOPENFILES_H
 #define LISTOPENFILES_H
 
-#include <QDialog>
+#include <QtWidgets/QDialog>
 #include <controllers/executesequence.h>
 
 namespace Ui {

@@ -1,7 +1,7 @@
 #ifndef PICTURELABEL_H
 #define PICTURELABEL_H
 
-#include <QLabel>
+#include <QtWidgets/QLabel>
 #include <QMouseEvent>
 #include <iostream>
 

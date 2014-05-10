@@ -1,7 +1,7 @@
 #ifndef CROPIMAGE_H
 #define CROPIMAGE_H
 
-#include <QDialog>
+#include <QtWidgets/QDialog>
 #include "cropimageop.h"
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>

@@ -5,8 +5,8 @@
 #include <iostream>
 #include <QEvent>
 #include <QMouseEvent>
-#include <QScrollArea>
-#include <QLabel>
+#include <QtWidgets/QScrollArea>
+#include <QtWidgets/QLabel>
 #include "operation.h"
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>

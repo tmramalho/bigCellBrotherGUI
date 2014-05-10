@@ -7,7 +7,7 @@
 #include <iostream>
 #include <QObject>
 #include <QImage>
-#include <QDialog>
+#include <QtWidgets/QDialog>
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>

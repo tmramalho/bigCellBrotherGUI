@@ -1,11 +1,11 @@
 #ifndef VIDEOPROCESSOR_H
 #define VIDEOPROCESSOR_H
 
-#include <QDialog>
-#include <QFileDialog>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QFileDialog>
 #include <QDir>
 #include <QFuture>
-#include <QtConcurrentRun>
+#include <QtConcurrent/QtConcurrent>
 #include "executesequence.h"
 
 namespace Ui {

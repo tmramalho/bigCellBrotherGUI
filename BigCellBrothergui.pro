@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui widgets
 
 TARGET = BigCellBrothergui
 TEMPLATE = app
@@ -21,4 +21,8 @@ DEPENDPATH += /opt/local/include
 RESOURCES += \
     assets/icons.qrc
 
+QMAKE_CXXFLAGS += -stdlib=libc++
+QMAKE_LFLAGS += -stdlib=libc++
+QMAKE_INFO_PLIST = /Users/tiago/Library/Qt/5.2.1/clang_64/mkspecs/macx-clang/Info.plist.app
 
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7

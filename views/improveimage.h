@@ -1,7 +1,7 @@
 #ifndef IMPROVEIMAGE_H
 #define IMPROVEIMAGE_H
 
-#include <QDialog>
+#include <QtWidgets/QDialog>
 #include "improveimageop.h"
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>

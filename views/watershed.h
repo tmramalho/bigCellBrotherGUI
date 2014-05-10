@@ -1,7 +1,7 @@
 #ifndef WATERSHED_H
 #define WATERSHED_H
 
-#include <QDialog>
+#include <QtWidgets/QDialog>
 #include "watershedop.h"
 
 namespace Ui {
