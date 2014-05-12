@@ -29,12 +29,14 @@ public slots:
 	void updateXEnd(int pos);
 	void updateYBegin(int pos);
 	void updateYEnd(int pos);
+    void updateAngle(int an);
 
 private:
 	int xb;
 	int xe;
 	int yb;
 	int ye;
+    int angle;
 };
 
 #endif // CROPIMAGEOP_H

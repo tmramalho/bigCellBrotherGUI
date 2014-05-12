@@ -1,3 +1,5 @@
+#!/bin/sh
+
 TYPE='debug'
 #install_name_tool -id ~/Dropbox/workspace/bigCellBrother/Maclib/libbigCellBrother.dylib ~/Dropbox/workspace/bigCellBrother/Maclib/libbigCellBrother.dylib
 #install_name_tool -change libbigCellBrother.dylib ~/Dropbox/workspace/bigCellBrother/Maclib/libbigCellBrother.dylib ~/Dropbox/workspace/build/bcb_mac_$TYPE/BigCellBrothergui.app/Contents/MacOS/BigCellBrothergui

@@ -13,19 +13,29 @@ void CropImageOp::updateParameters() {
 	xe = controller->getPM()->getNamedParameter("xe");
 	yb = controller->getPM()->getNamedParameter("yb");
 	ye = controller->getPM()->getNamedParameter("ye");
+    angle = controller->getPM()->getNamedParameter("ang");
 }
 
 void CropImageOp::execute()
 {
 	cv::Mat prev = controller->getPipelineImage(0);
+    cv::Mat next(prev.size(), prev.type());
+
+    //rotate
+    int len = std::max(prev.cols, prev.rows);
+    cv::Point2f pt(len/2., len/2.);
+    cv::Mat r = cv::getRotationMatrix2D(pt, angle, 1.0);
+    cv::warpAffine(prev, next, r, cv::Size(len, len));
+
+    //crop
 	cv::Rect roi;
 	roi.x = xb;
 	roi.y = yb;
 	roi.width = xe - xb;
 	roi.height = ye - yb;
-	cv::Mat next = prev(roi);
+    cv::Mat final = next(roi);
 	cv::Mat croppedImage;
-	next.copyTo(croppedImage);
+    final.copyTo(croppedImage);
 	controller->setPipelineImage(1, croppedImage);
 }
 
@@ -63,20 +73,33 @@ void CropImageOp::updateYEnd(int pos)
     if(pos <= yb) return;
 	ye = pos;
 	controller->getPM()->setNamedParameter("ye", ye);
-	perform();
+    perform();
+}
+
+void CropImageOp::updateAngle(int an)
+{
+   angle = an;
+   controller->getPM()->setNamedParameter("ang", angle);
+   perform();
 }
 
 
 cv::Mat CropImageOp::cropExternalImage(cv::Mat &image)
 {
+    cv::Mat next(image.size(), image.type());
+    int len = std::max(image.cols, image.rows);
+    cv::Point2f pt(len/2., len/2.);
+    cv::Mat r = cv::getRotationMatrix2D(pt, angle, 1.0);
+    cv::warpAffine(image, next, r, cv::Size(len, len));
+
 	cv::Rect roi;
 	roi.x = xb;
 	roi.y = yb;
 	roi.width = xe - xb;
 	roi.height = ye - yb;
-	cv::Mat next = image(roi);
+    cv::Mat final = next(roi);
 	cv::Mat result;
-	next.copyTo(result);
+    final.copyTo(result);
     return result;
 }
 

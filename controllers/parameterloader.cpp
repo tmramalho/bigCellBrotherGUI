@@ -21,6 +21,7 @@ ParameterLoader::ParameterLoader()
 	parameters["wsm"]  = 1;
     parameters["wsst"]  = 3;
 	parameters["wsrm"]  = 0;
+    parameters["ang"] = 0;
 }
 
 void ParameterLoader::readParametersFromFile(std::string filename)

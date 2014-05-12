@@ -24,6 +24,8 @@ void CropImage::bindToOp(CropImageOp *co)
     QObject::connect(ui->ybs, SIGNAL(valueChanged(int)), ui->spinBox_3, SLOT(setValue(int)));
 	QObject::connect(ui->yes, SIGNAL(valueChanged(int)), co, SLOT(updateYEnd(int)));
     QObject::connect(ui->yes, SIGNAL(valueChanged(int)), ui->spinBox_4, SLOT(setValue(int)));
+    QObject::connect(ui->angle, SIGNAL(valueChanged(int)), co, SLOT(updateAngle(int)));
+    QObject::connect(ui->angle, SIGNAL(valueChanged(int)), ui->spinBox_5, SLOT(setValue(int)));
 
     QObject::connect(ui->spinBox, SIGNAL(valueChanged(int)), co, SLOT(updateXBegin(int)));
     QObject::connect(ui->spinBox, SIGNAL(valueChanged(int)), ui->xbs, SLOT(setValue(int)));
@@ -33,6 +35,8 @@ void CropImage::bindToOp(CropImageOp *co)
     QObject::connect(ui->spinBox_3, SIGNAL(valueChanged(int)), ui->ybs, SLOT(setValue(int)));
     QObject::connect(ui->spinBox_4, SIGNAL(valueChanged(int)), co, SLOT(updateYEnd(int)));
     QObject::connect(ui->spinBox_4, SIGNAL(valueChanged(int)), ui->yes, SLOT(setValue(int)));
+    QObject::connect(ui->spinBox_5, SIGNAL(valueChanged(int)), co, SLOT(updateAngle(int)));
+    QObject::connect(ui->spinBox_5, SIGNAL(valueChanged(int)), ui->angle, SLOT(setValue(int)));
 }
 
 void CropImage::updateBounds(int xi, int xf, int yi, int yf)
