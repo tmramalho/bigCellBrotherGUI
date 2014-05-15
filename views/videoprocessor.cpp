@@ -11,8 +11,9 @@ VideoProcessor::VideoProcessor(QWidget *parent) :
 void VideoProcessor::setExecutor(ExecuteSequence *esP)
 {
 	es = esP;
-	QObject::connect(es, SIGNAL(incrementProgress(int)), this, SLOT(incrementProgress(int)));
+    QObject::connect(es, SIGNAL(incrementProgress(float, float)), this, SLOT(incrementProgress(float, float)));
     QObject::connect(es, SIGNAL(sequenceDone()), this, SLOT(exportDone()));
+    QObject::connect(this, SIGNAL(batchCancelled()), es, SLOT(cancelRun()));
 }
 
 VideoProcessor::~VideoProcessor()
@@ -20,14 +21,16 @@ VideoProcessor::~VideoProcessor()
 	delete ui;
 }
 
-void VideoProcessor::incrementProgress(int c)
+void VideoProcessor::incrementProgress(float el, float est)
 {
-    ui->progressBar->setValue(c);
+    ui->progressBar->setValue((int)est);
 }
 
 void VideoProcessor::exportDone()
 {
     ui->pickDOT->setEnabled(true);
+    ui->checkBox->setEnabled(true);
+    this->done(1);
 }
 
 void VideoProcessor::on_pickDOT_clicked()
@@ -56,5 +59,20 @@ void VideoProcessor::on_goButton_clicked()
 {
 	ui->goButton->setEnabled(false);
     ui->pickDOT->setEnabled(false);
+    ui->checkBox->setEnabled(false);
+    ui->pushButton->setEnabled(true);
     QFuture<void> future = QtConcurrent::run(es, &ExecuteSequence::run);
+}
+
+void VideoProcessor::on_pushButton_clicked()
+{
+    ui->pickDOT->setEnabled(true);
+    ui->checkBox->setEnabled(true);
+    emit batchCancelled();
+    this->done(0);
+}
+
+void VideoProcessor::on_checkBox_clicked(bool checked)
+{
+    es->setSaveFrames(checked);
 }

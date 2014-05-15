@@ -10,7 +10,9 @@ HEADERS += $$PWD/mainwindow.h \
     $$PWD/loadimage.h \
     $$PWD/videoprocessor.h \
     $$PWD/listclassifier.h \
-    views/listopenfiles.h
+    views/listopenfiles.h \
+    views/batchapply.h \
+    views/batchprogress.h
 SOURCES  +=  $$PWD/mainwindow.cpp \
     $$PWD/operation.cpp \
     $$PWD/picturelabel.cpp  \
@@ -22,7 +24,9 @@ SOURCES  +=  $$PWD/mainwindow.cpp \
     $$PWD/videoprocessor.cpp \
     $$PWD/loadimage.cpp \
     $$PWD/listclassifier.cpp \
-    views/listopenfiles.cpp
+    views/listopenfiles.cpp \
+    views/batchapply.cpp \
+    views/batchprogress.cpp
 FORMS    += $$PWD/mainwindow.ui \
     $$PWD/cropimage.ui \
     $$PWD/improveimage.ui \
@@ -32,4 +36,6 @@ FORMS    += $$PWD/mainwindow.ui \
     $$PWD/videoprocessor.ui \
     $$PWD/loadimage.ui \
     $$PWD/listclassifier.ui \
-    views/listopenfiles.ui
+    views/listopenfiles.ui \
+    views/batchapply.ui \
+    views/batchprogress.ui

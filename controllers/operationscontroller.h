@@ -36,7 +36,7 @@ public:
 	void updateSelectedOperationPreview(std::string op);
     void setOperationState(std::string op);
 	cv::Mat getPreviewForOperation(std::string op);
-	cv::Mat cropImage(cv::Mat &image);
+	cv::Mat transformImage(cv::Mat &image);
 
 	int getStepOrder(std::string st) { return stepsOrder[st]; }
 	void setPipelineImage(int i, cv::Mat result) { pipelineImages[i] = result; }

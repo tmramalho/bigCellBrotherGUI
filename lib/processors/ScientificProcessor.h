@@ -46,6 +46,7 @@ public:
     void setPreviousMarkersPic(cv::Mat previousMarkersPic);
 	bool isFirstFrame() const;
 	void setFirstFrame(bool firstFrame);
+    void reset();
 
     std::vector<CellCont> getCurrentCells() const;
     void setCurrentCells(const std::vector<CellCont> &value);
@@ -61,7 +62,7 @@ private:
 	cv::Mat previousMarkersPic;
     std::vector<cv::Mat> fluorescenceArray;
 	bool useFluor;
-	bool firstFrame;
+    bool firstFrame;
 };
 
 #endif /* SCIENTIFICPROCESSOR_H_ */

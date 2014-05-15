@@ -22,13 +22,20 @@ public:
 	~VideoProcessor();
 
 public slots:
-	void incrementProgress(int c);
+    void incrementProgress(float el, float est);
     void exportDone();
 
 private slots:
 	void on_pickDOT_clicked();
 
 	void on_goButton_clicked();
+
+    void on_pushButton_clicked();
+
+    void on_checkBox_clicked(bool checked);
+
+signals:
+    void batchCancelled();
 
 private:
 	Ui::VideoProcessor *ui;

@@ -21,6 +21,7 @@
 #include "createclassifier.h"
 #include "picturelabel.h"
 #include "listclassifier.h"
+#include "batchapply.h"
 #include "parameterloader.h"
 #include <iostream>
 #include <QtWidgets/QFileDialog>
@@ -64,6 +65,7 @@ private slots:
 	void updatePreview(QImage imagePreview);
 	void displayExecutionDialog();
     void displayOpenFiles();
+    void displayBatch();
 	void sequenceProcessingFinished();
 
 private:
@@ -93,6 +95,7 @@ private:
     ListClassifier *ls;
     LoadImage *li;
     ListOpenFiles *lo;
+    BatchApply *batch;
 };
 
 #endif // MAINWINDOW_H

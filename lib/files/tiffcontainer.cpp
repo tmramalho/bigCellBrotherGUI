@@ -32,7 +32,7 @@ void TiffContainer::openFile(std::string filename)
 	TIFFGetField(tif, TIFFTAG_BITSPERSAMPLE, &bpp);
 	TIFFGetField(tif, TIFFTAG_SAMPLESPERPIXEL, &spp);
 	TIFFGetField(tif, TIFFTAG_PHOTOMETRIC, &photo);
-	std::cout << height << ", " << width << ", " << bpp << ", "  << spp << ", " << photo << std::endl;
+    //std::cout << height << ", " << width << ", " << bpp << ", "  << spp << ", " << photo << std::endl;
 	frameSize.height = height;
 	frameSize.width = width;
 
@@ -91,7 +91,7 @@ cv::Mat TiffContainer::grabFrameNumber(int frameNum)
         if(vMax < max) max = vMax;
 		double scale = 255 / (max-min);
 		double b = - min * scale;
-        std::cout << min << " : " << max << std::endl;
+        //std::cout << min << " : " << max << std::endl;
 		readFrame.convertTo(currentFrame, CV_8U, scale, b);
     } else {
 		readFrame.copyTo(currentFrame);

@@ -9,7 +9,7 @@
 
 ScientificProcessor::ScientificProcessor() {
 	useFluor = false;
-	firstFrame = true;
+    firstFrame = true;
 }
 
 ScientificProcessor::~ScientificProcessor() {
@@ -48,7 +48,7 @@ void ScientificProcessor::processLabels(int t) {
     previousCells = currentCells;
     currentCells.clear();
     currentCells = cellVector;
-	std::cout << cellVector.size() << std::endl;
+    //std::cout << cellVector.size() << " cells found" << std::endl;
 }
 
 void ScientificProcessor::printStatistics() {
@@ -183,16 +183,15 @@ bool ScientificProcessor::isFirstFrame() const {
 }
 
 void ScientificProcessor::setFirstFrame(bool firstFrame) {
-	this->firstFrame = firstFrame;
+    this->firstFrame = firstFrame;
 }
 
-
-
-
-
-
-
-
+void ScientificProcessor::reset()
+{
+    currentCells.clear();
+    previousCells.clear();
+    fluorescenceArray.clear();
+}
 
 std::vector<CellCont> ScientificProcessor::getCurrentCells() const
 {

@@ -46,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
     cc = new CreateClassifier(&opCtr);
     sp = new ExecuteSequence(&opCtr);
     execution = new VideoProcessor();
+    batch = new BatchApply();
 
     //bind operations to widgets
     li->bindToOps();
@@ -56,6 +57,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ws->bindToOp(wso);
     ls->bindToOp(cc);
     execution->setExecutor(sp);
+    batch->setExecutor(sp);
     lo->setOp(sp);
 
     //define operation names
@@ -119,12 +121,15 @@ MainWindow::~MainWindow()
     delete ui;
     delete sp;
     delete cc;
+    delete lo;
+    delete execution;
     delete parameterManager;
 }
 
 void MainWindow::openImage() {
     QString fileName = QFileDialog::getOpenFileName(this,
 									   tr("Open File"), QDir::homePath());
+
 	if (!fileName.isEmpty()) {
         if(videoBox != NULL) {
             QObject::disconnect(videoBox, SIGNAL(paramsChanged()), this, SLOT(resetPipeline()));
@@ -171,6 +176,7 @@ void MainWindow::openImage() {
 
         if(videoBox->getIsHDR()) ui->stackedWidget->setCurrentIndex(bIndex);
         ui->actionApply->setEnabled(true);
+        ui->actionBatch_apply->setEnabled(true);
         ui->zoomInAct->setEnabled(true);
         ui->zoomOutAct->setEnabled(true);
         ui->normalSizeAct->setEnabled(true);
@@ -178,6 +184,8 @@ void MainWindow::openImage() {
         //ui->fitToWindowAct->setChecked(true);
         //this->fitToWindow();
         updateActions();
+
+        batch->setDirectory(fi.absoluteDir());
 
         if (!ui->fitToWindowAct->isChecked())
             imageLabel->adjustSize();
@@ -286,7 +294,7 @@ void MainWindow::updateActions()
 
 void MainWindow::scaleImage(double factor)
 {
-	Q_ASSERT(imageLabel->pixmap());
+    Q_ASSERT(imageLabel->pixmap());
 	scaleFactor *= factor;
 	PictureLabel *il = static_cast<PictureLabel *>(imageLabel);
 	il->scaleFactor = scaleFactor;
@@ -343,6 +351,11 @@ void MainWindow::displayExecutionDialog()
 void MainWindow::displayOpenFiles()
 {
     lo->show();
+}
+
+void MainWindow::displayBatch()
+{
+    batch->show();
 }
 
 void MainWindow::sequenceProcessingFinished()

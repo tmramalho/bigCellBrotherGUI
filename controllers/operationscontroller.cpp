@@ -91,7 +91,7 @@ cv::Mat OperationsController::getPreviewForOperation(std::string op)
 	return pipelineVisualization.at(op);
 }
 
-cv::Mat OperationsController::cropImage(cv::Mat &image)
+cv::Mat OperationsController::transformImage(cv::Mat &image)
 {
 	CropImageOp* cropOp = (CropImageOp*)(operationPipeline["Crop Image"]);
 	cv::Mat croppedImage = cropOp->cropExternalImage(image);

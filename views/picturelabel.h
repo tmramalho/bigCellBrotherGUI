@@ -18,6 +18,7 @@ signals:
 
 protected:
 	void mousePressEvent ( QMouseEvent * ev );
+    void mouseReleaseEvent ( QMouseEvent * ev );
 
 };
 
