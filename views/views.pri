@@ -1,6 +1,5 @@
 INCLUDEPATH += $$PWD
 HEADERS += $$PWD/mainwindow.h \
-    $$PWD/operation.h \
     $$PWD/picturelabel.h  \
     $$PWD/cropimage.h \
     $$PWD/improveimage.h \
@@ -14,7 +13,6 @@ HEADERS += $$PWD/mainwindow.h \
     views/batchapply.h \
     views/batchprogress.h
 SOURCES  +=  $$PWD/mainwindow.cpp \
-    $$PWD/operation.cpp \
     $$PWD/picturelabel.cpp  \
     $$PWD/cropimage.cpp \
     $$PWD/improveimage.cpp \

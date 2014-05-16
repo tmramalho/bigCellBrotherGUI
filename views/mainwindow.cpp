@@ -110,6 +110,18 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(this, SIGNAL(currentFrameChanged(int)), cc, SLOT(frameChanged(int)));
     QObject::connect(&opCtr, SIGNAL(newBounds(int,int,int,int)), ci, SLOT(updateBounds(int,int,int,int)));
     QObject::connect(sp, SIGNAL(sequenceDone()), this, SLOT(sequenceProcessingFinished()));
+
+    //parameters signals
+    QObject::connect(parameterManager, SIGNAL(parametersUpdated(std::map<std::string,double>)),
+                     ci, SLOT(updateParameters(std::map<std::string,double>)));
+    QObject::connect(parameterManager, SIGNAL(parametersUpdated(std::map<std::string,double>)),
+                     ii, SLOT(updateParameters(std::map<std::string,double>)));
+    QObject::connect(parameterManager, SIGNAL(parametersUpdated(std::map<std::string,double>)),
+                     th, SLOT(updateParameters(std::map<std::string,double>)));
+    QObject::connect(parameterManager, SIGNAL(parametersUpdated(std::map<std::string,double>)),
+                     cm, SLOT(updateParameters(std::map<std::string,double>)));
+    QObject::connect(parameterManager, SIGNAL(parametersUpdated(std::map<std::string,double>)),
+                     ws, SLOT(updateParameters(std::map<std::string,double>)));
 }
 
 MainWindow::~MainWindow()

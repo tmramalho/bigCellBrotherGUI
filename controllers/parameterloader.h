@@ -22,6 +22,7 @@ public:
 
 signals:
 	void parametersRead();
+    void parametersUpdated(const std::map <std::string, double> &param);
 
 private:
 	std::map <std::string, double> parameters;

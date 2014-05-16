@@ -22,6 +22,7 @@ public:
 
 public slots:
 	void updateBounds(int xi, int xf, int yi, int yf);
+    void updateParameters(const std::map <std::string, double> &param);
 
 private:
 	Ui::CropImage *ui;

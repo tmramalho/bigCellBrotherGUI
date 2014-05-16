@@ -20,6 +20,9 @@ public:
 	~ImproveImage();
 	void bindToOp(ImproveImageOp *iio);
 
+public slots:
+    void updateParameters(const std::map <std::string, double> &param);
+
 private:
 	Ui::ImproveImage *ui;
 };

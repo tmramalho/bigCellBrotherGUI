@@ -1,5 +1,6 @@
 INCLUDEPATH += $$PWD
 SOURCES += $$PWD/main.cpp \
+    $$PWD/operation.cpp \
     $$PWD/operationscontroller.cpp \
     $$PWD/improveimageop.cpp \
     $$PWD/cropimageop.cpp \
@@ -10,7 +11,8 @@ SOURCES += $$PWD/main.cpp \
     $$PWD/createclassifier.cpp \
     $$PWD/parameterloader.cpp
 
-HEADERS  += $$PWD/operationscontroller.h \
+HEADERS  += $$PWD/operation.h \
+    $$PWD/operationscontroller.h \
     $$PWD/improveimageop.h \
     $$PWD/cropimageop.h \
     $$PWD/thresholdop.h \

@@ -91,9 +91,10 @@ cv::Mat TiffContainer::grabFrameNumber(int frameNum)
         if(vMax < max) max = vMax;
 		double scale = 255 / (max-min);
 		double b = - min * scale;
-        //std::cout << min << " : " << max << std::endl;
+        //std::cout << "Feeding rescaled frame " << min << " : " << max << std::endl;
 		readFrame.convertTo(currentFrame, CV_8U, scale, b);
     } else {
+        //std::cout << "Feeding raw frame" << std::endl;
 		readFrame.copyTo(currentFrame);
 	}
 

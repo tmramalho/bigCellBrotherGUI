@@ -14,8 +14,8 @@ ParameterLoader::ParameterLoader()
 	parameters["iism"]  = 0;
 	parameters["iidr"]  = 0;
 	parameters["tto"]  = 0;
-	parameters["ttw"]  = 9;
-	parameters["ttt"]  = 2;
+    parameters["ttw"]  = 27;
+    parameters["ttt"]  = 255;
 	parameters["ttb"]  = 0;
 	parameters["wsz"]  = 3;
 	parameters["wsm"]  = 1;
@@ -43,6 +43,7 @@ void ParameterLoader::readParametersFromFile(std::string filename)
 	}
 
 	emit parametersRead();
+    emit parametersUpdated(parameters);
 }
 
 void ParameterLoader::saveParametersToFile(std::string filename)

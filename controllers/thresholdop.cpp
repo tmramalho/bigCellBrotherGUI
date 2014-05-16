@@ -5,10 +5,6 @@ ThresholdOp::ThresholdOp(OperationsController *_controller)
 {
 	controller = _controller;
 	updateParameters();
-    thresholdTH = 255;
-    threshold = 0;
-    thresholdBG = 0;
-    window = 27;
 }
 
 void ThresholdOp::updateParameters() {

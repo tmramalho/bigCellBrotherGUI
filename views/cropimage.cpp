@@ -67,3 +67,17 @@ void CropImage::updateBounds(int xi, int xf, int yi, int yf)
     ui->spinBox_4->setMaximum(yf);
     ui->spinBox_4->setValue(yf);
 }
+
+void CropImage::updateParameters(const std::map<std::string, double> &param)
+{
+    ui->xbs->setValue(param.at("xb"));
+    ui->spinBox->setValue(param.at("xb"));
+    ui->xes->setValue(param.at("xe"));
+    ui->spinBox_2->setValue(param.at("xe"));
+    ui->ybs->setValue(param.at("yb"));
+    ui->spinBox_3->setValue(param.at("yb"));
+    ui->yes->setValue(param.at("ye"));
+    ui->spinBox_4->setValue(param.at("ye"));
+    ui->angle->setValue(param.at("ang"));
+    ui->spinBox_5->setValue(param.at("ang"));
+}

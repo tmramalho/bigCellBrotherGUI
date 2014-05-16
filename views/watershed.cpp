@@ -28,5 +28,14 @@ void Watershed::bindToOp(WatershedOp *co)
     QObject::connect(ui->smoothingBox, SIGNAL(valueChanged(int)), ui->smoothingSlider, SLOT(setValue(int)));
     QObject::connect(ui->stepBox, SIGNAL(valueChanged(int)), ui->stepSlider, SLOT(setValue(int)));
 
-	QObject::connect(ui->checkBox, SIGNAL(toggled(bool)), co, SLOT(removeBorder(bool)));
+    QObject::connect(ui->checkBox, SIGNAL(toggled(bool)), co, SLOT(removeBorder(bool)));
+}
+
+void Watershed::updateParameters(const std::map<std::string, double> &param)
+{
+    ui->sizeSlider->setValue(param.at("wsz"));
+    ui->smoothingSlider->setValue(param.at("wsm"));
+    ui->stepSlider->setValue(param.at("wsst"));
+    ui->checkBox->setChecked(param.at("wsrm"));
+
 }

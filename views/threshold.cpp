@@ -32,3 +32,11 @@ void Threshold::bindToOp(ThresholdOp *co)
     QObject::connect(ui->bgThresholdBox, SIGNAL(valueChanged(int)), ui->bgThresholdSlider, SLOT(setValue(int)));
     QObject::connect(ui->thThresholdBox, SIGNAL(valueChanged(int)), ui->thThresholdSlider, SLOT(setValue(int)));
 }
+
+void Threshold::updateParameters(const std::map<std::string, double> &param)
+{
+    ui->bgThresholdSlider->setValue(param.at("ttb"));
+    ui->windowSlider->setValue(param.at("ttw"));
+    ui->thThresholdSlider->setValue(param.at("ttt"));
+    ui->sbThresholdBox->setValue(param.at("tto"));
+}

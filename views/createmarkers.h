@@ -17,6 +17,9 @@ public:
 	~CreateMarkers();
 	void bindToOp(CreateMarkersOp *co);
 
+public slots:
+    void updateParameters(const std::map <std::string, double> &param);
+
 private:
 	Ui::CreateMarkers *ui;
 };

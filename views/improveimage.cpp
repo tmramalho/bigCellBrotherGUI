@@ -28,6 +28,14 @@ void ImproveImage::bindToOp(ImproveImageOp *iio)
     QObject::connect(ui->smoothBox, SIGNAL(valueChanged(int)), iio, SLOT(updateSmoothing(int)));
     QObject::connect(ui->smoothBox, SIGNAL(valueChanged(int)), ui->smoothSlider, SLOT(setValue(int)));
 
-	QObject::connect(ui->doubleRes, SIGNAL(currentIndexChanged(int)), iio, SLOT(updateDoubleRes(int)));
+    QObject::connect(ui->doubleRes, SIGNAL(currentIndexChanged(int)), iio, SLOT(updateDoubleRes(int)));
+}
+
+void ImproveImage::updateParameters(const std::map<std::string, double> &param)
+{
+    ui->contrastSlider->setValue(param.at("iism"));
+    ui->noiseSlider->setValue(param.at("dns"));
+    ui->smoothSlider->setValue(param.at("iibw"));
+    ui->doubleRes->setCurrentIndex(param.at("iidr"));
 }
 

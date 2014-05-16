@@ -25,3 +25,11 @@ void CreateMarkers::bindToOp(CreateMarkersOp *co)
     QObject::connect(ui->heightBox, SIGNAL(valueChanged(int)), ui->heightSlider, SLOT(setValue(int)));
     QObject::connect(ui->widthBox, SIGNAL(valueChanged(int)), ui->widthSlider, SLOT(setValue(int)));
 }
+
+void CreateMarkers::updateParameters(const std::map<std::string, double> &param)
+{
+    ui->heightSlider->setValue(param.at("cch"));
+    ui->widthSlider->setValue(param.at("ccw"));
+    ui->heightBox->setValue(param.at("cch"));
+    ui->widthBox->setValue(param.at("ccw"));
+}

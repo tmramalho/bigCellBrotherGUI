@@ -52,7 +52,7 @@ private:
     bool executed;
     bool allowRun;
     bool saveFrames;
-    FileContainer *openFile(QFileInfo &fi);
+    FileContainer *openFile(QFileInfo &fi, bool rescale);
     void analyseFrame(FileContainer *bfPic, std::vector<FileContainer *> &flPics, int i,
                       std::fstream &filestrDOT, std::fstream &filestrCSV);
 };

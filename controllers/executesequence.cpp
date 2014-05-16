@@ -113,13 +113,13 @@ void ExecuteSequence::run()
     emit sequenceDone();
 }
 
-FileContainer *ExecuteSequence::openFile(QFileInfo &fi) {
+FileContainer *ExecuteSequence::openFile(QFileInfo &fi, bool rescale) {
     QString ext = fi.suffix();
     FileContainer *videoBox;
     if(ext == "avi")
         videoBox = new VideoContainer();
     else if(ext == "tif" || ext == "tiff")
-        videoBox = new TiffContainer();
+        videoBox = new TiffContainer(rescale);
     else {
        throw 1;
     }
@@ -145,7 +145,7 @@ void ExecuteSequence::batchRun(std::vector<QFileInfoList> &stacks)
         FileContainer *bfFile;
         try {
             QFileInfo file = stacks.at(0).at(i);
-            bfFile = openFile(file);
+            bfFile = openFile(file, true);
         } catch(int ei) {
             std::cerr << ei << std::endl;
             continue;
@@ -155,7 +155,7 @@ void ExecuteSequence::batchRun(std::vector<QFileInfoList> &stacks)
             if(i >= stacks.at(j).count()) continue;
             try {
                 QFileInfo file = stacks.at(j).at(i);
-                FileContainer *flFile = openFile(file);
+                FileContainer *flFile = openFile(file, false);
                 flFileVector.push_back(flFile);
             } catch(int ei) {
                 std::cerr << ei << std::endl;

@@ -17,6 +17,9 @@ public:
 	~Watershed();
 	void bindToOp(WatershedOp *co);
 
+public slots:
+    void updateParameters(const std::map <std::string, double> &param);
+
 private:
 	Ui::Watershed *ui;
 };
