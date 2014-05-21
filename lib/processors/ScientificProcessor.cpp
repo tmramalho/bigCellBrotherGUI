@@ -90,7 +90,7 @@ void ScientificProcessor::createCsvFile(std::fstream &filestr, unsigned int nfl)
     /* Header */
     filestr << "t, label, parent, cx, cy, h, w, area, angle, ";
     for(unsigned int i = 0; i < nfl; i++)
-        filestr << "fl" << i << ", flsq" << i << ", ";
+        filestr << "flav" << i << ", flsd" << i << ", ";
     filestr << std::endl;
 }
 

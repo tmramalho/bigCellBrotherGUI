@@ -186,18 +186,11 @@ void CellCont::calcFluorescence(CellCont& target, cv::Mat &currentLabelMask,
         cv::Rect roi = target.getBoundBox();
         cv::Mat trimFlPic = fluorescencePic(roi);
         cv::Mat trimLabelMask = currentLabelMask(roi);
-        //mask
-        cv::Mat maskFlPic;
-        trimFlPic.copyTo(maskFlPic, trimLabelMask);
-        cv::Mat result;
-        cv::integral(maskFlPic,result);
-        double integral = result.at<double>(result.rows-1, result.cols-1);
-        target.fluorescence[j] = integral;
-        cv::Mat sqFlPic;
-        cv::pow(maskFlPic, 2, sqFlPic);
-        cv::integral(sqFlPic,result);
-        double integralSq = result.at<double>(result.rows-1, result.cols-1);
-        target.fluorescenceSq[j] = integralSq;
+        cv::Mat mean;
+        cv::Mat sd;
+        cv::meanStdDev(trimFlPic, mean, sd, trimLabelMask);
+        target.fluorescence[j] = mean.at<double>(0);
+        target.fluorescenceSq[j] = sd.at<double>(0);
     }
 }
 
