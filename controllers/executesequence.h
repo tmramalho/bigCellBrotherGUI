@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QFileInfo>
 #include <vector>
+#include <string>
 #include <time.h>
 #include "operationscontroller.h"
 #include "lib/files/filecontainer.h"
@@ -30,6 +31,8 @@ public:
 
     void run();
     void batchRun(std::vector<QFileInfoList>& stacks);
+    ScientificProcessor &getLab() { return lab; }
+    void importLab(std::string filename);
 
 signals:
     void incrementProgress(float, float);

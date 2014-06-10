@@ -6,6 +6,7 @@
 #include "operationscontroller.h"
 #include "improveimage.h"
 #include "cropimage.h"
+#include "manualtracker.h"
 #include "improveimageop.h"
 #include "cropimageop.h"
 #include "threshold.h"
@@ -22,6 +23,7 @@
 #include "picturelabel.h"
 #include "listclassifier.h"
 #include "batchapply.h"
+#include "generatetrees.h"
 #include "parameterloader.h"
 #include <iostream>
 #include <QtWidgets/QFileDialog>
@@ -57,6 +59,7 @@ private slots:
 	void loadParameters();
 	void saveParameters();
     void resetPipeline();
+    void openSequence();
 
 	void on_listWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
 
@@ -67,6 +70,7 @@ private slots:
     void displayOpenFiles();
     void displayBatch();
 	void sequenceProcessingFinished();
+    void displayTrackingEditor();
 
 private:
 	void updateActions();
@@ -96,6 +100,8 @@ private:
     LoadImage *li;
     ListOpenFiles *lo;
     BatchApply *batch;
+    GenerateTrees *genTree;
+    ManualTracker *mt;
 };
 
 #endif // MAINWINDOW_H

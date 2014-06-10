@@ -204,8 +204,18 @@
     </property>
     <addaction name="actionHelp"/>
    </widget>
+   <widget class="QMenu" name="menuActions">
+    <property name="title">
+     <string>Actions</string>
+    </property>
+    <addaction name="actionApply"/>
+    <addaction name="actionImport_Sequence"/>
+    <addaction name="actionBatch_apply"/>
+    <addaction name="actionTracking"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
+   <addaction name="menuActions"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -238,6 +248,7 @@
    <addaction name="separator"/>
    <addaction name="actionApply"/>
    <addaction name="actionBatch_apply"/>
+   <addaction name="actionTracking"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
@@ -407,6 +418,27 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+B</string>
+   </property>
+  </action>
+  <action name="actionTracking">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../assets/icons.qrc">
+     <normaloff>:/small/fork_21x24.png</normaloff>:/small/fork_21x24.png</iconset>
+   </property>
+   <property name="text">
+    <string>Tracking</string>
+   </property>
+  </action>
+  <action name="actionImport_Sequence">
+   <property name="icon">
+    <iconset resource="../assets/icons.qrc">
+     <normaloff>:/small/list_nested_24x21.png</normaloff>:/small/list_nested_24x21.png</iconset>
+   </property>
+   <property name="text">
+    <string>Import Sequence</string>
    </property>
   </action>
  </widget>
@@ -607,6 +639,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionTracking</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>displayTrackingEditor()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>599</x>
+     <y>399</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionImport_Sequence</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>openSequence()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>599</x>
+     <y>399</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>openImage()</slot>
@@ -620,5 +684,7 @@
   <slot>saveParameters()</slot>
   <slot>displayOpenFiles()</slot>
   <slot>displayBatch()</slot>
+  <slot>displayTrackingEditor()</slot>
+  <slot>openSequence()</slot>
  </slots>
 </ui>

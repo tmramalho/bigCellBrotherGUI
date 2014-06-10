@@ -11,6 +11,10 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/map.hpp>
+#include <boost/serialization/vector.hpp>
 
 #include <vector>
 #include <set>
@@ -54,10 +58,16 @@ public:
     std::vector<CellCont> getPreviousCells() const;
     void setPreviousCells(const std::vector<CellCont> &value);
 
+    std::map<int, std::map<int, std::vector<double> > > getAllCells() const;
+    void serializeAllCells(std::fstream &filestr);
+    void loadAllCells(std::fstream &filestr);
+
 private:
     int calculateMaxOverlap(CellCont &newCell, cv::Mat &currentLabelMask, std::vector<int> &labels);
+    void saveCellInArray(CellCont &newCell, int t);
     std::vector<CellCont> currentCells;
     std::vector<CellCont> previousCells;
+    std::map<int, std::map<int, std::vector<double> > > allCells;
 	cv::Mat markersPic;
 	cv::Mat previousMarkersPic;
     std::vector<cv::Mat> fluorescenceArray;

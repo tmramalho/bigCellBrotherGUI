@@ -45,10 +45,10 @@ void VideoProcessor::on_pickDOT_clicked()
     es->setAviFilename(filenameString);
     size_t index = 0;
     index = filenameString.find("avi", index);
-    filenameString.replace(index, 3, "csv");
-    es->setCsvFilename(filenameString);
     filenameString.replace(index, 3, "dot");
     es->setDotFilename(filenameString);
+    filenameString.replace(index, 3, "csv");
+    es->setCsvFilename(filenameString);
     ui->goButton->setEnabled(true);
     QString fname(filenameString.c_str());
     ui->filename->setText(fname);

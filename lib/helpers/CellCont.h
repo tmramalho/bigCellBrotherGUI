@@ -56,8 +56,9 @@ public:
 	void setCenter(double x, double y);
 	int getPrevLabel() const;
 	void setPrevLabel(int prevLabel);
-	double getTime() const;
-	void setTime(double time);
+    int getTime() const;
+    void setTime(int time);
+    void setNewParent(int label, int time);
 	bool getIsCell() const;
     void setIsCell(bool isCell);
     std::vector<double> getFluorescence() const;
@@ -67,6 +68,9 @@ public:
 	void setAngle(double angle) { this->angle = angle; }
     std::vector<double> getFluorescenceSq() const;
     void setFluorescenceSq(const std::vector<double> &value);
+
+    int getParentTime() const;
+    void setParentTime(int value);
 
 private:
     inline static void expandRect(cv::Rect& bbox, int padding, int imgHeight, int imgWidth);
@@ -80,9 +84,10 @@ private:
     std::vector<double> fluorescenceSq;
 	//tracking stuff
 	int prevLabel;
-	double time;
+    int time;
+    int parentTime;
 	double angle;
-	cv::Point2f center;
+    cv::Point2f center;
 };
 
 #endif /* CELLCONT_H_ */

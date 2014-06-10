@@ -39,7 +39,11 @@ void ScientificProcessor::processLabels(int t) {
 			int parent = calculateMaxOverlap(newCell, currentLabelMask, labels);
 			newCell.setPrevLabel(parent);
 		}
-		if(newCell.getIsCell()) cellVector.push_back(newCell);
+        if(newCell.getIsCell()) {
+            cellVector.push_back(newCell);
+            saveCellInArray(newCell, t);
+        }
+
 	}
 
 	if (firstFrame) { firstFrame = false; }
@@ -167,15 +171,58 @@ int ScientificProcessor::calculateMaxOverlap(CellCont& newCell,
 	std::vector<int>::iterator resultPos = std::max_element(labels.begin(), labels.end());
 	int result = std::distance(labels.begin(), resultPos);
 	if (result > 1) return result;
-	else return -1;
+    else return -1;
+}
+
+void ScientificProcessor::saveCellInArray(CellCont &newCell, int t)
+{
+    std::map<int, std::vector<double> > currentCells = allCells[t];
+    int cl = newCell.getCurLabel();
+    std::vector<double> cells = currentCells[cl];
+    cells.push_back(newCell.getCurLabel());
+    cells.push_back(newCell.getPrevLabel());
+    cells.push_back(newCell.getParentTime());
+    cv::Point2f center = newCell.getCenter();
+    cells.push_back(center.x);
+    cells.push_back(center.y);
+    std::vector <double> feats = newCell.getFeatures();
+    cells.push_back(feats[0]);
+    cells.push_back(feats[1]);
+    cells.push_back(feats[2]);
+    std::vector <double> flVal = newCell.getFluorescence();
+    std::vector <double> flValSq = newCell.getFluorescenceSq();
+    for(unsigned int j = 0; j < flVal.size(); j++) {
+         cells.push_back(flVal[j]);
+         cells.push_back(flValSq[j]);
+    }
+    currentCells[cl] = cells;
+    allCells[t] = currentCells;
+}
+std::map<int, std::map<int, std::vector<double> > > ScientificProcessor::getAllCells() const
+{
+    return allCells;
+}
+
+void ScientificProcessor::serializeAllCells(std::fstream &filestr)
+{
+    boost::archive::text_oarchive oa(filestr);
+    oa << allCells;
+    filestr.close();
+}
+
+void ScientificProcessor::loadAllCells(std::fstream &filestr)
+{
+    boost::archive::text_iarchive ia(filestr);
+    ia >> allCells;
+    filestr.close();
 }
 
 cv::Mat ScientificProcessor::getPreviousMarkersPic() const {
-	return previousMarkersPic;
+    return previousMarkersPic;
 }
 
 void ScientificProcessor::setPreviousMarkersPic(cv::Mat previousMarkersPic) {
-	this->previousMarkersPic = previousMarkersPic;
+    this->previousMarkersPic = previousMarkersPic;
 }
 
 bool ScientificProcessor::isFirstFrame() const {
@@ -191,6 +238,7 @@ void ScientificProcessor::reset()
     currentCells.clear();
     previousCells.clear();
     fluorescenceArray.clear();
+    allCells.clear();
 }
 
 std::vector<CellCont> ScientificProcessor::getCurrentCells() const

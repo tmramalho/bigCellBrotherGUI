@@ -83,6 +83,7 @@ void ExecuteSequence::analyseFrame(FileContainer *bfPic, std::vector<FileContain
 void ExecuteSequence::run()
 {
     if(!ops->pipelineReady || !fs->isLoaded()) return;
+    lab.reset();
     allowRun = 1;
     int maxFrames = fs->getNumFrames();
     if(haveFluorescence) lab.setUseFluor(true);
@@ -108,7 +109,14 @@ void ExecuteSequence::run()
 
     lab.finishCsvFile(filestrCSV);
     lab.finishDotFile(filestrDOT);
-    lab.reset();
+
+    //serialize cell data
+    std::string slrFilename = csvFilename;
+    size_t index = csvFilename.find("csv", index);
+    slrFilename.replace(index, 3, "slr");
+    std::fstream filestrSLR(slrFilename.c_str(), std::fstream::trunc | std::fstream::out);
+    lab.serializeAllCells(filestrSLR);
+
 	executed = true;
     emit sequenceDone();
 }
@@ -141,6 +149,7 @@ void ExecuteSequence::batchRun(std::vector<QFileInfoList> &stacks)
     allowRun = 1;
     int numStacks = stacks.at(0).count();
     for(int i=0; i < numStacks; i++) {
+        lab.reset();
         std::cout << i << "th stack" << std::endl;
         FileContainer *bfFile;
         try {
@@ -204,13 +213,18 @@ void ExecuteSequence::batchRun(std::vector<QFileInfoList> &stacks)
 
         lab.finishCsvFile(filestrCSV);
         lab.finishDotFile(filestrDOT);
-        lab.reset();
 
         delete bfFile;
         flFileVector.clear();
     }
 
     emit sequenceDone();
+}
+
+void ExecuteSequence::importLab(std::string filename)
+{
+    std::fstream filestream(filename, std::fstream::in);
+    lab.loadAllCells(filestream);
 }
 
 void ExecuteSequence::cancelRun()

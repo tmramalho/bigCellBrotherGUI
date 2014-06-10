@@ -11,7 +11,8 @@ HEADERS += $$PWD/mainwindow.h \
     $$PWD/listclassifier.h \
     views/listopenfiles.h \
     views/batchapply.h \
-    views/batchprogress.h
+    views/batchprogress.h \
+    views/generatetrees.h
 SOURCES  +=  $$PWD/mainwindow.cpp \
     $$PWD/picturelabel.cpp  \
     $$PWD/cropimage.cpp \
@@ -24,7 +25,8 @@ SOURCES  +=  $$PWD/mainwindow.cpp \
     $$PWD/listclassifier.cpp \
     views/listopenfiles.cpp \
     views/batchapply.cpp \
-    views/batchprogress.cpp
+    views/batchprogress.cpp \
+    views/generatetrees.cpp
 FORMS    += $$PWD/mainwindow.ui \
     $$PWD/cropimage.ui \
     $$PWD/improveimage.ui \
@@ -36,4 +38,5 @@ FORMS    += $$PWD/mainwindow.ui \
     $$PWD/listclassifier.ui \
     views/listopenfiles.ui \
     views/batchapply.ui \
-    views/batchprogress.ui
+    views/batchprogress.ui \
+    views/generatetrees.ui

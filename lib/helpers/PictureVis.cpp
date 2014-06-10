@@ -67,7 +67,55 @@ cv::Mat PictureVis::drawMarkersOnPicture(cv::Mat& targetPicture, cv::Mat& marker
 		}
 
 	cv::Mat result = colorMarkers * 0.5 + targetColorPicture * 0.5;
-	return result;
+    return result;
+}
+
+cv::Mat PictureVis::highlightMarker(cv::Mat &targetPicture, cv::Mat &markers, int parentLabel)
+{
+    cv::Mat targetColorPicture;
+    cv::Mat colorMarkers(targetPicture.rows, targetPicture.cols, CV_8UC3);
+    double max;
+    cv::minMaxLoc(markers, NULL, &max);
+    vector<cv::Vec3b> colorTab = getRandomColorTab((int)max + 1);
+
+    cv::cvtColor(targetPicture, targetColorPicture, CV_GRAY2BGR);
+
+    for( int i = 0; i < markers.rows; i++ )
+        for( int j = 0; j < markers.cols; j++ )
+        {
+            int idx = markers.at<int>(i,j);
+            if( idx == parentLabel )
+                colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(WHITE, WHITE, WHITE);
+            else
+                colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, BLACK, BLACK);
+        }
+
+    cv::Mat result = colorMarkers * 0.5 + targetColorPicture * 0.5;
+    return result;
+}
+
+cv::Mat PictureVis::highlightMarkerVector(cv::Mat &targetPicture, cv::Mat &markers, std::vector<int> &childLabels)
+{
+    cv::Mat targetColorPicture;
+    cv::Mat colorMarkers(targetPicture.rows, targetPicture.cols, CV_8UC3);
+    double max;
+    cv::minMaxLoc(markers, NULL, &max);
+    vector<cv::Vec3b> colorTab = getRandomColorTab((int)max + 1);
+
+    cv::cvtColor(targetPicture, targetColorPicture, CV_GRAY2BGR);
+
+    for( int i = 0; i < markers.rows; i++ )
+        for( int j = 0; j < markers.cols; j++ )
+        {
+            int idx = markers.at<int>(i,j);
+            if(std::find(childLabels.begin(), childLabels.end(), idx) != childLabels.end())
+                colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(WHITE, WHITE, WHITE);
+            else
+                colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, BLACK, BLACK);
+        }
+
+    cv::Mat result = colorMarkers * 0.5 + targetColorPicture * 0.5;
+    return result;
 }
 
 cv::Mat PictureVis::drawCellsOnPicture(cv::Mat& targetPicture, cv::Mat& markers,

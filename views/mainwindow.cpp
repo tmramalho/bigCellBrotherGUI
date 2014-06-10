@@ -47,6 +47,8 @@ MainWindow::MainWindow(QWidget *parent) :
     sp = new ExecuteSequence(&opCtr);
     execution = new VideoProcessor();
     batch = new BatchApply();
+    mt = new ManualTracker(sp, &opCtr);
+    genTree = new GenerateTrees(mt);
 
     //bind operations to widgets
     li->bindToOps();
@@ -179,11 +181,13 @@ void MainWindow::openImage() {
         ui->framePicker->setTickPosition(QSlider::TicksBelow);
         ui->framePicker->setSingleStep(1);
         ui->framePicker->setTickInterval(videoBox->getNumFrames()/10);
+        genTree->updatePicker(videoBox->getNumFrames()-1);
         updateFrameNumberDisplay();
 
         on_framePicker_valueChanged(0);
         opCtr.setupPipeline(videoBox->grabFrameNumber(0));
         sp->setFileSource(videoBox);
+        mt->setFileSource(videoBox);
         scaleFactor = 1.0;
 
         if(videoBox->getIsHDR()) ui->stackedWidget->setCurrentIndex(bIndex);
@@ -193,6 +197,7 @@ void MainWindow::openImage() {
         ui->zoomOutAct->setEnabled(true);
         ui->normalSizeAct->setEnabled(true);
         ui->fitToWindowAct->setEnabled(true);
+        ui->actionTracking->setEnabled(true);
         //ui->fitToWindowAct->setChecked(true);
         //this->fitToWindow();
         updateActions();
@@ -283,7 +288,7 @@ void MainWindow::zoomIn()
  {
 	 imageLabel->adjustSize();
 	 scaleFactor = 1.0;
-	 PictureLabel *il = static_cast<PictureLabel *>(imageLabel);
+     PictureLabel *il = static_cast<PictureLabel *>(imageLabel);
 	 il->scaleFactor = scaleFactor;
  }
 
@@ -357,7 +362,7 @@ void MainWindow::updateFrameNumberDisplay()
 
 void MainWindow::displayExecutionDialog()
 {
-    execution->show();
+    execution->exec();
 }
 
 void MainWindow::displayOpenFiles()
@@ -367,14 +372,21 @@ void MainWindow::displayOpenFiles()
 
 void MainWindow::displayBatch()
 {
-    batch->show();
+    batch->exec();
 }
 
 void MainWindow::sequenceProcessingFinished()
 {
 	int nItems = ui->listWidget->count();
 	QListWidgetItem *qli = ui->listWidget->item(nItems-1);
-	qli->setHidden(false);
+    qli->setHidden(false);
+}
+
+void MainWindow::displayTrackingEditor()
+{
+    genTree->setCurrentFrame(0);
+    genTree->setNextFrame(0);
+    genTree->exec();
 }
 
 void MainWindow::on_framePicker_valueChanged(int value)
@@ -402,4 +414,15 @@ void MainWindow::updatePreview(QImage imagePreview)
 void MainWindow::resetPipeline() {
     int value = ui->framePicker->value();
     on_framePicker_valueChanged(value);
+}
+
+void MainWindow::openSequence()
+{
+    QString filename = QFileDialog::getOpenFileName(this,
+                                       tr("Open sequence file"), QDir::homePath(),
+                                        tr("SLR files(*.slr)"));
+    QByteArray ba = filename.toLocal8Bit();
+    const char *c_str = ba.data();
+    const std::string filenameString(c_str);
+    sp->importLab(filenameString);
 }

@@ -25,6 +25,8 @@ public:
 	virtual ~PictureVis();
 	static cv::Mat drawMarkers(const markersCont &mc);
 	static cv::Mat drawMarkersOnPicture(cv::Mat& targetPicture, cv::Mat& markers);
+    static cv::Mat highlightMarker(cv::Mat& targetPicture, cv::Mat& markers, int parentLabel);
+    static cv::Mat highlightMarkerVector(cv::Mat& targetPicture, cv::Mat& markers, std::vector<int> &childLabels);
 	static cv::Mat drawClassyMarkersOnPicture(cv::Mat& targetPicture, cv::Mat& markers,
 			std::set<int> markedBadLabels, std::set<int> markedGoodLabels, std::set<int> foundBadLabels,
 			std::set<int> foundGoodLabels);

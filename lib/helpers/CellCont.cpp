@@ -95,15 +95,22 @@ int CellCont::getPrevLabel() const {
 }
 
 void CellCont::setPrevLabel(int prevLabel) {
-	this->prevLabel = prevLabel;
+    this->prevLabel = prevLabel;
 }
 
-double CellCont::getTime() const {
+void CellCont::setNewParent(int label, int time)
+{
+    this->prevLabel = label;
+    this->parentTime = time;
+}
+
+int CellCont::getTime() const {
 	return time;
 }
 
-void CellCont::setTime(double time) {
+void CellCont::setTime(int time) {
 	this->time = time;
+    this->parentTime = time-1;
 }
 
 CellCont CellCont::determineLabelProperties(cv::Mat &currentLabelMask, cv::Mat &markersPic,
@@ -216,6 +223,16 @@ std::set<int> CellCont::findNearestNeigbors(cv::Rect &bbox,
 
 	return neighborSet;
 }
+int CellCont::getParentTime() const
+{
+    return parentTime;
+}
+
+void CellCont::setParentTime(int value)
+{
+    parentTime = value;
+}
+
 
 void CellCont::detectHeightWidth(cv::RotatedRect &box, double *hDim, double *wDim) {
     if(box.size.width > box.size.height) {
