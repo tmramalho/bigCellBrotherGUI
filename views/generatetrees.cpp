@@ -29,6 +29,7 @@ GenerateTrees::GenerateTrees(ManualTracker *_mt, QWidget *parent) :
     QObject::connect(ui->curScroll->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(syncHorizontalSlider(int)));
     QObject::connect(ui->nextScroll->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(syncHorizontalSlider(int)));
     QObject::connect(mt, SIGNAL(newParentFrame(QImage)), this, SLOT(updateParentFrame(QImage)));
+    QObject::connect(mt, SIGNAL(newChildFrame(QImage)), this, SLOT(updateChildFrame(QImage)));
 }
 
 GenerateTrees::~GenerateTrees()
@@ -48,6 +49,7 @@ void GenerateTrees::updatePicker(int max)
 void GenerateTrees::on_curSlider_valueChanged(int value)
 {
     if (value == curFrame) return;
+    std::cout << "View changed prev frame" << std::endl;
     if(value >= nextFrame) {
         setNextFrame(value);
     }
@@ -57,6 +59,7 @@ void GenerateTrees::on_curSlider_valueChanged(int value)
 void GenerateTrees::on_nextSlider_valueChanged(int value)
 {
     if (value == nextFrame) return;
+    std::cout << "View changed next frame" << std::endl;
     if (value < curFrame) {
         setCurrentFrame(value);
     }
@@ -77,45 +80,56 @@ void GenerateTrees::syncVerticalSlider(int value)
 
 void GenerateTrees::setCurrentFrame(int value)
 {
-    curFrame = value;
+    mt->changeParentImage(value);
+}
+
+void GenerateTrees::setNextFrame(int value)
+{
+    mt->changeChildImage(value);
+}
+
+void GenerateTrees::showEvent(QShowEvent *ev)
+{
+    setCurrentFrame(0);
+    if(maxFrames > 0) setNextFrame(1);
+    else setNextFrame(0);
+}
+
+void GenerateTrees::updateParentFrame(QImage frame)
+{
+    curFrame = mt->getParentFrameNumber();
     ui->curSlider->setValue(curFrame);
     ui->curNumber->setValue(curFrame);
-    QImage frame = mt->changeParentImage(value);
     curLabel->clear();
     curLabel->setPixmap(QPixmap::fromImage(frame));
     curLabel->setMinimumSize(frame.width(), frame.height());
 }
 
-void GenerateTrees::setNextFrame(int value)
+void GenerateTrees::updateChildFrame(QImage frame)
 {
-    nextFrame = value;
+    nextFrame = mt->getChildFrameNumber();
     ui->nextSlider->setValue(nextFrame);
     ui->nextNumber->setValue(nextFrame);
-    QImage frame = mt->changeChildImage(value);
     nextLabel->clear();
     nextLabel->setPixmap(QPixmap::fromImage(frame));
     nextLabel->setMinimumSize(frame.width(), frame.height());
 }
 
-void GenerateTrees::updateParentFrame(QImage frame)
-{
-    curLabel->clear();
-    curLabel->setPixmap(QPixmap::fromImage(frame));
-    curLabel->setMinimumSize(frame.width(), frame.height());
-}
-
 void GenerateTrees::on_nextFrameButton_clicked()
 {
     if(curFrame < maxFrames && nextFrame < maxFrames) {
-        setCurrentFrame(nextFrame);
-        setNextFrame(nextFrame+1);
+        mt->setChildAsParent();
     }
 }
 
-void GenerateTrees::on_pushButton_clicked()
+void GenerateTrees::on_prevFrameButton_clicked()
 {
     if(curFrame > 0 && nextFrame > 0) {
-        setCurrentFrame(curFrame-1);
-        setNextFrame(nextFrame-1);
+        mt->setParentAsChild();
     }
+}
+
+void GenerateTrees::on_saveButton_clicked()
+{
+
 }

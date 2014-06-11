@@ -14,11 +14,16 @@ class ManualTracker : public QObject
 public:
     explicit ManualTracker(ExecuteSequence *es, OperationsController *_oc, QObject *parent = 0);
     void setFileSource(FileContainer *vb) { images = vb; }
-    QImage changeParentImage(int frameNum);
-    QImage changeChildImage(int frameNum);
+    void changeParentImage(int frameNum, int _parentLabel=0);
+    void changeChildImage(int frameNum);
+    void setChildAsParent();
+    void setParentAsChild();
+    int getParentFrameNumber() { return parentFrameNumber; }
+    int getChildFrameNumber() { return childFrameNumber; }
 
 signals:
     void newParentFrame(QImage updatedFrame);
+    void newChildFrame(QImage updatedFrame);
 
 public slots:
     void curCellPicked(int i, int j, int bt);
@@ -32,6 +37,9 @@ private:
     QImage convertMatToQt(cv::Mat result);
     QImage updateParentImage();
     QImage updateChildImage();
+    void updateChildCells();
+    void updateMasterData(int label);
+    std::vector<int> childLabels;
     cv::Mat parentMarkers;
     cv::Mat childMarkers;
     cv::Mat curFrame;

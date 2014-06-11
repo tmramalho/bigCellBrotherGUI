@@ -22,8 +22,11 @@ public:
     void setCurrentFrame(int value);
     void setNextFrame(int value);
 
+    void showEvent(QShowEvent *ev);
+
 public slots:
     void updateParentFrame(QImage frame);
+    void updateChildFrame(QImage frame);
 
 private slots:
     void on_curSlider_valueChanged(int value);
@@ -32,8 +35,9 @@ private slots:
     void syncVerticalSlider(int value);
 
     void on_nextFrameButton_clicked();
+    void on_prevFrameButton_clicked();
 
-    void on_pushButton_clicked();
+    void on_saveButton_clicked();
 
 private:
     Ui::GenerateTrees *ui;

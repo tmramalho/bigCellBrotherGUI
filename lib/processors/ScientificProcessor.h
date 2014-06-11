@@ -61,6 +61,8 @@ public:
     std::map<int, std::map<int, std::vector<double> > > getAllCells() const;
     void serializeAllCells(std::fstream &filestr);
     void loadAllCells(std::fstream &filestr);
+    void removeAncestor(int time, int label);
+    void addAncestor(int time, int label, int prevTime, int prevLabel);
 
 private:
     int calculateMaxOverlap(CellCont &newCell, cv::Mat &currentLabelMask, std::vector<int> &labels);

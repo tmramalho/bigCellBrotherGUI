@@ -10,50 +10,92 @@ ManualTracker::ManualTracker(ExecuteSequence *es, OperationsController *_oc, QOb
     childFrameNumber = 0;
 }
 
-QImage ManualTracker::changeParentImage(int frameNum)
+void ManualTracker::changeParentImage(int frameNum, int _parentLabel)
 {
     cv::Mat rawFrame = images->grabFrameNumber(frameNum);
     oc->resetPipeline(rawFrame);
     parentMarkers = oc->runFullPipeline();
     curFrame = oc->getPipelineImage(2);
-    parentLabel = 0;
+    parentLabel = _parentLabel;
     parentFrameNumber = frameNum;
 
-    return updateParentImage();
+    QImage updatedFrame = updateParentImage();
+    emit newParentFrame(updatedFrame);
 }
 
-QImage ManualTracker::changeChildImage(int frameNum)
+void ManualTracker::changeChildImage(int frameNum)
 {
     cv::Mat rawFrame = images->grabFrameNumber(frameNum);
     oc->resetPipeline(rawFrame);
     childMarkers = oc->runFullPipeline();
     nextFrame = oc->getPipelineImage(2);
     childFrameNumber = frameNum;
+    updateChildCells();
 
-    return updateChildImage();
+    QImage childFrame = updateChildImage();
+    emit newChildFrame(childFrame);
+}
+
+void ManualTracker::setChildAsParent()
+{
+    if(parentLabel > 1 && childLabels.size() > 0) {
+        changeParentImage(childFrameNumber, childLabels[0]);
+    } else {
+        changeParentImage(childFrameNumber);
+    }
+    changeChildImage(childFrameNumber+1);
+
+}
+
+void ManualTracker::setParentAsChild()
+{
+    if(parentLabel > 1) {
+        std::map<int, std::vector<double> > cells;
+
+        try {
+            cells = (sp->getAllCells()).at(parentFrameNumber);
+        } catch (const std::out_of_range& oor) {
+            std::cerr << "Out of Range error: " << oor.what() << '\n';
+        }
+
+        //find out who its parent is and go there
+        int newParentLabel = cells[parentLabel][1];
+        int newParentTime = cells[parentLabel][2];
+        int newChildTime = parentFrameNumber;
+
+        changeParentImage(newParentTime, newParentLabel);
+        changeChildImage(newChildTime);
+    } else {
+        changeParentImage(childFrameNumber);
+        changeChildImage(childFrameNumber+1);
+    }
 }
 
 void ManualTracker::curCellPicked(int i, int j, int bt)
 {
-    std::cout << "Parent chosen " << i << ", " << j << ", " << bt << std::endl;
     int label = parentMarkers.at<int>(i, j);
-    std::cout << parentLabel << std::endl;
+    std::cout << "Clicked on parent "<< label << std::endl;
     parentLabel = label;
     QImage updatedFrame = updateParentImage();
     emit newParentFrame(updatedFrame);
+
+    updateChildCells();
+    QImage childFrame = updateChildImage();
+    emit newChildFrame(childFrame);
 }
 
 void ManualTracker::nextCellPicked(int i, int j, int bt)
 {
-    std::cout << "Child chosen " << i << ", " << j << ", " << bt << std::endl;
     int label = childMarkers.at<int>(i, j);
-    std::cout << label << std::endl;
+    std::cout << "Clicked on child "<< label << std::endl;
+    if(parentLabel > 1) {
+        updateMasterData(label);
+    }
 }
 
 QImage ManualTracker::convertMatToQt(cv::Mat result)
 {
     cv::Mat image;
-    std::cout << result.type() << std::endl;
     if(result.type() == CV_8U)
         cv::cvtColor(result, image, CV_GRAY2RGB);
     else
@@ -78,31 +120,58 @@ QImage ManualTracker::updateParentImage()
 
 QImage ManualTracker::updateChildImage()
 {
-    std::map<int, std::vector<double> > childCells;
     cv::Mat frame;
+
+    if (childLabels.size() == 0 || parentLabel < 2) {
+        frame = PictureVis::drawMarkersOnPicture(nextFrame, childMarkers);
+    } else {
+        frame = PictureVis::highlightMarkerVector(nextFrame, childMarkers, childLabels);
+    }
+
+    return convertMatToQt(frame);
+}
+
+void ManualTracker::updateChildCells()
+{
+    childLabels.clear();
+    if(parentLabel < 2) return;
+
+    std::map<int, std::vector<double> > childCells;
 
     try {
         childCells = (sp->getAllCells()).at(childFrameNumber);
     } catch (const std::out_of_range& oor) {
         std::cerr << "Out of Range error: " << oor.what() << '\n';
     }
-    std::cout << childFrameNumber << " : " << childCells.size() << std::endl;
-    if (childCells.size() == 0 || parentLabel < 2) {
-        frame = PictureVis::drawMarkersOnPicture(nextFrame, childMarkers);
-    } else {
-        std::vector<int> childLabels;
+
+    if(childCells.size() != 0) {
         for (std::map<int, std::vector<double> >::iterator it=childCells.begin();
              it!=childCells.end(); ++it) {
             if(it->second[1] == parentLabel && it->second[2] == parentFrameNumber) {
                 childLabels.push_back(it->first);
             }
         }
-        frame = PictureVis::highlightMarkerVector(nextFrame, childMarkers, childLabels);
-        std::cout << "there are " << childCells.size() << "cells here, and " << childLabels.size()
-                  << "are descendants" << std::endl;
+        std::cout << "there are " << childCells.size() << " cells here, and " << childLabels.size()
+                  << " are descendants" << std::endl;
+    }
+}
+
+void ManualTracker::updateMasterData(int label)
+{
+    if(parentLabel < 2) return;
+    if(label < 2) return;
+
+    std::vector<int>::iterator p = std::find(childLabels.begin(), childLabels.end(), label);
+    if(p != childLabels.end()) {
+        //remove label
+        childLabels.erase(p);
+        sp->removeAncestor(childFrameNumber, label);
+    } else {
+        //add label
+        childLabels.push_back(label);
+        sp->addAncestor(childFrameNumber, label, parentFrameNumber, parentLabel);
     }
 
-
-
-    return convertMatToQt(frame);
+    QImage childFrame = updateChildImage();
+    emit newChildFrame(childFrame);
 }

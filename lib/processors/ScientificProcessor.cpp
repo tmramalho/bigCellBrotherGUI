@@ -217,6 +217,17 @@ void ScientificProcessor::loadAllCells(std::fstream &filestr)
     filestr.close();
 }
 
+void ScientificProcessor::removeAncestor(int time, int label)
+{
+    allCells[time][label][1] = -1;
+}
+
+void ScientificProcessor::addAncestor(int time, int label, int prevTime, int prevLabel)
+{
+    allCells[time][label][1] = prevLabel;
+    allCells[time][label][2] = prevTime;
+}
+
 cv::Mat ScientificProcessor::getPreviousMarkersPic() const {
     return previousMarkersPic;
 }

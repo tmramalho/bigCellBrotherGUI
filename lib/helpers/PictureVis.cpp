@@ -109,9 +109,11 @@ cv::Mat PictureVis::highlightMarkerVector(cv::Mat &targetPicture, cv::Mat &marke
         {
             int idx = markers.at<int>(i,j);
             if(std::find(childLabels.begin(), childLabels.end(), idx) != childLabels.end())
-                colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(WHITE, WHITE, WHITE);
-            else
+                colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, WHITE, BLACK);
+            else if( idx <= 1 )
                 colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, BLACK, BLACK);
+            else
+                colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(WHITE, BLACK, BLACK);
         }
 
     cv::Mat result = colorMarkers * 0.5 + targetColorPicture * 0.5;

@@ -384,8 +384,6 @@ void MainWindow::sequenceProcessingFinished()
 
 void MainWindow::displayTrackingEditor()
 {
-    genTree->setCurrentFrame(0);
-    genTree->setNextFrame(0);
     genTree->exec();
 }
 
