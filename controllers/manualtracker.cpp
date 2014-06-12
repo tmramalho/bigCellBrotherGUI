@@ -59,8 +59,8 @@ void ManualTracker::setParentAsChild()
         }
 
         //find out who its parent is and go there
-        int newParentLabel = cells[parentLabel][1];
-        int newParentTime = cells[parentLabel][2];
+        int newParentLabel = cells[parentLabel][2];
+        int newParentTime = cells[parentLabel][1];
         int newChildTime = parentFrameNumber;
 
         changeParentImage(newParentTime, newParentLabel);
@@ -69,6 +69,13 @@ void ManualTracker::setParentAsChild()
         changeParentImage(childFrameNumber);
         changeChildImage(childFrameNumber+1);
     }
+}
+
+void ManualTracker::saveLineage(std::string fname)
+{
+    std::fstream filestr(fname.c_str(), std::fstream::trunc | std::fstream::out);
+    sp->saveAllCellsToCsv(filestr);
+    emit exportDone();
 }
 
 void ManualTracker::curCellPicked(int i, int j, int bt)
@@ -147,7 +154,7 @@ void ManualTracker::updateChildCells()
     if(childCells.size() != 0) {
         for (std::map<int, std::vector<double> >::iterator it=childCells.begin();
              it!=childCells.end(); ++it) {
-            if(it->second[1] == parentLabel && it->second[2] == parentFrameNumber) {
+            if(it->second[2] == parentLabel && it->second[1] == parentFrameNumber) {
                 childLabels.push_back(it->first);
             }
         }

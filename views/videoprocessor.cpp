@@ -37,7 +37,7 @@ void VideoProcessor::on_pickDOT_clicked()
 {
 
 	QString filename = QFileDialog::getSaveFileName(this,
-									   tr("Save File as.."), QDir::homePath(),
+                                       tr("Save File as.."), QDir::homePath(),
                                         tr("Avi files(*.avi)"));
 	QByteArray ba = filename.toLocal8Bit();
 	const char *c_str = ba.data();

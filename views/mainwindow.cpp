@@ -250,7 +250,8 @@ void MainWindow::openImageFluorescent()
 void MainWindow::loadParameters()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
-                                       tr("Open File"), QDir::homePath());
+                                    tr("Open File"), QDir::homePath(),
+                                    tr("PXM files(*.pxm)"));
     if (!fileName.isEmpty()) {
         QByteArray ba = fileName.toLocal8Bit();
         const char *c_str = ba.data();
@@ -262,8 +263,8 @@ void MainWindow::loadParameters()
 void MainWindow::saveParameters()
 {
     QString filename = QFileDialog::getSaveFileName(this,
-                                       tr("Save File as.."), QDir::homePath(),
-                                        tr("PXM files(*.pxm)"));
+                                    tr("Save File as.."), QDir::homePath(),
+                                    tr("PXM files(*.pxm)"));
     QByteArray ba = filename.toLocal8Bit();
     const char *c_str = ba.data();
     const std::string filenameString(c_str);

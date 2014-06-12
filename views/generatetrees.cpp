@@ -30,6 +30,7 @@ GenerateTrees::GenerateTrees(ManualTracker *_mt, QWidget *parent) :
     QObject::connect(ui->nextScroll->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(syncHorizontalSlider(int)));
     QObject::connect(mt, SIGNAL(newParentFrame(QImage)), this, SLOT(updateParentFrame(QImage)));
     QObject::connect(mt, SIGNAL(newChildFrame(QImage)), this, SLOT(updateChildFrame(QImage)));
+    QObject::connect(mt, SIGNAL(exportDone()), this, SLOT(finishExport()));
 }
 
 GenerateTrees::~GenerateTrees()
@@ -115,6 +116,11 @@ void GenerateTrees::updateChildFrame(QImage frame)
     nextLabel->setMinimumSize(frame.width(), frame.height());
 }
 
+void GenerateTrees::finishExport()
+{
+    ui->saveButton->setEnabled(true);
+}
+
 void GenerateTrees::on_nextFrameButton_clicked()
 {
     if(curFrame < maxFrames && nextFrame < maxFrames) {
@@ -131,5 +137,12 @@ void GenerateTrees::on_prevFrameButton_clicked()
 
 void GenerateTrees::on_saveButton_clicked()
 {
-
+    QString filename = QFileDialog::getSaveFileName(this,
+                                       tr("Save File as.."), QDir::homePath(),
+                                       tr("Csv files(*.csv)"));
+    QByteArray ba = filename.toLocal8Bit();
+    const char *c_str = ba.data();
+    std::string filenameString(c_str);
+    ui->saveButton->setEnabled(false);
+    mt->saveLineage(filenameString);
 }

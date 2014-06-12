@@ -3,6 +3,8 @@
 
 #include <QDialog>
 #include <QScrollBar>
+#include <QFileDialog>
+#include <QDir>
 #include <iostream>
 #include "picturelabel.h"
 #include "controllers/manualtracker.h"
@@ -27,6 +29,7 @@ public:
 public slots:
     void updateParentFrame(QImage frame);
     void updateChildFrame(QImage frame);
+    void finishExport();
 
 private slots:
     void on_curSlider_valueChanged(int value);

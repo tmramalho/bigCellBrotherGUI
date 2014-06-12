@@ -92,7 +92,7 @@ void ScientificProcessor::updateDotFile(std::fstream &filestr, int i) {
 
 void ScientificProcessor::createCsvFile(std::fstream &filestr, unsigned int nfl) {
     /* Header */
-    filestr << "t, label, parent, cx, cy, h, w, area, angle, ";
+    filestr << "t, label, tp, parent, cx, cy, h, w, area, angle, ";
     for(unsigned int i = 0; i < nfl; i++)
         filestr << "flav" << i << ", flsd" << i << ", ";
     filestr << std::endl;
@@ -106,6 +106,7 @@ void ScientificProcessor::updateCsvFile(std::fstream &filestr, int i) {
     /* Data */
     for(unsigned int j = 0; j < currentCells.size(); j++) {
         filestr << i << ", " << currentCells[j].getCurLabel() << ", ";
+        filestr << currentCells[j].getParentTime() << ", ";
         filestr << currentCells[j].getPrevLabel() << ", ";
         cv::Point2f center = currentCells[j].getCenter();
         filestr << center.x << ", " << center.y << ", ";
@@ -180,8 +181,8 @@ void ScientificProcessor::saveCellInArray(CellCont &newCell, int t)
     int cl = newCell.getCurLabel();
     std::vector<double> cells = currentCells[cl];
     cells.push_back(newCell.getCurLabel());
-    cells.push_back(newCell.getPrevLabel());
     cells.push_back(newCell.getParentTime());
+    cells.push_back(newCell.getPrevLabel());
     cv::Point2f center = newCell.getCenter();
     cells.push_back(center.x);
     cells.push_back(center.y);
@@ -189,6 +190,7 @@ void ScientificProcessor::saveCellInArray(CellCont &newCell, int t)
     cells.push_back(feats[0]);
     cells.push_back(feats[1]);
     cells.push_back(feats[2]);
+    cells.push_back(newCell.getAngle());
     std::vector <double> flVal = newCell.getFluorescence();
     std::vector <double> flValSq = newCell.getFluorescenceSq();
     for(unsigned int j = 0; j < flVal.size(); j++) {
@@ -217,15 +219,47 @@ void ScientificProcessor::loadAllCells(std::fstream &filestr)
     filestr.close();
 }
 
+void ScientificProcessor::saveAllCellsToCsv(std::fstream &filestr)
+{
+    std::map<int, std::vector<double> > firstTime = allCells.begin()->second;
+    std::vector<double> firstCell = firstTime.begin()->second;
+    std::cout << firstCell.size() << std::endl;
+    int nfl = (firstCell.size() - 9)/2;
+
+    /* Header */
+    filestr << "t, label, tp, parent, cx, cy, h, w, area, angle, ";
+    for(unsigned int i = 0; i < nfl; i++)
+        filestr << "flav" << i << ", flsd" << i << ", ";
+    filestr << std::endl;
+
+    /* Data */
+    for(std::map<int, std::map<int, std::vector<double> > >::iterator it = allCells.begin();
+        it != allCells.end(); ++it) {
+        int t = it->first;
+        std::map<int, std::vector<double> > currentTime = it->second;
+        for(std::map<int, std::vector<double> >::iterator itm = currentTime.begin();
+            itm != currentTime.end(); ++itm) {
+            std::vector<double> features = itm->second;
+            filestr << t << ",";
+            for(std::vector<double>::iterator itv = features.begin();
+                 itv != features.end(); ++itv) {
+                filestr << *itv << ",";
+            }
+            filestr << std::endl;
+        }
+    }
+    filestr.close();
+}
+
 void ScientificProcessor::removeAncestor(int time, int label)
 {
-    allCells[time][label][1] = -1;
+    allCells[time][label][2] = -1;
 }
 
 void ScientificProcessor::addAncestor(int time, int label, int prevTime, int prevLabel)
 {
-    allCells[time][label][1] = prevLabel;
-    allCells[time][label][2] = prevTime;
+    allCells[time][label][2] = prevLabel;
+    allCells[time][label][1] = prevTime;
 }
 
 cv::Mat ScientificProcessor::getPreviousMarkersPic() const {

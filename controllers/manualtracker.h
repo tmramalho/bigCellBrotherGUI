@@ -18,12 +18,14 @@ public:
     void changeChildImage(int frameNum);
     void setChildAsParent();
     void setParentAsChild();
+    void saveLineage(std::string fname);
     int getParentFrameNumber() { return parentFrameNumber; }
     int getChildFrameNumber() { return childFrameNumber; }
 
 signals:
     void newParentFrame(QImage updatedFrame);
     void newChildFrame(QImage updatedFrame);
+    void exportDone();
 
 public slots:
     void curCellPicked(int i, int j, int bt);
