@@ -70,6 +70,35 @@ cv::Mat PictureVis::drawMarkersOnPicture(cv::Mat& targetPicture, cv::Mat& marker
     return result;
 }
 
+cv::Mat PictureVis::drawChildMarkersOnPicture(cv::Mat& targetPicture, cv::Mat& markers,
+                                              std::map<int, std::vector<double> > &childCells) {
+    cv::Mat targetColorPicture;
+    cv::Mat colorMarkers(targetPicture.rows, targetPicture.cols, CV_8UC3);
+    double max;
+    cv::minMaxLoc(markers, NULL, &max);
+    vector<cv::Vec3b> colorTab = getRandomColorTab((int)max + 1);
+
+    cv::cvtColor(targetPicture, targetColorPicture, CV_GRAY2BGR);
+
+    for( int i = 0; i < markers.rows; i++ )
+        for( int j = 0; j < markers.cols; j++ )
+        {
+            int idx = markers.at<int>(i,j);
+            if( idx <= 1 )
+                colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, BLACK, BLACK);
+            else {
+                std::vector<double>features = childCells[idx];
+                if(features[2] == -1)
+                    colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, WHITE, WHITE);
+                else
+                    colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(WHITE, WHITE, BLACK);
+            }
+        }
+
+    cv::Mat result = colorMarkers * 0.3 + targetColorPicture * 0.7;
+    return result;
+}
+
 cv::Mat PictureVis::highlightMarker(cv::Mat &targetPicture, cv::Mat &markers, int parentLabel)
 {
     cv::Mat targetColorPicture;
@@ -231,7 +260,35 @@ cv::Mat PictureVis::drawClassyMarkersOnPicture(cv::Mat& targetPicture,
 		}
 
 	cv::Mat result = colorMarkers * 0.5 + targetColorPicture * 0.5;
-	return result;
+    return result;
+}
+
+cv::Mat PictureVis::drawParentMarkersOnPicture(cv::Mat &targetPicture, cv::Mat &markers, std::set<int> &parentCells)
+{
+    cv::Mat targetColorPicture;
+    cv::Mat colorMarkers(targetPicture.rows, targetPicture.cols, CV_8UC3);
+    double max;
+    cv::minMaxLoc(markers, NULL, &max);
+    vector<cv::Vec3b> colorTab = getRandomColorTab((int)max + 1);
+
+    cv::cvtColor(targetPicture, targetColorPicture, CV_GRAY2BGR);
+
+    for( int i = 0; i < markers.rows; i++ )
+        for( int j = 0; j < markers.cols; j++ )
+        {
+            int idx = markers.at<int>(i,j);
+            if( idx <= 1 )
+                colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, BLACK, BLACK);
+            else {
+                if(parentCells.find(idx) != parentCells.end())
+                    colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, WHITE, BLACK);
+                else
+                    colorMarkers.at<cv::Vec3b>(i,j) = cv::Vec3b(BLACK, BLACK, WHITE);
+            }
+        }
+
+    cv::Mat result = colorMarkers * 0.3 + targetColorPicture * 0.7;
+    return result;
 }
 
 vector<cv::Vec3b> PictureVis::getRandomColorTab(int numComp) {

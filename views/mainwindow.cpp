@@ -197,7 +197,6 @@ void MainWindow::openImage() {
         ui->zoomOutAct->setEnabled(true);
         ui->normalSizeAct->setEnabled(true);
         ui->fitToWindowAct->setEnabled(true);
-        ui->actionTracking->setEnabled(true);
         //ui->fitToWindowAct->setChecked(true);
         //this->fitToWindow();
         updateActions();
@@ -381,6 +380,7 @@ void MainWindow::sequenceProcessingFinished()
 	int nItems = ui->listWidget->count();
 	QListWidgetItem *qli = ui->listWidget->item(nItems-1);
     qli->setHidden(false);
+    ui->actionTracking->setEnabled(true);
 }
 
 void MainWindow::displayTrackingEditor()
@@ -424,4 +424,5 @@ void MainWindow::openSequence()
     const char *c_str = ba.data();
     const std::string filenameString(c_str);
     sp->importLab(filenameString);
+    ui->actionTracking->setEnabled(true);
 }

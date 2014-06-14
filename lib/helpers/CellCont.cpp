@@ -115,8 +115,7 @@ void CellCont::setTime(int time) {
 
 CellCont CellCont::determineLabelProperties(cv::Mat &currentLabelMask, cv::Mat &markersPic,
 											int label, int smRadius) {
-	int boxPadding = 20;
-	double mi, ma;
+    int boxPadding = 20;
 	cv::Mat currentLabelCtour;
 	std::vector< std::vector<cv::Point> > ctours;
 	std::vector<cv::Vec4i> hrchy;
@@ -130,9 +129,8 @@ CellCont CellCont::determineLabelProperties(cv::Mat &currentLabelMask, cv::Mat &
 	cv::Rect bbox = cv::boundingRect(ctours[0]);
 
 	//save cell features
-	detectHeightWidth(box, &mi, &ma);
-	features[0] = mi;
-	features[1] = ma;
+    features[0] = box.size.height;
+    features[1] = box.size.width;
 	features[2] = cv::contourArea(ctours[0]);
 	features[3] = cv::arcLength(ctours[0], true);
 	// put 7 hu moments in features [4:10]

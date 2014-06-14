@@ -38,6 +38,7 @@ public:
 	cv::Mat getPreviewForOperation(std::string op);
 	cv::Mat transformImage(cv::Mat &image);
 
+    void runPipelineUntil(std::string op);
 	int getStepOrder(std::string st) { return stepsOrder[st]; }
 	void setPipelineImage(int i, cv::Mat result) { pipelineImages[i] = result; }
 	cv::Mat getPipelineImage(int i) { return pipelineImages[i]; }
@@ -58,7 +59,6 @@ public slots:
 	void parametersUpdated();
 
 private:
-	void runPipelineUntil(std::string op);
 	std::string currentStep;
 	std::map<int, cv::Mat> pipelineImages;
 	std::map<std::string, Operation *> operationPipeline;

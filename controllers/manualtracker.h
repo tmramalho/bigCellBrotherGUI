@@ -19,6 +19,7 @@ public:
     void setChildAsParent();
     void setParentAsChild();
     void saveLineage(std::string fname);
+    cv::Mat generateMarkersForFrame(int fnum, cv::Size fsize);
     int getParentFrameNumber() { return parentFrameNumber; }
     int getChildFrameNumber() { return childFrameNumber; }
 
@@ -40,8 +41,10 @@ private:
     QImage updateParentImage();
     QImage updateChildImage();
     void updateChildCells();
+    void updateParentCells();
     void updateMasterData(int label);
     std::vector<int> childLabels;
+    std::set<int> parentLabels;
     cv::Mat parentMarkers;
     cv::Mat childMarkers;
     cv::Mat curFrame;
